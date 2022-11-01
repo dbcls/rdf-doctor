@@ -1,5 +1,21 @@
 # rdf-doctor
 
+## Motivation
+
+DBCLS has been converting various life science databases to RDF or supporting them. This development will enable us to provide a high-quality dataset that better links existing RDF datasets stored in the RDF portal site and newly developed RDF.
+
+## Requirement
+```
+(1) Operating system
+Linux (CentOS 7 or later or Ubuntu 20.04 or later), macOS 16 or later
+macOS 16 or later.
+(2) Software development language
+Python, JavaScript, etc.
+(3) Operating system environment
+
+Main memory: 32 GB or less
+Hard disk: 2TB or less
+```
 ## Install
 
 ```
@@ -33,6 +49,23 @@ Options:
     URL1, URL2,...
     * See also https://github.com/DaniFdezAlvarez/shexer#params-to-define-target-shapes
 ```
+
+## TODO
+
+Implementation
+
+```
+a) sheXer [1] の提供する機能で、ローカルのRDFデータファイルを対象とするもの
+b) クラスごとのインスタンスについてプレフィックスを取得し、正規表現にしたうえでShExに含める [2]
+c) 取得したプレフィックスに対して、所与のプレフィックスリストを参照し、プレフィックスの再利用度をレポートに含める
+d) 所与の辞書を参照し、プレフィックス及びクラス名について書き換え候補をレポートに含める
+e) 取得したクラス名について、fingerprinting法 [3] に基づくクラスタリング結果をレポートに含める
+```
+
+## See Also
+- [1] https://github.com/DaniFdezAlvarez/shexer
+- [2] http://shex.io/shex-primer/#combined-constraints
+- [3] https://docs.openrefine.org/next/manual/cellediting#fingerprinting
 
 ## Example
 
