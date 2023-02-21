@@ -4,7 +4,7 @@
 
 DBCLS has conducted to convert various life science databases to RDF and support it. This development will enable us to provide a high-quality dataset that better links existing RDF datasets stored in the RDF portal site and newly developed RDF.
 
-## Requirement
+## Requirements
 ```
 (1) Operating system
 Linux (CentOS 7 or later or Ubuntu 20.04 or later), macOS 16 or later
