@@ -2,7 +2,7 @@
 
 ## Motivation
 
-DBCLS has been converting various life science databases to RDF or supporting them. This development will enable us to provide a high-quality dataset that better links existing RDF datasets stored in the RDF portal site and newly developed RDF.
+DBCLS has conducted to convert various life science databases to RDF and support it. This development will enable us to provide a high-quality dataset that better links existing RDF datasets stored in the RDF portal site and newly developed RDF.
 
 ## Requirement
 ```
@@ -201,4 +201,3 @@ weso-s:KNApSAcKCoreAnnotations
             # 62.57074038553052 % obj: xml:string. Cardinality: {1}
 }
 ```
-
