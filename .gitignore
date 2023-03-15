@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# sheXer output files
+*.shex
+
+# DS_Store (Mac)
+.DS_Store

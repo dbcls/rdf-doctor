@@ -1,0 +1,16 @@
+<http://example.org/artwork1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Artwork> .
+<http://example.org/artwork1> <http://example.org/creator> "Vincent van Gogh" .
+<http://example.org/artwork1> <http://example.org/title> "Starry Night" .
+<http://example.org/artwork1> <http://example.org/creationYear> "1889" .
+<http://example.org/artwork1> <http://example.org/museum> <http://example.org/museum1> .
+<http://example.org/museum1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Museum> .
+<http://example.org/museum1> <http://example.org/name> "Museum of Modern Art" .
+<http://example.org/museum1> <http://example.org/location> "11 W 53rd St, New York, NY 10019" .
+<http://example.org/artwork2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Artwork> .
+<http://example.org/artwork2> <http://example.org/creator> "Leonardo da Vinci" .
+<http://example.org/artwork2> <http://example.org/title> "Mona Lisa" .
+<http://example.org/artwork2> <http://example.org/creationYear> "1503-1519" .
+<http://example.org/artwork2> <http://example.org/museum> <http://example.org/museum2> .
+<http://example.org/museum2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Museum> .
+<http://example.org/museum2> <http://example.org/name> "Louvre Museum" .
+<http://example.org/museum2> <http://example.org/location> "Rue de Rivoli, 75001 Paris, France" .

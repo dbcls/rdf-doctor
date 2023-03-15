@@ -7,12 +7,12 @@ DBCLS has conducted to convert various life science databases to RDF and support
 ## Requirements
 ```
 (1) Operating system
-Linux (CentOS 7 or later or Ubuntu 20.04 or later), macOS 16 or later
-macOS 16 or later.
-(2) Software development language
-Python, JavaScript, etc.
-(3) Operating system environment
+Linux (CentOS 7 or later or Ubuntu 20.04 or later), macOS 12 Monterey or later
 
+(2) Software development language
+Python
+
+(3) Operating system environment
 Main memory: 32 GB or less
 Hard disk: 2TB or less
 ```

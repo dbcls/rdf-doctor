@@ -9,14 +9,10 @@ b2rkegg: <http://bio2rdf.org/kegg:>
 b2rpcc: <http://bio2rdf.org/pubchem.compound:>
 b2rpcs: <http://bio2rdf.org/pubchem.substance:>
 b2rpkb: <http://bio2rdf.org/pharmgkb:>
-bao:	<http://www.bioassayontology.org/bao#>
 bao: <http://www.bioassayontology.org/bao#>
-bibo:  <http://purl.org/ontology/bibo/>
-bibo: <http://purl.org/ontology/bibo/>
 bibo: <http://purl.org/ontology/bibo/>
 bid: <http://rdf.jpostdb.org/bid/>
-bioassay:	<http://rdf.ncbi.nlm.nih.gov/pubchem/bioassay/>
-biopax:	<http://www.biopax.org/release/biopax-level3.owl#>
+bioassay: <http://rdf.ncbi.nlm.nih.gov/pubchem/bioassay/>
 biopax: <http://www.biopax.org/release/biopax-level3.owl#>
 bioproject: <http://identifiers.org/bioproject/>
 bioproject_ont: <http://ddbj.nig.ac.jp/ontologies/bioproject/>
@@ -56,7 +52,8 @@ chipseqdataset: <http://kero.hgc.jp/rdf/dataset/9/ChIPseq/>
 chromhmmdata: <http://kero.hgc.jp/rdf/data/9/ChromHMM/>
 chromhmmdataset: <http://kero.hgc.jp/rdf/dataset/9/ChromHMM/>
 citation: <http://purl.uniprot.org/pubmed/12775724>
-cito:	<http://purl.org/spar/cito/>mesh: <http://id.nlm.nih.gov/mesh/>
+cito: <http://purl.org/spar/cito/>
+mesh: <http://id.nlm.nih.gov/mesh/>
 civic: <http://purl.jp/bio/10/civic/>
 civico: <http://purl.jp/bio/10/civic/ontology#>
 clinicaltrial: <https://www.clinicaltrialsregister.eu/ctr-search/trial/>
@@ -95,12 +92,7 @@ dc: <http://purl.org/dc/elements/1.1/>
 dc: <http://purl.org/dc/terms/>
 dcat: <http://www.w3.org/ns/dcat#>
 dcmiterms: <http://dublincore.org/documents/dcmi-terms/>
-dct:	<http://purl.org/dc/terms/>
-dct:   <http://purl.org/dc/terms/>
-dct:  <http://purl.org/dc/terms/>
 dct: <http://purl.org/dc/terms/>
-dct: <http://purl.org/dc/terms/>
-dcterms: <http://purl.org/dc/terms/>
 dcterms: <http://purl.org/dc/terms/>
 dctype: <http://purl.org/dc/dcmitype/>
 ddbj: <http://getentry.ddbj.nig.ac.jp/getentry/na/>
@@ -119,7 +111,7 @@ effect: <http://icgc.link/Effect/>
 efo: <http://www.ebi.ac.uk/efo/>
 emol: <https://www.emolecules.com/cgi-bin/more?vid=>
 ena: <http://www.ebi.ac.uk/ena/data/view/>
-endpoint:	<http://rdf.ncbi.nlm.nih.gov/pubchem/endpoint/>
+endpoint: <http://rdf.ncbi.nlm.nih.gov/pubchem/endpoint/>
 ens_resource: <http://rdf.ebi.ac.uk/resource/ensembl/>
 ens_terms: <http://rdf.ebi.ac.uk/terms/ensembl/>
 ense: <http://rdf.ebi.ac.uk/resource/ensembl.exon/>
@@ -142,15 +134,13 @@ exo: <http://purl.jp/bio/10/exac/>
 experimentset: <http://purl.jp/bio/101/opentggates/ExperimentSet/>
 fabio: <http://purl.org/spar/fabio/>
 faldo: <http://biohackathon.org/resource/faldo#>
-faldo: <http://biohackathon.org/resource/faldo#> 
 fams: <http://purl.jp/bio/01/famsbase/>
 famso: <http://purl.jp/bio/01/famsbase/ontology/>
 fdasrs: <http://fdasis.nlm.nih.gov/srs/ProxyServlet?mergeData=true&objectHandle=DBMaint&APPLICATION_NAME=fdasrs&actionHandle=default&nextPage=jsp/srs/ResultScreen.jsp&TXTSUPERLISTID=>
 feature: <http://identifiers.org/insdc/AP014957.1#feature:>
 findings: <http://purl.jp/bio/101/opentggates/PathologicalFindings/>
-foaf:  <http://xmlns.com/foaf/0.1/>
 foaf: <http://xmlns.com/foaf/0.1/>
-foaf: <http://xmlns.com/foaf/0.1/>kero: <http://kero.hgc.jp/ontology/kero.owl#>
+kero: <http://kero.hgc.jp/ontology/kero.owl#>
 gdgdb_schema: <http://jcggdb.jp/rdf/diseases/gdgdb-schema#>
 gdgsch: <http://jcggdb.jp/rdf/diseases/gdgdb-schema#>
 genbank: <http://www.ncbi.nlm.nih.gov/nuccore/>
@@ -160,10 +150,9 @@ ggdonto: <http://jcggdb.jp/rdf/diseases/ggdonto#>
 ggdonto_schema: <http://jcggdb.jp/rdf/diseases/ggdonto-schema#>
 ggdsch: <http://jcggdb.jp/rdf/diseases/ggdonto-schema#>
 glycan: <http://purl.jp/bio/12/glyco/glycan#>
-glycan: <http://purl.jp/bio/12/glyco/glycan#>
 glycan: <http://rdf.glycoinfo.org/glycan/>
-glycanid: <http://rdf.glycoinfo.org/glycan/>p1: <http://purl.obolibrary.org/obo/go#>
-glytoucan: <http://www.glytoucan.org/glyco/owl/glytoucan#>
+glycanid: <http://rdf.glycoinfo.org/glycan/>
+p1: <http://purl.obolibrary.org/obo/go#>
 glytoucan: <http://www.glytoucan.org/glyco/owl/glytoucan#>
 gm: <http://purl.jp/bio/10/gm/>
 gmncbi_schema: <http://jcggdb.jp/rdf/diseases/gmncbi-schema#>
@@ -176,13 +165,12 @@ gwas: <http://rdf.ebi.ac.uk/terms/gwas/>
 gwas_cytogenetic_region: <http://rdf.ebi.ac.uk/dataset/gwas/CytogeneticRegion/>
 gwas_snp: <http://rdf.ebi.ac.uk/dataset/gwas/SingleNucleotidePolymorphism/>
 gwas_trackable: <http://rdf.ebi.ac.uk/dataset/gwas/Trackable/>
-gxa:  <http://rdf.ebi.ac.uk/resource/expressionatlas/>
+gxa: <http://rdf.ebi.ac.uk/resource/expressionatlas/>
 gxaterms: <http://rdf.ebi.ac.uk/terms/expressionatlas/>
 hbnc: <http://identifiers.org/hgnc/>
-hco:  <http://identifiers.org/hco/>
+hco: <http://identifiers.org/hco/>
 hco: <http://identifiers.org/hco/1#>
 hco: <http://identifiers.org/hco/11#>
-hco: <http://identifiers.org/hco/>
 hg38: <http://kero.hgc.jp/rdf/resource/homo_sapiens/hg38/>
 hgnc: <http://identifiers.org/hgnc/>
 hmdb: <http://www.hmdb.ca/metabolites/>
@@ -199,7 +187,7 @@ idchembl: <http://identifiers.org/chembl.compound/CHEMBL>
 iddrugb: <http://identifiers.org/drugbank/DB>
 idhmdb: <http://identifiers.org/hmdb/>
 idkeggc: <http://identifiers.org/kegg.compound/>
-ido:  <http://rdf.identifiers.org/ontology/>
+ido: <http://rdf.identifiers.org/ontology/>
 idorg_bioproject: <http://identifiers.org/bioproject/>
 idorg_biosample: <http://identifiers.org/biosample/>
 idorg_sra: <http://identifiers.org/insdc.sra/>
@@ -207,11 +195,11 @@ idpcc: <http://identifiers.org/pubchem.compound/>
 idpcs: <http://identifiers.org/pubchem.substance/>
 idpdb: <http://identifiers.org/pdb-ccd/>
 idpkb: <http://identifiers.org/pharmgkb.drug/>
-idt:  <http://identifiers.org/>
+idt: <http://identifiers.org/>
 idup: <http://identifiers.org/uniprot/>
 idzinc: <http://identifiers.org/zinc/>
-if:    <http://med2rdf.org/if/800126_2590014F1021_1_015_1F#>
-ifo:   <http://med2rdf.org/ontology/ifo/>
+if: <http://med2rdf.org/if/800126_2590014F1021_1_015_1F#>
+ifo: <http://med2rdf.org/ontology/ifo/>
 inchi: <http://glyconavi.org/inchi/>
 info: <http://rdf.glycoinfo.org/glycan/>
 innovation: <http://purl.org/innovation/>
@@ -234,21 +222,20 @@ jstpat: <http://vocab.jst.go.jp/terms/patent#>
 kegg: <http://identifiers.org/kegg.drug/>
 keggbget: <http://www.genome.jp/dbget-bin/www_bget?>
 lang: <http://id.loc.gov/vocabulary/iso639-1/>
-m2r:  <http://med2rdf.org/ontology/med2rdf#>
 m2r: <http://med2rdf.org/ontology/med2rdf#>
 mass: <https://glycoinfo.gitlab.io/wurcsframework/org/glycoinfo/wurcsframework/1.0.1/wurcsframework-1.0.1.jar#>
 mbgd: <http://purl.jp/bio/11/mbgd#>
 mccv: <http://purl.jp/bio/10/mccv#>
-measuregroup:	<http://rdf.ncbi.nlm.nih.gov/pubchem/measuregroup/>
+measuregroup: <http://rdf.ncbi.nlm.nih.gov/pubchem/measuregroup/>
 med2rdf: <http://med2rdf.org/ontology/med2rdf#>
 medgen: <http://www.ncbi.nlm.nih.gov/medgen/>
 meo: <http://purl.jp/bio/11/meo/>
-mesh: <http://id.nlm.nih.gov/mesh/>
 meshv: <http://id.nlm.nih.gov/mesh/vocab#>
-meshv: <http://id.nlm.nih.gov/mesh/vocab#>oboinowl: <http://www.geneontology.org/formats/oboInOwl#>
+oboinowl: <http://www.geneontology.org/formats/oboInOwl#>
 mo: <http://med2rdf/ontology/medgen#>
 mo_ispref: <http://med2rdf/ontology/medgen/ispref#>
-mondo: <http://purl.obolibrary.org/obo/MONDO_>rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+mondo: <http://purl.obolibrary.org/obo/MONDO_>
+rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 monosac: <http://rdf.glycoinfo.org/glycan/wurcs/2.0/Monosaccharide/>
 mpo: <http://purl.jp/bio/10/mpo/>
 mutation: <http://icgc.link/Mutation/>
@@ -263,7 +250,6 @@ ncbiprotein: <http://www.ncbi.nlm.nih.gov/protein/>
 ncbitaxnomy: <http://identifiers.org/taxonomy/>
 ncbitaxon: <http://purl.org/obo/owl/NCBITaxon#>
 ncit: <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#>
-ncit: <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#>rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 ndl: <http://ndl.go.jp/dcndl/terms/>
 nikkaji: <http://stirdf.jst.go.jp/cde/nikkaji/>
 node: <http://example.org/vg/node/>
@@ -278,18 +264,13 @@ nxp_gene: <http://nextprot.org/rdf/gene/>
 nxp_iso: <http://nextprot.org/rdf/isoform/>
 nxp_pub: <http://nextprot.org/rdf/publication/>
 nxp_term: <http://nextprot.org/rdf/terminology/>
-obo:	<http://purl.obolibrary.org/obo/>
-obo:  <http://purl.obolibrary.org/obo/>
 obo: <http://purl.obolibrary.org/obo/>
-obo: <http://purl.obolibrary.org/obo/>
-obo: <http://purl.obolibrary.org/obo/>rdfs:	<http://www.w3.org/2000/01/rdf-schema#>
+rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 obochebi: <http://purl.obolibrary.org/obo/CHEBI_>
 obochebi: <http://purl.obolibrary.org/obo/chebi/>
 obochebi_dot: <http://purl.obolibrary.org/obo/chebi.>
 obochebi_sha: <http://purl.obolibrary.org/obo/chebi#>
-oboinowl: <http://www.geneontology.org/formats/oboInOwl#>
 ogo: <http://miuras.inf.um.es/ontologies/OGO.owl#>
-olo:   <http://purl.org/ontology/olo/core#>
 olo: <http://purl.org/ontology/olo/core#>
 ontology: <http://purl.jp/bio/101/opentggates/ontology/>
 ops: <http://www.openphacts.org/units/>
@@ -298,26 +279,20 @@ organism: <http://mbgd.genome.ad.jp/rdf/resource/organism/>
 organism: <http://purl.org/net/orthordf/hOP/organism/>
 orth: <http://purl.jp/bio/11/orth#>
 orth: <http://purl.org/net/orth#>
-owl:   <http://www.w3.org/2002/07/owl#>
-owl:  <http://www.w3.org/2002/07/owl#>
 owl: <http://www.w3.org/2002/07/owl#>
-owl: <http://www.w3.org/2002/07/owl#>
-owl: <http://www.w3.org/2002/07/owl#>dcterms: <http://purl.org/dc/terms/>
-owl: <http://www.w3.org/2002/07/owl#>oban: <http://purl.org/oban/>
-owl: <http://www.w3.org/2002/07/owl#>rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+oban: <http://purl.org/oban/>
 p15: <http://rdf.glytoucan.org/partner/>
 paconto: <http://jcggdb.jp/rdf/diseases/paconto#>
 pacsch: <http://jcggdb.jp/rdf/diseases/paconto-schema#>
 path: <http://example.org/vg/path/>
 pathology: <http://purl.jp/bio/101/opentggates/Pathology/>
-pav:   <http://purl.org/pav/>
 pav: <http://purl.org/pav/>
 pcc: <http://pubchem.ncbi.nlm.nih.gov/compound/>
 pcdotf: <http://pubchem.ncbi.nlm.nih.gov/substance/>
 pcs: <http://pubchem.ncbi.nlm.nih.gov/substance/>
 pcscid: <http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=>
 pcssid: <http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?sid=>
-pdb:  <http://rdf.wwpdb.org/pdb/>
+pdb: <http://rdf.wwpdb.org/pdb/>
 pdb: <http://identifiers.org/pdb/>
 pdb: <https://rdf.wwpdb.org/pdb/>
 pdbe: <http://www.ebi.ac.uk/pdbe-srv/pdbechem/chemicalCompound/show/>
@@ -325,27 +300,27 @@ pdbj: <http://pdbj.org/chemie/summary/>
 pdbo: <https://rdf.wwpdb.org/schema/pdbx-v50.owl#>
 pdbr: <https://rdf.wwpdb.org/pdb/>
 pdbx: <http://pdbml.pdb.org/schema/pdbx-v50.xsd>
-pdo: <http://purl.jp/bio/11/pdo/>idtax: <http://identifiers.org/taxonomy/>
+pdo: <http://purl.jp/bio/11/pdo/>
+idtax: <http://identifiers.org/taxonomy/>
 pfm: <http://identifiers.org/Pfam/>
-pi:    <http://med2rdf.org/pi/800126_2590014F1021_1_12#>
+pi: <http://med2rdf.org/pi/800126_2590014F1021_1_12#>
 pint: <http://purl.jp/10/pint/>
-pio:   <http://med2rdf.org/ontology/pio/>
+pio: <http://med2rdf.org/ontology/pio/>
 pkb: <http://www.pharmgkb.org/drug/>
-pmid:  <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+pmid: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
 pmid: <http://identifiers.org/pubmed/>
 position: <http://identifiers.org/insdc/AP014957.1#position:>
 position: <http://purl.uniprot.org/position/>
 prism: <http://prismstandard.org/namespaces/1.2/basic/>
-prism: <http://prismstandard.org/namespaces/1.2/basic/>faldo: <http://biohackathon.org/resource/faldo#>
 prism: <http://prismstandard.org/namespaces/basic/2.0/>
 prism: <http://prismstandard.org/namespeces/1.2/basic/>
 probe: <http://purl.jp/bio/101/opentggates/Probe/>
 project: <http://icgc.link/Project/>
-protein:	<http://rdf.ncbi.nlm.nih.gov/pubchem/protein/>
+protein: <http://rdf.ncbi.nlm.nih.gov/pubchem/protein/>
 protid: <http://identifiers.org/ncbiprotein/>
 prov: <http://www.w3.org/ns/prov#>
 pubchem: <http://identifiers.org/pubchem.compound/>
-pubchemv:	<http://rdf.ncbi.nlm.nih.gov/pubchem/vocabulary#>
+pubchemv: <http://rdf.ncbi.nlm.nih.gov/pubchem/vocabulary#>
 pubmed: <http://identifiers.org/pubmed/>
 pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
 pubmed: <https://pubmed.ncbi.nlm.nih.gov/12775724>
@@ -358,25 +333,15 @@ qudt: <http://qudt.org/vocab/unit#>
 range: <http://purl.uniprot.org/range/>
 rchembl: <http://rdf.ebi.ac.uk/resource/chembl/molecule/CHEMBL>
 rcsb: <http://ligand-expo.rcsb.org/pyapps/ldHandler.py?formid=cc-index-search&operation=ccid&target=>
-rcv: <http://identifiers.org/clinvar.record:>db: <http://purl.jp/bio/03/dbcatalog/>
+rcv: <http://identifiers.org/clinvar.record:>
+db: <http://purl.jp/bio/03/dbcatalog/>
 rda: <http://rdvocab.info/ElementsGr2/>
-rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>insdc_ontology: <http://ddbj.nig.ac.jp/ontologies/nucleotide/>
-rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
-rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-rdfs: <http://www.w3.org/2000/01/rdf-schema#>ccbyncsa40: <http://creativecommons.org/licenses/by-nc-sa/4.0/>
-rdfs: <http://www.w3.org/2000/01/rdf-schema#>dcmiterms: <http://dublincore.org/documents/dcmi-terms/>
-rdfs: <http://www.w3.org/2000/01/rdf-schema#>ex: <http://example.org/>rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-rdfs: <http://www.w3.org/2000/01/rdf-schema#>mesh: <http://id.nlm.nih.gov/mesh/>
-rdfs: <http://www.w3.org/2000/01/rdf-schema#>rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+insdc_ontology: <http://ddbj.nig.ac.jp/ontologies/nucleotide/>
+ccbyncsa40: <http://creativecommons.org/licenses/by-nc-sa/4.0/>
+ex: <http://example.org/>
 reactome: <http://www.reactome.org/biopax/71/48887#>
 ref: <http://rdf.glycoinfo.org/references/>
-reference:	<http://rdf.ncbi.nlm.nih.gov/pubchem/reference/>
+reference: <http://rdf.ncbi.nlm.nih.gov/pubchem/reference/>
 refexo: <http://purl.jp/bio/01/refexo#>
 refseq: <http://identifiers.org/refseq/>
 region: <http://identifiers.org/insdc/AP014957.1#region:>
@@ -399,21 +364,17 @@ schema: <http://schema.org/>
 schembl: <https://www.surechembl.org/chemical/>
 scv: <http://identifiers.org/clinvar.submission:>
 semanticscience: <http://semanticscience.org/resource/>
-sio:	<http://semanticscience.org/resource/>
-sio: <http://semanticscience.org/ontology/>
 sio: <http://semanticscience.org/resource/>
-skos:  <http://www.w3.org/2004/02/skos/core#>
+sio: <http://semanticscience.org/ontology/>
 skos: <http://www.w3.org/2004/02/skos/core#>
-skos: <http://www.w3.org/2004/02/skos/core#>
-skos: <http://www.w3.org/2004/02/skos/core#>atlas: <http://www.ebi.ac.uk/gxa/query?conditionQuery=>
-skos: <http://www.w3.org/2004/02/skos/core#>ncit: <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#>
+atlas: <http://www.ebi.ac.uk/gxa/query?conditionQuery=>
 slide: <http://virtualslide.nibiohn.go.jp/Authenticate3.php?image_id=>
 snomedct: <http://purl.bioontology.org/ontology/SNOMEDCT/>
 snvdata: <http://kero.hgc.jp/rdf/data/9/SNV/>
 snvdataset: <http://kero.hgc.jp/rdf/dataset/9/SNV/>
 so: <http://purl.obolibrary.org/obo/so#>
 sos: <http://purl.jp/bio/01/quanto/ontology/sos#>
-source:		<http://rdf.ncbi.nlm.nih.gov/pubchem/source/>
+source: <http://rdf.ncbi.nlm.nih.gov/pubchem/source/>
 species: <http://kero.hgc.jp/rdf/species/>
 sra: <http://identifiers.org/insdc.sra/>
 src: <http://rdf.glycoinfo.org/source/>
@@ -421,18 +382,18 @@ srx: <http://identifiers.org/insdc.sra/>
 ssbd: <http://metadb.riken.jp/db/SSBD/>
 ssbdo: <http://metadb.riken.jp/ontology/SSBD/>
 ssc: <http://semanticscience.org/resource/>
-sty: <http://purl.bioontology.org/ontology/STY/>rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-substance:	<http://rdf.ncbi.nlm.nih.gov/pubchem/substance/>
+sty: <http://purl.bioontology.org/ontology/STY/>
+substance: <http://rdf.ncbi.nlm.nih.gov/pubchem/substance/>
 tag: <http://integbio.jp/dbcatalog/dbcatalogtag.owl#>
 taxddbj: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 taxid: <http://identifiers.org/taxonomy/>
 taxo: <http://purl.uniprot.org/taxonomy/>
 taxon: <http://ddbj.nig.ac.jp/ontologies/taxonomy/>
 taxon: <http://identifiers.org/taxonomy/>
-taxonomy:	<http://rdf.ncbi.nlm.nih.gov/pubchem/taxonomy/>
+taxonomy: <http://rdf.ncbi.nlm.nih.gov/pubchem/taxonomy/>
 taxonomy: <http://identifiers.org/taxonomy/>
 tgvo: <http://togovar.biosciencedbc.jp/vocabulary/>
-tio:  <http://togoid.dbcls.jp/ontology#>
+tio: <http://togoid.dbcls.jp/ontology#>
 tl: <http://purl.org/NET/c4dm/timeline.owl#>
 topography: <http://purl.jp/bio/101/opentggates/PathologicalTopography/
 tssseqdata: <http://kero.hgc.jp/rdf/data/9/TSSseq/>
@@ -441,16 +402,13 @@ uatc: <http://purl.bioontology.org/ontology/UATC/>
 uni: <http://identifiers.org/uniprot/>
 unimod: <http://www.unimod.org/obo/unimod.obo#>
 uniprot: <http://purl.uniprot.org/uniprot/>
-uniprot: <http://purl.uniprot.org/uniprot/>
 uniprot_enzyme: <http://purl.uniprot.org/enzyme/>
 unitset: <http://purl.jp/bio/101/opentggates/UnitSet/>
 unitsetprofile: <http://purl.jp/bio/101/opentggates/UnitSetProfile/>
 uo: <http://purl.obolibrary.org/obo/>
-up:   <http://purl.uniprot.org/uniprot/>
+up: <http://purl.uniprot.org/uniprot/>
 up: <http://identifiers.org/uniprot/>
 up: <http://purl.uniprot.org/core/>
-up: <http://purl.uniprot.org/core/>
-up: <http://purl.uniprot.org/uniprot/>
 up_page: <http://www.uniprot.org/uniprot/>
 uptax: <http://purl.uniprot.org/taxonomy/>
 variants: <http://civic.genome.wustl.edu/links/variants/>
@@ -464,8 +422,7 @@ wikidata: <https://identifiers.org/wikidata/>
 wurcs: <http://rdf.glycoinfo.org/glycan/wurcs/2.0/>
 wurcs: <http://www.glycoinfo.org/glyco/owl/wurcs#>
 xl: <http://www.w3.org/2008/05/skos-xl#>
-xsd:   <http://www.w3.org/2001/XMLSchema#>
 xsd: <http://www.w3.org/2001/XMLSchema#>
 xsi: <http://www.w3.org/2001/XMLSchema-instance>
-yjc:   <http://med2rdf.org/if/yjcode/>
+yjc: <http://med2rdf.org/if/yjcode/>
 zinc: <http://zinc.docking.org/substance/>

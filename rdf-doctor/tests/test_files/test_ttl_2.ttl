@@ -1,0 +1,46 @@
+@prefix ex: <http://example.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:person1 rdf:type ex:Person ;
+    ex:name "John Smith" ;
+    ex:hasAddress ex:address1 .
+
+ex:address1 rdf:type ex:Address ;
+    ex:street "123 Main St." ;
+    ex:city "Anytown" ;
+    ex:state "CA" ;
+    ex:zip "12345" .
+
+ex:person2 rdf:type ex:Person ;
+    ex:name "Mary Johnson" ;
+    ex:age 25 ;
+    ex:hasAddress ex:address2 .
+
+ex:address2 rdf:type ex:Address ;
+    ex:city "Otherville" ;
+    ex:state "NY" .
+
+ex:person3 rdf:type ex:Person ;
+    ex:name "Peter Parker" ;
+    ex:hasAddress ex:address3 .
+
+ex:address3 rdf:type ex:Address ;
+    ex:street "789 Maple Ave." ;
+    ex:city "Gotham" ;
+    ex:state "IL" ;
+    ex:zip "13579" .
+
+ex:person4 rdf:type ex:Person ;
+    ex:name "Sarah Lee" ;
+    ex:age 35 .
+
+ex:person5 rdf:type ex:Person ;
+    ex:name "David Kim" ;
+    ex:hasAddress ex:address5 .
+
+ex:address5 rdf:type ex:Address ;
+    ex:street "1111 Walnut St." ;
+    ex:city "Boston" ;
+    ex:state "MA" ;
+    ex:zip "36912" .
