@@ -44,7 +44,7 @@ Options:
     shex+
     md    markdown
   -o, --output FILE  Write to file instead of stdout
-  -c, --class        Set the shexer target_classes to be inspected to one of:
+  -c, --classes      Set the shexer target_classes to be inspected to one of:
     all (default）
     URL1, URL2,...
     * See also https://github.com/DaniFdezAlvarez/shexer#params-to-define-target-shapes
@@ -55,12 +55,10 @@ Options:
 Implementation
 
 ```
-a) sheXer [1] の提供する機能で、ローカルのRDFデータファイルを対象とするもの
-b) クラスごとのインスタンスについてプレフィックスを取得し、正規表現にしたうえでShExに含める [2]
-c) 取得したプレフィックスに対して、所与のプレフィックスリストを参照し、プレフィックスの再利用度をレポートに含める
-d) 所与の辞書を参照し、プレフィックス及びクラス名について書き換え候補をレポートに含める
-e) 取得したクラス名について、fingerprinting法 [3] に基づくクラスタリング結果をレポートに含める
+a) クラスごとのインスタンスについてプレフィックスを取得し、バリデーション表現にしたうえでShExに含める
+b) 所与の辞書を参照し、プレフィックス及びクラス名について書き換え候補をレポートに含める
 ```
+
 
 ## See Also
 - [1] https://github.com/DaniFdezAlvarez/shexer
@@ -70,134 +68,50 @@ e) 取得したクラス名について、fingerprinting法 [3] に基づくク�
 ## Example
 
 ```
-rdf-doctor -i knapsack_core_2021-08-28_exsample.ttl -r shex+
+$ rdf-doctor -i test_turtle_1.ttl
+PREFIX : <http://weso.es/shapes/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX ex: <http://example.org/>
-PREFIX weso-s: <http://weso.es/shapes/>
-PREFIX xml: <http://www.w3.org/2001/XMLSchema#>
-PREFIX xml: <http://www.w3.org/XML/1998/namespace/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX : <http://mb-wiki.nig.ac.jp/resource/>
-PREFIX dc: <http://purl.org/dc/elements/1.1/>
-PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX mb: <http://ddbj.nig.ac.jp/ontolofies/metabobank/>
-PREFIX mb-wiki: <http://mb-wiki.nig.ac.jp/>
-PREFIX sio: <http://semanticscience.org/resource/>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace/>
+PREFIX ex: <http://example.org/>
 
-weso-s:KNApSAcKCoreRecord
+:Address   # 4 instances
 {
-   rdf:type  [mb:KNApSAcKCoreRecord]  ;                        # 100.0 %
-   sio:SIO_000008  IRI  {2};                                   # 100.0 %
-            # 100.0 % obj: @weso-s:CHEMINF_000042. Cardinality: {1}
-            # 100.0 % obj: @weso-s:CHEMINF_000043. Cardinality: {1}
-   sio:CHEMINF_000200  IRI  {5};                               # 100.0 %
-            # 100.0 % obj: @weso-s:CHEMINF_000113. Cardinality: {1}
-            # 100.0 % obj: @weso-s:Start_substance. Cardinality: {1}
-            # 100.0 % obj: @weso-s:CHEMINF_000018. Cardinality: {1}
-            # 100.0 % obj: @weso-s:CHEMINF_000059. Cardinality: {1}
-   rdfs:seeAlso  IRI  ;                                        # 100.0 %
-   dcterms:hasPart  IRI  {3};                                  # 100.0 %
-            # 100.0 % obj: @weso-s:SDfile. Cardinality: {1}
-            # 100.0 % obj: @weso-s:CDXfile. Cardinality: {1}
-            # 100.0 % obj: @weso-s:CHEMINF_000058. Cardinality: {1}
-   mb:fid  xml:string  ;                                       # 100.0 %
-   dc:identifier  xml:string  ;                                # 100.0 %
-   foaf:homepage  IRI  ;                                       # 100.0 %
-   rdfs:label  xml:string  ;                                   # 100.0 %
-   sio:SIO_000255  @weso-s:KNApSAcKCoreAnnotations  +          # 100.0 %
-            # 73.88767071254684 % obj: @weso-s:KNApSAcKCoreAnnotations. Cardinality: {1}
-            # 12.210155562078075 % obj: @weso-s:KNApSAcKCoreAnnotations. Cardinality: {2}
+   rdf:type  [ex:Address]  ;                                   # 100.0 % (4 instances).
+   ex:city  xsd:string  ;                                      # 100.0 % (4 instances).
+   ex:state  xsd:string  ;                                     # 100.0 % (4 instances).
+   ex:zip  xsd:string  ?;
+            # 75.0 % (3 instances). obj: xsd:string. Cardinality: {1}
+   ex:street  xsd:string  ?
+            # 75.0 % (3 instances). obj: xsd:string. Cardinality: {1}
 }
 
 
-weso-s:CHEMINF_000058
+:Person   # 5 instances
 {
-   rdf:type  [sio:CHEMINF_000058]  ;                           # 100.0 %
-   rdfs:seeAlso  IRI  ;                                        # 100.0 %
-   dcterms:format  IRI                                         # 100.0 %
+   rdf:type  [ex:Person]  ;                                    # 100.0 % (5 instances).
+   ex:name  xsd:string  ;                                      # 100.0 % (5 instances).
+   ex:hasAddress  @:Address  ?;
+            # 80.0 % (4 instances). obj: @:Address. Cardinality: {1}
+   ex:age  xsd:integer  ?
+            # 40.0 % (2 instances). obj: xsd:integer. Cardinality: {1}
 }
+```
 
+```
+$ rdf-doctor -i test_turtle_2.ttl -r md
+Prefix reuse percentage: 75.0 %
 
-weso-s:CDXfile
-{
-   rdf:type  [mb:CDXfile]  ;                                   # 100.0 %
-   dcterms:format  IRI  ;                                      # 100.0 %
-   rdfs:seeAlso  IRI                                           # 100.0 %
-}
+[INFO] Multiple strings were found that appear to represent the same class name. They are listed below.
 
+http://xmlns.com/foaf/0.1/Person
+http://xmlns.com/foaf/0.1/PErson
+http://xmlns.com/foaf/0.1/PERSON
 
-weso-s:SDfile
-{
-   rdf:type  [mb:SDfile]  ;                                    # 100.0 %
-   dcterms:format  IRI  ;                                      # 100.0 %
-   rdfs:seeAlso  IRI                                           # 100.0 %
-}
-
-
-weso-s:CHEMINF_000042
-{
-   rdf:type  [sio:CHEMINF_000042]  ;                           # 100.0 %
-   sio:SIO_000300  xml:string                                  # 100.0 %
-}
-
-
-weso-s:CHEMINF_000043
-{
-   rdf:type  [sio:CHEMINF_000043]  ;                           # 100.0 %
-   sio:SIO_000300  xml:string                                  # 100.0 %
-}
-
-
-weso-s:CHEMINF_000018
-{
-   rdf:type  [sio:CHEMINF_000018]  ;                           # 100.0 %
-   sio:SIO_000300  rdf:langString  ?;
-            # 74.57829037103542 % obj: rdf:langString. Cardinality: {1}
-   sio:SIO_000300  xml:string  ?
-            # 25.42170962896459 % obj: xml:string. Cardinality: {1}
-}
-
-
-weso-s:CHEMINF_000059
-{
-   rdf:type  [sio:CHEMINF_000059]  ;                           # 100.0 %
-   sio:SIO_000300  xml:string  ;                               # 100.0 %
-   rdfs:seeAlso  IRI                                           # 100.0 %
-}
-
-
-weso-s:CHEMINF_000113
-{
-   rdf:type  [sio:CHEMINF_000113]  ;                           # 100.0 %
-   sio:SIO_000300  xml:string  ;                               # 100.0 %
-   rdfs:seeAlso  IRI                                           # 100.0 %
-}
-
-
-weso-s:Start_substance
-{
-   rdf:type  [mb:Start_substance]  ;                           # 100.0 %
-   sio:SIO_000300  xml:string                                  # 100.0 %
-}
-
-
-weso-s:KNApSAcKCoreAnnotations
-{
-   rdf:type  [mb:KNApSAcKCoreAnnotations]  ;                   # 100.0 %
-   mb:kingdom  xml:string  ;                                   # 100.0 %
-   mb:family  xml:string  ;                                    # 100.0 %
-   mb:references  xml:string  +;                               # 100.0 %
-            # 99.55414339158509 % obj: xml:string. Cardinality: {1}
-   mb:organism  xml:string  ;                                  # 100.0 %
-   mb:sp1  xml:string  ;                                       # 100.0 %
-   rdfs:seeAlso  IRI  ?;
-            # 69.92407991741769 % obj: IRI. Cardinality: {1}
-   dcterms:references  IRI  *;
-            # 63.87097246524295 % obj: IRI. Cardinality: +
-            # 62.57074038553052 % obj: IRI. Cardinality: {1}
-   mb:pmid  xml:string  *
-            # 63.87097246524295 % obj: xml:string. Cardinality: +
-            # 62.57074038553052 % obj: xml:string. Cardinality: {1}
-}
+http://xmlns.com/foaf/0.1/Document
+http://xmlns.com/foaf/0.1/DOCUMENT
+http://xmlns.com/foaf/0.1#Document
+http://xmlns.com/foaf/0.1/DOcument
 ```
