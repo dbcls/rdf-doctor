@@ -2,10 +2,11 @@ import os
 import sys
 import argparse
 import consts
+import gzip
 import rdflib
 import re
 from shexer.shaper import Shaper
-from shexer.consts import NT, TURTLE, MIXED_INSTANCES
+from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
 from unidecode import unidecode
 from collections import defaultdict
 from pathlib import Path
@@ -23,19 +24,20 @@ def doctor():
         print(error_msg)
         return
 
-    input_format = get_input_format(args.input)
+    compression_mode = get_compression_mode(args.input)
+    input_format = get_input_format(args.input, compression_mode)
 
     try:
         # Processing branch by report format
         if args.report == consts.REPORT_FORMAT_SHEX:
             # shex
-            generate_report_shex(args, input_format)
+            generate_report_shex(args, input_format, compression_mode)
         elif args.report == consts.REPORT_FORMAT_MARKDOWN or args.report == consts.REPORT_FORMAT_MD:
             # markdown/md
-            generate_report_markdown(args, input_format)
+            generate_report_markdown(args, input_format, compression_mode)
         elif args.report == consts.REPORT_FORMAT_SHEX_PLUS:
             # shex+
-            generate_report_shex_plus(args, input_format)
+            generate_report_shex_plus(args, input_format, compression_mode)
         else:
             # Else case does not occur.
             # Prevented by validate_command_line_args function.
@@ -85,19 +87,37 @@ def get_command_line_args(args):
 
     return parser.parse_args(args)
 
-# Return input file format ("nt" or "turtle")
-def get_input_format(input_file):
+
+def get_compression_mode(input_file):
     extension = os.path.splitext(input_file)[1]
-    if extension == consts.EXTENSION_NT:
-        # N-Triples
-        return NT
-    elif extension == consts.EXTENSION_TTL:
-        # Turtle
-        return TURTLE
+    if extension == consts.EXTENSION_GZ:
+        return GZ
     else:
-        # Else case does not occur.
-        # Prevented by validate_command_line_args function.
-        raise ValueError(extension + '" is an unsupported extension. ".ttl" and ".nt" are supported.')
+        return None
+
+
+# Return input file format ("nt" or "turtle")
+def get_input_format(input_file, compression_mode):
+    if compression_mode != None:
+        org_extension = os.path.splitext(os.path.splitext(input_file)[0])[1]
+        if org_extension == consts.EXTENSION_NT:
+            # N-Triples
+            return NT
+        elif org_extension == consts.EXTENSION_TTL:
+            # Turtle
+            return TURTLE
+    else:
+        extension = os.path.splitext(input_file)[1]
+        if extension == consts.EXTENSION_NT:
+            # N-Triples
+            return NT
+        elif extension == consts.EXTENSION_TTL:
+            # Turtle
+            return TURTLE
+        else:
+            # Else case does not occur.
+            # Prevented by validate_command_line_args function.
+            raise ValueError(extension + '" is an unsupported extension. ".ttl", ".nt" and ".gz" are supported.')
 
 
 # Validate args(input, output, report, classes)
@@ -130,12 +150,18 @@ def validate_command_line_args(args):
         error_msg = 'Report format error: "' + args.report + '" is an unsupported report format. "' + consts.REPORT_FORMAT_SHEX + '", "' + consts.REPORT_FORMAT_MARKDOWN + '", "' + consts.REPORT_FORMAT_MD + '" and "' + consts.REPORT_FORMAT_SHEX_PLUS + '" are supported.'
         return False, error_msg
 
-    # Allow only ".nt" or ".ttl" extensions
+    # Allow only ".nt" or ".ttl" (and .gz) extensions
     extension = os.path.splitext(args.input)[1]
-    if extension != consts.EXTENSION_NT and \
-        extension != consts.EXTENSION_TTL:
-        error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl" and ".nt" are supported.'
+    if extension == consts.EXTENSION_GZ:
+        org_extension = os.path.splitext(os.path.splitext(args.input)[0])[1]
+        # gz
+        if org_extension != consts.EXTENSION_NT and org_extension != consts.EXTENSION_TTL:
+            error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt" and ".gz" are supported.'
+            return False, error_msg
+    elif extension != consts.EXTENSION_NT and extension != consts.EXTENSION_TTL:
+        error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt" and ".gz" are supported.'
         return False, error_msg
+
 
     # Make an error if another class name is specified with "all"
     if consts.TARGET_CLASS_ALL in args.classes:
@@ -147,14 +173,14 @@ def validate_command_line_args(args):
 
 
 # Processing when the report format is "shex"
-def generate_report_shex(args, input_format):
-    call_shexer_shaper(args, input_format)
+def generate_report_shex(args, input_format, compression_mode):
+    call_shexer_shaper(args, input_format, compression_mode)
 
 
 # Processing when the report format is "md/markdown"
 # # todo: Include rewriting candidates for prefixes and class names determined by referring to the dictionary in the report
-def generate_report_markdown(args, input_format):
-    class_list = get_classes_list(args.input, input_format)
+def generate_report_markdown(args, input_format, compression_mode):
+    class_list = get_classes_list(args.input, input_format, compression_mode)
     fingerprint_class_dict = defaultdict(list)
 
     # Perform clustering by fingerprint for the acquired class name
@@ -178,10 +204,14 @@ def generate_report_markdown(args, input_format):
     else:
         result_list.append("[OK] A potentially incorrect class name was not detected.\n")
 
-    # Calculate prefix reuse percentage only for turtle format
-    if input_format == TURTLE:
+    prefix_reuse_percentage, error_msg = get_prefix_reuse_percentage(args.input, input_format, compression_mode)
+
+    if error_msg != None:
         # Insert at the beginning
-        result_list.insert(0, "Prefix reuse percentage: " + str(calc_prefix_reuse_percentage(args.input, input_format)) + " %\n\n")
+        result_list.insert(0, "Prefix reuse percentage: " + error_msg + "\n\n")
+    else:
+        # Insert at the beginning
+        result_list.insert(0, "Prefix reuse percentage: " + str(prefix_reuse_percentage) + " %\n\n")
 
     # Output results to specified destination (standard output or file)
     if args.output is None:
@@ -194,11 +224,11 @@ def generate_report_markdown(args, input_format):
 # Processing when the report format is "shex+"
 # todo: Develop processing for shex+
 # todo: Include validating specification
-def generate_report_shex_plus(args, input_format):
-    call_shexer_shaper(args, input_format)
+def generate_report_shex_plus(args, input_format, compression_mode):
+    call_shexer_shaper(args, input_format, compression_mode)
 
 
-def call_shexer_shaper(args, input_format):
+def call_shexer_shaper(args, input_format, compression_mode):
     # Set parameters when calling the shaper class depending on whether the class is specified as an argument
     if consts.TARGET_CLASS_ALL in args.classes:
         target_classes = None
@@ -212,6 +242,7 @@ def call_shexer_shaper(args, input_format):
                     target_classes=target_classes,
                     all_classes_mode=all_classes_mode,
                     input_format=input_format,
+                    compression_mode=compression_mode,
                     instances_report_mode=MIXED_INSTANCES)
 
     # Output results to specified destination (standard output or file)
@@ -223,24 +254,34 @@ def call_shexer_shaper(args, input_format):
 
 # Calculates the percentage of prefixes in the input file that exist in the prefix list file prepared in advance,
 # and returns it after rounding to the second decimal place.
-def calc_prefix_reuse_percentage(input_file, input_format):
-    target_namespaces = get_namespaces_list(input_file, input_format)
-
+# If the prefix is not detected, do not calculate and return an error message in the second return value.
+def get_prefix_reuse_percentage(input_file, input_format, compression_mode):
+    target_namespaces = get_namespaces_list(input_file, input_format, compression_mode)
     with open(Path(__file__).resolve().parent.joinpath(consts.PREFIX_LIST_FILE_PATH), 'r') as f:
         correct_namespaces_list = f.read().splitlines()
 
     target_namespace_count = len(target_namespaces)
+    if target_namespace_count == 0:
+        error_msg = "Not calculated because there is no prefix defined."
+        return None, error_msg
+
     correct_count = 0
     for namespace in target_namespaces:
         if str(namespace[1]) in correct_namespaces_list:
             correct_count+=1
 
-    return round(correct_count / target_namespace_count * 100, 2)
+    return round(correct_count / target_namespace_count * 100, 2), None
 
 
-def get_classes_list(input_file, input_format):
+def get_classes_list(input_file, input_format, compression_mode):
     g = rdflib.Graph()
-    g.parse(input_file, format=input_format)
+
+    if compression_mode != None:
+        with gzip.open(input_file, "rb") as f:
+            data = f.read()
+        g.parse(data=data, format=input_format)
+    else:
+        g.parse(input_file, format=input_format)
 
     query = """
         select distinct ?class_name
@@ -258,13 +299,20 @@ def get_classes_list(input_file, input_format):
     return class_list
 
 
-def get_namespaces_list(input_file, input_format):
+def get_namespaces_list(input_file, input_format, compression_mode):
     g = rdflib.Graph()
-    g.parse(input_file, format=input_format)
+    if compression_mode != None:
+        with gzip.open(input_file, "rb") as f:
+            data = f.read()
+        g.parse(data=data, format=input_format)
+    else:
+        g.parse(input_file, format=input_format)
 
     namespace_list = []
+    exclude_list = ["owl", "rdf", "rdfs", "xsd", "xml"]
     for namespace in g.namespaces():
-        namespace_list.append(namespace)
+        if str(namespace[0]) not in exclude_list:
+            namespace_list.append(namespace)
 
     return namespace_list
 

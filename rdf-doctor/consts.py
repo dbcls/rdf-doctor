@@ -12,6 +12,7 @@ TARGET_CLASS_ALL = "all"
 # Input file extensions
 EXTENSION_NT = ".nt"
 EXTENSION_TTL = ".ttl"
+EXTENSION_GZ = ".gz"
 
 # Prefix list file path
 PREFIX_LIST_FILE_PATH = "reference/correct-prefixes.txt"
