@@ -24,6 +24,12 @@ setup(
     author = 'DBCLS',
     url = 'https://github.com/dbcls/rdf-doctor',
     packages=find_packages("rdf-doctor"),
+    include_package_data=True,
+    data_files=[
+        ("",["LICENSE"]),
+        ("reference",["rdf-doctor/reference/correct-prefixes.txt"]),
+        ("reference",["rdf-doctor/reference/rdf-config-prefixes.yaml"])
+    ],
     package_dir={"": "rdf-doctor"},
     py_modules=[splitext(basename(path))[0] for path in glob('rdf-doctor/*.py')],
     long_description = read('README.md'),
