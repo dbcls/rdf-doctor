@@ -100,7 +100,7 @@ PREFIX ex: <http://example.org/>
 }
 ```
 
-```
+`````
 $ rdf-doctor -i test_turtle_2.ttl -r md
 # Prefix
 
@@ -133,3 +133,4 @@ http://xmlns.com/foaf/0.1#PERSON
 http://xmlns.com/foaf/0.1#Document
 http://xmlns.com/foaf/0.1#DOCUMENT
 ```
+`````
