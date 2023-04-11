@@ -102,16 +102,34 @@ PREFIX ex: <http://example.org/>
 
 ```
 $ rdf-doctor -i test_turtle_2.ttl -r md
-Prefix reuse percentage: 75.0 %
+# Prefix
 
-[INFO] Multiple strings were found that appear to represent the same class name. They are listed below.
+## Reuse percentage
+```
+50.0%
+```
 
-http://xmlns.com/foaf/0.1/Person
-http://xmlns.com/foaf/0.1/PErson
-http://xmlns.com/foaf/0.1/PERSON
+## A prefix that appears to be incorrect was found.
+```
+Input	Correct
+http://xmlns.com/foaf/0.1#	http://xmlns.com/foaf/0.1/
+```
 
-http://xmlns.com/foaf/0.1/Document
-http://xmlns.com/foaf/0.1/DOCUMENT
+# Class
+
+## A class name that appears to be incorrect was found.
+```
+Input	Correct
+http://xmlns.com/foaf/0.1#Person	http://xmlns.com/foaf/0.1/Person
+http://xmlns.com/foaf/0.1#Document	http://xmlns.com/foaf/0.1/Document
+```
+
+## Multiple strings were found that appear to represent the same class name.
+```
+http://xmlns.com/foaf/0.1#Person
+http://xmlns.com/foaf/0.1#PErson
+http://xmlns.com/foaf/0.1#PERSON
+
 http://xmlns.com/foaf/0.1#Document
-http://xmlns.com/foaf/0.1/DOcument
+http://xmlns.com/foaf/0.1#DOCUMENT
 ```

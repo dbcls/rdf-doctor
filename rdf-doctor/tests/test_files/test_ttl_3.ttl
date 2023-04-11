@@ -1,22 +1,39 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
 @prefix ex: <http://example.org/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:artwork1 rdf:type ex:Artwork ;
-    ex:creator "Vincent van Gogh" ;
-    ex:title "Starry Night" ;
-    ex:creationYear "1889" ;
-    ex:museum ex:museum1 .
+ex:Jimmy a foaf:Person ;  # Complete
+	foaf:age "23"^^xsd:integer ;
+	foaf:name "Jimmy" ;
+	foaf:familyName "Jones" .
 
-ex:museum1 rdf:type ex:Museum ;
-    ex:name "Museum of Modern Art" ;
-    ex:location "11 W 53rd St, New York, NY 10019" .
+ex:Sarah a foaf:PErson ;  # Complete implicit type for age
+	foaf:age 22 ;
+	foaf:name "Sarah" ;
+	foaf:familyName "Salem" .
 
-ex:artwork2 rdf:type ex:Artwork ;
-    ex:creator "Leonardo da Vinci" ;
-    ex:title "Mona Lisa" ;
-    ex:creationYear "1503-1519" ;
-    ex:museum ex:museum2 .
+ex:Bella a foaf:PERSON ;  # Missing familyName
+	foaf:age "56"^^xsd:integer ;
+	foaf:name "Isabella" .
 
-ex:museum2 rdf:type ex:Museum ;
-    ex:name "Louvre Museum" ;
-    ex:location "Rue de Rivoli, 75001 Paris, France" .
+ex:David a foaf:Parson ;  # Missing age and use knows
+	foaf:name "David" ;
+	foaf:familyName "Doulofeau" ;
+	foaf:knows ex:Sarah .
+
+ex:HumanLike foaf:name "Person" ;  # foaf properties, but not explicit type.
+	foaf:familyName "Maybe" ;
+	foaf:age 99 ;
+	foaf:knows ex:David .
+
+
+ex:x1 rdf:type foaf:Document ;
+	foaf:depiction "A thing that is nice" ;
+	foaf:title "A nice thing" .
+
+
+ex:x2 rdf:type foaf:DOCUMENT ;
+	foaf:title "Another thing" .
+

@@ -1,34 +1,24 @@
-<http://example.org/person1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Person> .
-<http://example.org/person1> <http://example.org/name> "John Smith" .
-<http://example.org/person1> <http://example.org/hasAddress> <http://example.org/address1> .
-<http://example.org/address1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Address> .
-<http://example.org/address1> <http://example.org/street> "123 Main St." .
-<http://example.org/address1> <http://example.org/city> "Anytown" .
-<http://example.org/address1> <http://example.org/state> "CA" .
-<http://example.org/address1> <http://example.org/zip> "12345" .
-<http://example.org/person2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Person> .
-<http://example.org/person2> <http://example.org/name> "Mary Johnson" .
-<http://example.org/person2> <http://example.org/age> "25"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<http://example.org/person2> <http://example.org/hasAddress> <http://example.org/address2> .
-<http://example.org/address2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Address> .
-<http://example.org/address2> <http://example.org/city> "Otherville" .
-<http://example.org/address2> <http://example.org/state> "NY" .
-<http://example.org/person3> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Person> .
-<http://example.org/person3> <http://example.org/name> "Peter Parker" .
-<http://example.org/person3> <http://example.org/hasAddress> <http://example.org/address3> .
-<http://example.org/address3> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Address> .
-<http://example.org/address3> <http://example.org/street> "789 Maple Ave." .
-<http://example.org/address3> <http://example.org/city> "Gotham" .
-<http://example.org/address3> <http://example.org/state> "IL" .
-<http://example.org/address3> <http://example.org/zip> "13579" .
-<http://example.org/person4> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Person> .
-<http://example.org/person4> <http://example.org/name> "Sarah Lee" .
-<http://example.org/person4> <http://example.org/age> "35"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<http://example.org/person4> <http://example.org/hasAddress> <http://example.org/address4> .
-<http://example.org/address4> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Address> .
-<http://example.org/address4> <http://example.org/street> "321 Oak St." .
-<http://example.org/address4> <http://example.org/city> "Smallville" .
-<http://example.org/address4> <http://example.org/state> "KS" .
-<http://example.org/address4> <http://example.org/zip> "24680" .
-<http://example.org/person5> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Person> .
-<http://example.org/person5> <http://example.org/name> "Jessica Williams" .
+<http://example.org/Jimmy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://example.org/Jimmy> <http://xmlns.com/foaf/0.1/age> "23"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/Jimmy> <http://xmlns.com/foaf/0.1/name> "Jimmy" .
+<http://example.org/Jimmy> <http://xmlns.com/foaf/0.1/familyName> "Jones" .
+<http://example.org/Sarah> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/PErson> .
+<http://example.org/Sarah> <http://xmlns.com/foaf/0.1/age> "22"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/Sarah> <http://xmlns.com/foaf/0.1/name> "Sarah" .
+<http://example.org/Sarah> <http://xmlns.com/foaf/0.1/familyName> "Salem" .
+<http://example.org/Bella> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1#Person> .
+<http://example.org/Bella> <http://xmlns.com/foaf/0.1/age> "56"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/Bella> <http://xmlns.com/foaf/0.1/name> "Isabella" .
+<http://example.org/David> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://example.org/David> <http://xmlns.com/foaf/0.1/name> "David" .
+<http://example.org/David> <http://xmlns.com/foaf/0.1/familyName> "Doulofeau" .
+<http://example.org/David> <http://xmlns.com/foaf/0.1/knows> <http://example.org/Sarah> .
+<http://example.org/HumanLike> <http://xmlns.com/foaf/0.1/name> "Person" .
+<http://example.org/HumanLike> <http://xmlns.com/foaf/0.1/familyName> "Maybe" .
+<http://example.org/HumanLike> <http://xmlns.com/foaf/0.1/age> "99"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/HumanLike> <http://xmlns.com/foaf/0.1/knows> <http://example.org/David> .
+<http://example.org/x1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+<http://example.org/x1> <http://xmlns.com/foaf/0.1/depiction> "A thing that s nice" .
+<http://example.org/x1> <http://xmlns.com/foaf/0.1/title> "A nice thing" .
+<http://example.org/x2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1#Document> .
+<http://example.org/x2> <http://xmlns.com/foaf/0.1/title> "Another thing" .

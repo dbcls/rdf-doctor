@@ -1,46 +1,39 @@
-@prefix ex: <http://example.org/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-ex:person1 rdf:type ex:Person ;
-    ex:name "John Smith" ;
-    ex:hasAddress ex:address1 .
+@prefix ex: <http://example.org#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:address1 rdf:type ex:Address ;
-    ex:street "123 Main St." ;
-    ex:city "Anytown" ;
-    ex:state "CA" ;
-    ex:zip "12345" .
+ex:Jimmy a foaf:Person ;  # Complete
+	foaf:age "23"^^xsd:integer ;
+	foaf:name "Jimmy" ;
+	foaf:familyName "Jones" .
 
-ex:person2 rdf:type ex:Person ;
-    ex:name "Mary Johnson" ;
-    ex:age 25 ;
-    ex:hasAddress ex:address2 .
+ex:Sarah a foaf:Person ;  # Complete implicit type for age
+	foaf:age 22 ;
+	foaf:name "Sarah" ;
+	foaf:familyName "Salem" .
 
-ex:address2 rdf:type ex:Address ;
-    ex:city "Otherville" ;
-    ex:state "NY" .
+ex:Bella a foaf:Person ;  # Missing familyName
+	foaf:age "56"^^xsd:integer ;
+	foaf:name "Isabella" .
 
-ex:person3 rdf:type ex:Person ;
-    ex:name "Peter Parker" ;
-    ex:hasAddress ex:address3 .
+ex:David a foaf:Person ;  # Missing age and use knows
+	foaf:name "David" ;
+	foaf:familyName "Doulofeau" ;
+	foaf:knows ex:Sarah .
 
-ex:address3 rdf:type ex:Address ;
-    ex:street "789 Maple Ave." ;
-    ex:city "Gotham" ;
-    ex:state "IL" ;
-    ex:zip "13579" .
+ex:HumanLike foaf:name "Person" ;  # foaf properties, but not explicit type.
+	foaf:familyName "Maybe" ;
+	foaf:age 99 ;
+	foaf:knows ex:David .
 
-ex:person4 rdf:type ex:Person ;
-    ex:name "Sarah Lee" ;
-    ex:age 35 .
 
-ex:person5 rdf:type ex:Person ;
-    ex:name "David Kim" ;
-    ex:hasAddress ex:address5 .
+ex:x1 rdf:type foaf:Document ;
+	foaf:depiction "A thing that is nice" ;
+	foaf:title "A nice thing" .
 
-ex:address5 rdf:type ex:Address ;
-    ex:street "1111 Walnut St." ;
-    ex:city "Boston" ;
-    ex:state "MA" ;
-    ex:zip "36912" .
+
+ex:x2 rdf:type foaf:Document ;
+	foaf:title "Another thing" .
+

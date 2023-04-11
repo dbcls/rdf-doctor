@@ -14,5 +14,9 @@ EXTENSION_NT = ".nt"
 EXTENSION_TTL = ".ttl"
 EXTENSION_GZ = ".gz"
 
-# Prefix list file path
-PREFIX_LIST_FILE_PATH = "reference/correct-prefixes.txt"
+# Correct prefix list file path
+CORRECT_PREFIXES_FILE_PATH = "reference/correct-prefixes.txt"
+
+# Errata
+CLASS_ERRATA_FILE_PATH = "reference/refine-classes.txt"
+PREFIX_ERRATA_FILE_PATH = "reference/refine-prefixes.txt"

@@ -1,0 +1,7 @@
+http://xmlns.com/foaf/0.1#Person	http://xmlns.com/foaf/0.1/Person
+http://xmlns.com/foaf/0.1/PErson	http://xmlns.com/foaf/0.1/Person
+http://xmlns.com/foaf/0.1/Parson	http://xmlns.com/foaf/0.1/Person
+http://xmlns.com/foaf/0.1/PERSON	http://xmlns.com/foaf/0.1/Person
+http://xmlns.com/foaf/0.1#Document	http://xmlns.com/foaf/0.1/Document
+http://xmlns.com/foaf/0.1/Docment	http://xmlns.com/foaf/0.1/Document
+http://xmlns.com/foaf/0.1/DOCUMENT	http://xmlns.com/foaf/0.1/Document

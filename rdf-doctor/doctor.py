@@ -5,6 +5,7 @@ import consts
 import gzip
 import rdflib
 import re
+import csv
 from shexer.shaper import Shaper
 from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
 from unidecode import unidecode
@@ -52,6 +53,7 @@ def doctor():
     return
 
 
+# Parse command line arguments and get them as ArgumentParser
 def get_command_line_args(args):
     parser = argparse.ArgumentParser(description="Home page: https://github.com/dbcls/rdf-doctor",
                                     usage="rdf-doctor -i RDF-FILE [Options]",
@@ -88,6 +90,7 @@ def get_command_line_args(args):
     return parser.parse_args(args)
 
 
+# Determine if the input file is compressed and get the compression mode ("gz" or None)
 def get_compression_mode(input_file):
     extension = os.path.splitext(input_file)[1]
     if extension == consts.EXTENSION_GZ:
@@ -162,7 +165,6 @@ def validate_command_line_args(args):
         error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt" and ".gz" are supported.'
         return False, error_msg
 
-
     # Make an error if another class name is specified with "all"
     if consts.TARGET_CLASS_ALL in args.classes:
         if len(args.classes) != 1:
@@ -178,47 +180,50 @@ def generate_report_shex(args, input_format, compression_mode):
 
 
 # Processing when the report format is "md/markdown"
-# # todo: Include rewriting candidates for prefixes and class names determined by referring to the dictionary in the report
 def generate_report_markdown(args, input_format, compression_mode):
-    class_list = get_classes_list(args.input, input_format, compression_mode)
-    fingerprint_class_dict = defaultdict(list)
 
-    # Perform clustering by fingerprint for the acquired class name
-    for cls in class_list:
-        fingerprint_class_dict[fingerprint(cls)].append(cls)
+    # Processing related to prefixes ------------------
+    # Get list for result output about prefix reuse rate
+    md_result_prefix_reuse_percentage = get_md_result_prefix_reuse_percentage(args.input, input_format, compression_mode)
 
-    # A list to store the result string
-    result_list = []
+    input_prefixes = get_input_prefixes(args.input, input_format, compression_mode)
+    # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
+    md_result_prefix_errata = get_md_result_prefix_errata(input_prefixes)
+    # -------------------------------------------------
 
-    # Extract if there are multiple different strings with the same key
-    for value in fingerprint_class_dict.values():
-        if len(value) >= 2:
-            result_list.append("\n")
-            for v in value:
-                result_list.append(v+"\n")
+    # Processing related to classes -------------------
+    input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
 
-    # Change the output message depending on whether there are multiple different strings with the same key
-    if len(result_list) != 0:
-        # Insert at the beginning
-        result_list.insert(0, "[INFO] Multiple strings were found that appear to represent the same class name. They are listed below.\n")
-    else:
-        result_list.append("[OK] A potentially incorrect class name was not detected.\n")
+    # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
+    # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
+    md_result_class_errata, fingerprint_class_dict = get_md_result_class_errata(input_classes, defaultdict(list))
 
-    prefix_reuse_percentage, error_msg = get_prefix_reuse_percentage(args.input, input_format, compression_mode)
+    # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
+    md_result_class_fingerprint = get_md_result_class_fingerprint(fingerprint_class_dict)
+    # -------------------------------------------------
 
-    if error_msg != None:
-        # Insert at the beginning
-        result_list.insert(0, "Prefix reuse percentage: " + error_msg + "\n\n")
-    else:
-        # Insert at the beginning
-        result_list.insert(0, "Prefix reuse percentage: " + str(prefix_reuse_percentage) + " %\n\n")
+    # List for storing the final result
+    md_final_result = []
+
+    # Merge result
+    if len(md_result_prefix_reuse_percentage) != 0 or len(md_result_prefix_errata) != 0  :
+        md_final_result.append("# Prefix\n\n")
+
+    md_final_result.extend(md_result_prefix_reuse_percentage)
+    md_final_result.extend(md_result_prefix_errata)
+
+    if len(md_result_class_errata) != 0 or len(md_result_class_fingerprint) != 0  :
+        md_final_result.append("# Class\n\n")
+
+    md_final_result.extend(md_result_class_errata)
+    md_final_result.extend(md_result_class_fingerprint)
 
     # Output results to specified destination (standard output or file)
     if args.output is None:
-        print("".join(result_list))
+        print("".join(md_final_result))
     else:
         with open(args.output, "w", encoding="utf-8") as f:
-            f.write("".join(result_list))
+            f.write("".join(md_final_result))
 
 
 # Processing when the report format is "shex+"
@@ -228,6 +233,7 @@ def generate_report_shex_plus(args, input_format, compression_mode):
     call_shexer_shaper(args, input_format, compression_mode)
 
 
+# Call the shex_graph method of shexer's shaper class and output the result
 def call_shexer_shaper(args, input_format, compression_mode):
     # Set parameters when calling the shaper class depending on whether the class is specified as an argument
     if consts.TARGET_CLASS_ALL in args.classes:
@@ -255,25 +261,34 @@ def call_shexer_shaper(args, input_format, compression_mode):
 # Calculates the percentage of prefixes in the input file that exist in the prefix list file prepared in advance,
 # and returns it after rounding to the second decimal place.
 # If the prefix is not detected, do not calculate and return an error message in the second return value.
-def get_prefix_reuse_percentage(input_file, input_format, compression_mode):
-    target_namespaces = get_namespaces_list(input_file, input_format, compression_mode)
-    with open(Path(__file__).resolve().parent.joinpath(consts.PREFIX_LIST_FILE_PATH), 'r') as f:
-        correct_namespaces_list = f.read().splitlines()
+def get_md_result_prefix_reuse_percentage(input_file, input_format, compression_mode):
+    result_prefix_reuse_percentage = []
+    input_prefixes = get_input_prefixes(input_file, input_format, compression_mode)
+    correct_prefixes = get_correct_prefixes()
 
-    target_namespace_count = len(target_namespaces)
-    if target_namespace_count == 0:
-        error_msg = "Not calculated because there is no prefix defined."
-        return None, error_msg
+    result_prefix_reuse_percentage.append("## Reuse percentage\n")
 
-    correct_count = 0
-    for namespace in target_namespaces:
-        if str(namespace[1]) in correct_namespaces_list:
-            correct_count+=1
+    input_prefixes_count = len(input_prefixes)
+    if input_prefixes_count == 0:
+        result_prefix_reuse_percentage.append("```\n")
+        result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
+        result_prefix_reuse_percentage.append("```\n\n")
+    else:
+        correct_count = 0
+        for prefix in input_prefixes:
+            if str(prefix[1]) in correct_prefixes:
+                correct_count+=1
 
-    return round(correct_count / target_namespace_count * 100, 2), None
+        prefix_reuse_percentage = round(correct_count / input_prefixes_count * 100, 2)
+        result_prefix_reuse_percentage.append("```\n")
+        result_prefix_reuse_percentage.append(str(prefix_reuse_percentage) + "%\n")
+        result_prefix_reuse_percentage.append("```\n\n")
+
+    return result_prefix_reuse_percentage
 
 
-def get_classes_list(input_file, input_format, compression_mode):
+# Get the classes contained within the input file
+def get_input_classes(input_file, input_format, compression_mode, target_classes):
     g = rdflib.Graph()
 
     if compression_mode != None:
@@ -283,23 +298,120 @@ def get_classes_list(input_file, input_format, compression_mode):
     else:
         g.parse(input_file, format=input_format)
 
+    # Filter by classes(command line arguments)
+    class_filter = ','.join(target_classes)
+
     query = """
-        select distinct ?class_name
-        where {
+        SELECT DISTINCT ?class_name
+        WHERE {
             [] a ?class_name .
-            filter(! isBlank(?class_name))
+            FILTER(! isBlank(?class_name))
+    """
+    if consts.TARGET_CLASS_ALL not in target_classes:
+        query += " FILTER (?class_name IN (" + class_filter + "))"
+
+    query += """
         }
     """
 
-    class_list = []
+    input_classes = []
     qres = g.query(query)
     for row in qres:
-        class_list.append(f"{row.class_name}")
+        input_classes.append(f"{row.class_name}")
 
-    return class_list
+    return input_classes
 
 
-def get_namespaces_list(input_file, input_format, compression_mode):
+# Return class errata in a two-dimensional array
+def get_class_errata():
+    with open(Path(__file__).resolve().parent.joinpath(consts.CLASS_ERRATA_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
+        tsv_reader = csv.reader(f, delimiter='\t')
+        class_errata = [row for row in tsv_reader]
+
+    return class_errata
+
+
+# Return prefix errata in a two-dimensional array
+def get_prefix_errata():
+    with open(Path(__file__).resolve().parent.joinpath(consts.PREFIX_ERRATA_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
+        tsv_reader = csv.reader(f, delimiter='\t')
+        prefix_errata = [row for row in tsv_reader]
+
+    return prefix_errata
+
+
+# Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
+# and returns the class corresponding to each key in fingerprint format stored in dictionary format.
+def get_md_result_class_errata(input_classes, fingerprint_class_dict):
+    class_errata = get_class_errata()
+    result_body = []
+
+    # Perform clustering by fingerprint for the acquired class name
+    for cls in input_classes:
+        fingerprint_class_dict[fingerprint(cls)].append(cls)
+        for eratta in class_errata:
+            if cls == eratta[0]:
+                result_body.append(cls+"\t"+eratta[1]+"\n")
+
+    md_result_class_errata = []
+    # When there is data to output
+    if len(result_body) != 0:
+        md_result_class_errata.append("## A class name that appears to be incorrect was found.\n")
+        md_result_class_errata.append("```\n")
+        md_result_class_errata.append("Input\tCorrect\n")
+        md_result_class_errata.extend(result_body)
+        md_result_class_errata.append("```\n\n")
+
+    return md_result_class_errata, fingerprint_class_dict
+
+
+# Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
+def get_md_result_prefix_errata(input_prefixes):
+    prefix_errata = get_prefix_errata()
+    result_body = []
+
+    # Perform clustering by fingerprint for the acquired class name
+    for prefix in input_prefixes:
+        for eratta in prefix_errata:
+            if str(prefix[1]) == eratta[1] and eratta[2] != "":
+                result_body.append(prefix[1]+"\t"+eratta[2]+"\n")
+
+    md_result_prefix_errata = []
+    # When there is data to output
+    if len(result_body) != 0:
+        md_result_prefix_errata.append("## A prefix that appears to be incorrect was found.\n")
+        md_result_prefix_errata.append("```\n")
+        md_result_prefix_errata.append("Input\tCorrect\n")
+        md_result_prefix_errata.extend(result_body)
+        md_result_prefix_errata.append("```\n\n")
+
+    return md_result_prefix_errata
+
+
+# Get the output result when there are multiple different strings with the same key for the class
+def get_md_result_class_fingerprint(fingerprint_class_dict):
+    result_body = []
+    # Extract if there are multiple different strings with the same key
+    for value in fingerprint_class_dict.values():
+        if len(value) >= 2:
+            if len(result_body) != 0:
+                result_body.append("\n")
+            for v in value:
+                result_body.append("\n"+v)
+
+    md_result_class_fingerprint = []
+    # When there is data to output
+    if len(result_body) != 0:
+        md_result_class_fingerprint.append("## Multiple strings were found that appear to represent the same class name.\n")
+        md_result_class_fingerprint.append("```")
+        md_result_class_fingerprint.extend(result_body)
+        md_result_class_fingerprint.append("\n```\n\n")
+
+    return md_result_class_fingerprint
+
+
+# Get the prefixes contained within the input file
+def get_input_prefixes(input_file, input_format, compression_mode):
     g = rdflib.Graph()
     if compression_mode != None:
         with gzip.open(input_file, "rb") as f:
@@ -308,15 +420,27 @@ def get_namespaces_list(input_file, input_format, compression_mode):
     else:
         g.parse(input_file, format=input_format)
 
-    namespace_list = []
+    input_prefixes = []
     exclude_list = ["owl", "rdf", "rdfs", "xsd", "xml"]
-    for namespace in g.namespaces():
-        if str(namespace[0]) not in exclude_list:
-            namespace_list.append(namespace)
+    for prefix in g.namespaces():
+        if str(prefix[0]) not in exclude_list:
+            input_prefixes.append(prefix)
 
-    return namespace_list
+    return input_prefixes
 
 
+# Get the correct prefix from a prepared prefix list
+def get_correct_prefixes():
+    with open(Path(__file__).resolve().parent.joinpath(consts.CORRECT_PREFIXES_FILE_PATH), 'r') as f:
+        correct_prefixes = f.read().splitlines()
+
+    return correct_prefixes
+
+
+# Generates a key from the received string, excluding case differences, symbols, control characters, etc.
+# Values that contain only the most valuable or meaningful part of the string will have the same key
+# returned by this method, useful for clustering.
+# Detailed explanation：https://openrefine.org/docs/technical-reference/clustering-in-depth#fingerprint
 def fingerprint(string):
     string = string.lower()
     string = re.sub("[^A-Za-z0-9 ]+", "", string)

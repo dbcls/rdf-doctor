@@ -15,5 +15,17 @@ class TestFingerPrint(unittest.TestCase):
         result = fingerprint("http://xmlns.com/foaf/0.1#Document")
         self.assertEqual(result, "httpxmlnscomfoaf01document")
 
+    def test_fingerprint_4(self):
+        result = fingerprint("http://xmlns.com/foaf/0.1/Person")
+        self.assertEqual(result, "httpxmlnscomfoaf01person")
+
+    def test_fingerprint_5(self):
+        result = fingerprint("http://xmlns.com/foaf/0.1/PERSON")
+        self.assertEqual(result, "httpxmlnscomfoaf01person")
+
+    def test_fingerprint_6(self):
+        result = fingerprint("http://xmlns.com/foaf/0.1#Person")
+        self.assertEqual(result, "httpxmlnscomfoaf01person")
+
 if __name__ == "__main__":
     unittest.main()
