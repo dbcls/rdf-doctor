@@ -13,10 +13,10 @@ class TestGetMdResultClassErrata(unittest.TestCase):
     def test_get_md_result_prefix_errata_ttl(self):
         input_prefixes = get_input_prefixes("tests/test_files/test_ttl_2.ttl", TURTLE, None)
         md_result_prefix_errata = get_md_result_prefix_errata(input_prefixes)
-        self.assertEqual(md_result_prefix_errata, ['## A prefix that appears to be incorrect was found.\n', \
+        self.assertEqual(md_result_prefix_errata, ['## Found a prefix that looks incorrect.\n', \
                                                     '```\n', \
-                                                    'Input\tCorrect\n', \
-                                                    rdflib.term.URIRef('http://xmlns.com/foaf/0.1#\thttp://xmlns.com/foaf/0.1/\n'), \
+                                                    'Prefix\tInput URI\tSuggested URI\n', \
+                                                    rdflib.term.URIRef('foaf:\thttp://xmlns.com/foaf/0.1#\thttp://xmlns.com/foaf/0.1/\n'), \
                                                     '```\n\n'])
 
 if __name__ == "__main__":

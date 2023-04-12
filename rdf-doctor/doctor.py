@@ -356,9 +356,9 @@ def get_md_result_class_errata(input_classes, fingerprint_class_dict):
     md_result_class_errata = []
     # When there is data to output
     if len(result_body) != 0:
-        md_result_class_errata.append("## A class name that appears to be incorrect was found.\n")
+        md_result_class_errata.append("## Found a class name that looks incorrect.\n")
         md_result_class_errata.append("```\n")
-        md_result_class_errata.append("Input\tCorrect\n")
+        md_result_class_errata.append("Input class name\tSuggested class name\n")
         md_result_class_errata.extend(result_body)
         md_result_class_errata.append("```\n\n")
 
@@ -373,15 +373,15 @@ def get_md_result_prefix_errata(input_prefixes):
     # Perform clustering by fingerprint for the acquired class name
     for prefix in input_prefixes:
         for eratta in prefix_errata:
-            if str(prefix[1]) == eratta[1] and eratta[2] != "":
-                result_body.append(prefix[1]+"\t"+eratta[2]+"\n")
+            if str(prefix[1]) == eratta[1] and eratta[0] != ""and eratta[2] != "":
+                result_body.append(eratta[0]+"\t"+prefix[1]+"\t"+eratta[2]+"\n")
 
     md_result_prefix_errata = []
     # When there is data to output
     if len(result_body) != 0:
-        md_result_prefix_errata.append("## A prefix that appears to be incorrect was found.\n")
+        md_result_prefix_errata.append("## Found a prefix that looks incorrect.\n")
         md_result_prefix_errata.append("```\n")
-        md_result_prefix_errata.append("Input\tCorrect\n")
+        md_result_prefix_errata.append("Prefix\tInput URI\tSuggested URI\n")
         md_result_prefix_errata.extend(result_body)
         md_result_prefix_errata.append("```\n\n")
 
