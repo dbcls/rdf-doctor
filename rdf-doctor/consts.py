@@ -18,5 +18,5 @@ EXTENSION_GZ = ".gz"
 CORRECT_PREFIXES_FILE_PATH = "reference/correct-prefixes.txt"
 
 # Errata
-CLASS_ERRATA_FILE_PATH = "reference/refine-classes.txt"
-PREFIX_ERRATA_FILE_PATH = "reference/refine-prefixes.txt"
+CLASS_ERRATA_FILE_PATH = "reference/refine-classes.tsv"
+PREFIX_ERRATA_FILE_PATH = "reference/refine-prefixes.tsv"

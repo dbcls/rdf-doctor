@@ -9,4 +9,3 @@ obochebi:	http://purl.obolibrary.org/obo/chebi/	http://purl.obolibrary.org/obo/C
 obochebi_dot:	http://purl.obolibrary.org/obo/chebi.	http://purl.obolibrary.org/obo/CHEBI_
 obochebi_sha:	http://purl.obolibrary.org/obo/chebi#	http://purl.obolibrary.org/obo/CHEBI_
 rchembl:	http://rdf.ebi.ac.uk/resource/chembl/molecule/CHEMBL	
-foaf:	http://xmlns.com/foaf/0.1#	http://xmlns.com/foaf/0.1/
