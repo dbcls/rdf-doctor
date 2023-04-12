@@ -27,8 +27,7 @@ setup(
     include_package_data=True,
     data_files=[
         ("",["LICENSE"]),
-        ("reference",["rdf-doctor/reference/correct-prefixes.txt"]),
-        ("reference",["rdf-doctor/reference/rdf-config-prefixes.yaml"])
+        ("reference",glob("rdf-doctor/reference/*")),
     ],
     package_dir={"": "rdf-doctor"},
     py_modules=[splitext(basename(path))[0] for path in glob('rdf-doctor/*.py')],
