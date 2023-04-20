@@ -1,6 +1,5 @@
 import unittest
-import rdflib
-from doctor import get_prefix_comparison_result, get_input_prefixes
+from doctor.doctor import get_prefix_comparison_result, get_input_prefixes
 from shexer.consts import NT, TURTLE
 
 class TestGetMdResultClassErrata(unittest.TestCase):

@@ -1,5 +1,5 @@
 import unittest
-from doctor import get_class_comparison_result, get_input_classes
+from doctor.doctor import get_class_comparison_result, get_input_classes
 from shexer.consts import NT, TURTLE, GZ
 from collections import defaultdict
 

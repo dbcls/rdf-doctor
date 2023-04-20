@@ -1,5 +1,5 @@
 import unittest
-from doctor import get_fingerprint_comparison_result, get_input_classes, get_class_comparison_result
+from doctor.doctor import get_fingerprint_comparison_result, get_input_classes, get_class_comparison_result
 from shexer.consts import NT, TURTLE
 from collections import defaultdict
 

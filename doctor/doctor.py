@@ -1,12 +1,14 @@
 import os
 import sys
 import argparse
-import consts
 import gzip
 import rdflib
 import re
 import csv
 import time
+from doctor.consts import VERSION, REPORT_FORMAT_SHEX, REPORT_FORMAT_SHEX_PLUS, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
+                            TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, CORRECT_PREFIXES_FILE_PATH, \
+                            CLASS_ERRATA_FILE_PATH, PREFIX_ERRATA_FILE_PATH
 from shexer.shaper import Shaper
 from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
 from unidecode import unidecode
@@ -19,7 +21,7 @@ def doctor():
     args = get_command_line_args(sys.argv[1:])
 
     if args.version:
-        print(consts.VERSION)
+        print(VERSION)
         return
 
     result, error_msg = validate_command_line_args(args)
@@ -32,19 +34,19 @@ def doctor():
 
     try:
         # Processing branch by report format
-        if args.report == consts.REPORT_FORMAT_SHEX:
+        if args.report == REPORT_FORMAT_SHEX:
             # shex
             generate_report_shex(args, input_format, compression_mode)
-        elif args.report == consts.REPORT_FORMAT_MARKDOWN or args.report == consts.REPORT_FORMAT_MD:
+        elif args.report == REPORT_FORMAT_MARKDOWN or args.report == REPORT_FORMAT_MD:
             # markdown/md
             generate_report_markdown(args, input_format, compression_mode)
-        elif args.report == consts.REPORT_FORMAT_SHEX_PLUS:
+        elif args.report == REPORT_FORMAT_SHEX_PLUS:
             # shex+
             generate_report_shex_plus(args, input_format, compression_mode)
         else:
             # Else case does not occur.
             # Prevented by validate_command_line_args function.
-            raise ValueError(args.report + '" is an unsupported report format. "' + consts.REPORT_FORMAT_SHEX + '", "' + consts.REPORT_FORMAT_MARKDOWN + '", "' + consts.REPORT_FORMAT_MD + '" and "' + consts.REPORT_FORMAT_SHEX_PLUS + '" are supported.')
+            raise ValueError(args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '", "' + REPORT_FORMAT_MARKDOWN + '", "' + REPORT_FORMAT_MD + '" and "' + REPORT_FORMAT_SHEX_PLUS + '" are supported.')
 
     except ValueError as e:
         print(e)
@@ -53,7 +55,7 @@ def doctor():
         print("An exception error occurred. Input data format may not be correct. Please review the data.")
 
     processing_time = time.perf_counter() - start_time
-    print("processing_time: " + str(round(processing_time, 2)) + "s")
+    #print(str(round(processing_time, 2)) + "s")
 
     return
 
@@ -77,7 +79,7 @@ def get_command_line_args(args):
 
     # Report format (-r、--report、default: shex)
     parser.add_argument("-r","--report", type=str,
-                        default=consts.REPORT_FORMAT_SHEX,
+                        default=REPORT_FORMAT_SHEX,
                         help="Set the output format/serializer of report to one of: shex (defalut) or shex+ or md|markdown",
                         metavar="")
 
@@ -87,7 +89,7 @@ def get_command_line_args(args):
 
     # Target class(-c、--classes、default: all、Multiple can be specified.)
     parser.add_argument("-c","--classes", type=str,
-                        default=[consts.TARGET_CLASS_ALL],
+                        default=[TARGET_CLASS_ALL],
                         nargs='+',
                         help="Set the shexer target_classes to be inspected to one of: all (defalut) or URL1, URL2,...",
                         metavar="")
@@ -98,7 +100,7 @@ def get_command_line_args(args):
 # Determine if the input file is compressed and get the compression mode ("gz" or None)
 def get_compression_mode(input_file):
     extension = os.path.splitext(input_file)[1]
-    if extension == consts.EXTENSION_GZ:
+    if extension == EXTENSION_GZ:
         return GZ
     else:
         return None
@@ -108,18 +110,18 @@ def get_compression_mode(input_file):
 def get_input_format(input_file, compression_mode):
     if compression_mode != None:
         org_extension = os.path.splitext(os.path.splitext(input_file)[0])[1]
-        if org_extension == consts.EXTENSION_NT:
+        if org_extension == EXTENSION_NT:
             # N-Triples
             return NT
-        elif org_extension == consts.EXTENSION_TTL:
+        elif org_extension == EXTENSION_TTL:
             # Turtle
             return TURTLE
     else:
         extension = os.path.splitext(input_file)[1]
-        if extension == consts.EXTENSION_NT:
+        if extension == EXTENSION_NT:
             # N-Triples
             return NT
-        elif extension == consts.EXTENSION_TTL:
+        elif extension == EXTENSION_TTL:
             # Turtle
             return TURTLE
         else:
@@ -151,27 +153,27 @@ def validate_command_line_args(args):
                 return False, error_msg
 
     # Report Format only allows "shex" or "md/markdown" or "shex+"
-    if args.report != consts.REPORT_FORMAT_SHEX and \
-        args.report != consts.REPORT_FORMAT_MARKDOWN and \
-        args.report != consts.REPORT_FORMAT_MD and \
-        args.report != consts.REPORT_FORMAT_SHEX_PLUS:
-        error_msg = 'Report format error: "' + args.report + '" is an unsupported report format. "' + consts.REPORT_FORMAT_SHEX + '", "' + consts.REPORT_FORMAT_MARKDOWN + '", "' + consts.REPORT_FORMAT_MD + '" and "' + consts.REPORT_FORMAT_SHEX_PLUS + '" are supported.'
+    if args.report != REPORT_FORMAT_SHEX and \
+        args.report != REPORT_FORMAT_MARKDOWN and \
+        args.report != REPORT_FORMAT_MD and \
+        args.report != REPORT_FORMAT_SHEX_PLUS:
+        error_msg = 'Report format error: "' + args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '", "' + REPORT_FORMAT_MARKDOWN + '", "' + REPORT_FORMAT_MD + '" and "' + REPORT_FORMAT_SHEX_PLUS + '" are supported.'
         return False, error_msg
 
     # Allow only ".nt" or ".ttl" (and .gz) extensions
     extension = os.path.splitext(args.input)[1]
-    if extension == consts.EXTENSION_GZ:
+    if extension == EXTENSION_GZ:
         org_extension = os.path.splitext(os.path.splitext(args.input)[0])[1]
         # gz
-        if org_extension != consts.EXTENSION_NT and org_extension != consts.EXTENSION_TTL:
+        if org_extension != EXTENSION_NT and org_extension != EXTENSION_TTL:
             error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
             return False, error_msg
-    elif extension != consts.EXTENSION_NT and extension != consts.EXTENSION_TTL:
+    elif extension != EXTENSION_NT and extension != EXTENSION_TTL:
         error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
         return False, error_msg
 
     # Make an error if another class name is specified with "all"
-    if consts.TARGET_CLASS_ALL in args.classes:
+    if TARGET_CLASS_ALL in args.classes:
         if len(args.classes) != 1:
             error_msg = 'Target class error: If "all" is specified, other classes cannot be specified.'
             return False, error_msg
@@ -343,7 +345,7 @@ def generate_report_shex_plus(args, input_format, compression_mode):
 # Call the shex_graph method of shexer's shaper class and output the result
 def call_shexer_shaper(args, input_format, compression_mode):
     # Set parameters when calling the shaper class depending on whether the class is specified as an argument
-    if consts.TARGET_CLASS_ALL in args.classes:
+    if TARGET_CLASS_ALL in args.classes:
         target_classes = None
         all_classes_mode = True
     else:
@@ -406,7 +408,7 @@ def get_input_classes(input_file, input_format, compression_mode, target_classes
             [] a ?class_name .
             FILTER(! isBlank(?class_name))
     """
-    if consts.TARGET_CLASS_ALL not in target_classes:
+    if TARGET_CLASS_ALL not in target_classes:
         query += " FILTER (?class_name IN (" + class_filter + "))"
 
     query += """
@@ -423,7 +425,7 @@ def get_input_classes(input_file, input_format, compression_mode, target_classes
 
 # Return class errata in a two-dimensional array
 def get_class_errata():
-    with open(Path(__file__).resolve().parent.joinpath(consts.CLASS_ERRATA_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
+    with open(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
         tsv_reader = csv.reader(f, delimiter='\t')
         class_errata = [row for row in tsv_reader]
 
@@ -432,7 +434,7 @@ def get_class_errata():
 
 # Return prefix errata in a two-dimensional array
 def get_prefix_errata():
-    with open(Path(__file__).resolve().parent.joinpath(consts.PREFIX_ERRATA_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
+    with open(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
         tsv_reader = csv.reader(f, delimiter='\t')
         prefix_errata = [row for row in tsv_reader]
 
@@ -518,7 +520,7 @@ def get_input_prefixes(input_file, input_format, compression_mode):
 
 # Get the correct prefix from a prepared prefix list
 def get_correct_prefixes():
-    with open(Path(__file__).resolve().parent.joinpath(consts.CORRECT_PREFIXES_FILE_PATH), 'r') as f:
+    with open(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH), 'r') as f:
         correct_prefixes = f.read().splitlines()
 
     return correct_prefixes

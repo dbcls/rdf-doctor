@@ -1,5 +1,5 @@
 import unittest
-from doctor import get_input_prefixes
+from doctor.doctor import get_input_prefixes
 import rdflib
 from shexer.consts import NT, TURTLE, GZ
 

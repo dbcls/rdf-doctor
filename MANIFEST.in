@@ -1,2 +1,1 @@
-include LICENSE
-recursive-include rdf-doctor/reference *.txt *.yaml
+recursive-include doctor/reference *

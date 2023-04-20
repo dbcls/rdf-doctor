@@ -1,5 +1,5 @@
 import unittest
-from doctor import fingerprint
+from doctor.doctor import fingerprint
 
 class TestFingerPrint(unittest.TestCase):
 

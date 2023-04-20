@@ -15,22 +15,26 @@ setup(
     install_requires=_requires_from_file('requirements.txt'),
     entry_points={
         "console_scripts":[
-            "rdf-doctor = doctor:doctor"
+            "rdf-doctor = doctor.doctor:doctor"
         ]
     },
     name = 'rdf-doctor',
-    version = '0.1',
+    version = '0.1.17',
     description = 'Validate RDF data, report problems, and support creation of more accurate data',
     author = 'DBCLS',
     url = 'https://github.com/dbcls/rdf-doctor',
-    packages=find_packages("rdf-doctor"),
+    packages=find_packages(),
     include_package_data=True,
-    data_files=[
-        ("",["LICENSE"]),
-        ("reference",glob("rdf-doctor/reference/*")),
-    ],
-    package_dir={"": "rdf-doctor"},
-    py_modules=[splitext(basename(path))[0] for path in glob('rdf-doctor/*.py')],
+    package_data={
+        'reference': ['reference/*'],
+    },
     long_description = read('README.md'),
     long_description_content_type='text/markdown',
+    classifiers=[
+            "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
+            "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11",
+    ],
 )

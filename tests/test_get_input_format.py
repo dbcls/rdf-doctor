@@ -1,5 +1,5 @@
 import unittest
-from doctor import get_input_format
+from doctor.doctor import get_input_format
 from shexer.consts import NT, TURTLE, GZ
 
 class TestGetInputFormat(unittest.TestCase):

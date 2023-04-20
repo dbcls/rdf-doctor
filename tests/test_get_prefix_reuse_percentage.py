@@ -1,5 +1,5 @@
 import unittest
-from doctor import get_prefix_reuse_percentage
+from doctor.doctor import get_prefix_reuse_percentage
 from shexer.consts import NT, TURTLE, GZ
 
 class TestGetPrefixReusePercentage(unittest.TestCase):
