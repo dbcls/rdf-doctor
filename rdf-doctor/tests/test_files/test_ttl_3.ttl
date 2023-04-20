@@ -1,39 +1,39 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 @prefix ex: <http://example.org/> .
-@prefix foaf: <http://xmlns.com/foaf/0.1#> .
+@prefix chebi: <http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:Jimmy a foaf:Person ;  # Complete
-	foaf:age "23"^^xsd:integer ;
-	foaf:name "Jimmy" ;
-	foaf:familyName "Jones" .
+ex:Jimmy a chebi:Person ;  # Complete
+	chebi:age "23"^^xsd:integer ;
+	chebi:name "Jimmy" ;
+	chebi:familyName "Jones" .
 
-ex:Sarah a foaf:PErson ;  # Complete implicit type for age
-	foaf:age 22 ;
-	foaf:name "Sarah" ;
-	foaf:familyName "Salem" .
+ex:Sarah a chebi:PErson ;  # Complete implicit type for age
+	chebi:age 22 ;
+	chebi:name "Sarah" ;
+	chebi:familyName "Salem" .
 
-ex:Bella a foaf:PERSON ;  # Missing familyName
-	foaf:age "56"^^xsd:integer ;
-	foaf:name "Isabella" .
+ex:Bella a chebi:PERSON ;  # Missing familyName
+	chebi:age "56"^^xsd:integer ;
+	chebi:name "Isabella" .
 
-ex:David a foaf:Parson ;  # Missing age and use knows
-	foaf:name "David" ;
-	foaf:familyName "Doulofeau" ;
-	foaf:knows ex:Sarah .
+ex:David a chebi:Parson ;  # Missing age and use knows
+	chebi:name "David" ;
+	chebi:familyName "Doulofeau" ;
+	chebi:knows ex:Sarah .
 
-ex:HumanLike foaf:name "Person" ;  # foaf properties, but not explicit type.
-	foaf:familyName "Maybe" ;
-	foaf:age 99 ;
-	foaf:knows ex:David .
-
-
-ex:x1 rdf:type foaf:Document ;
-	foaf:depiction "A thing that is nice" ;
-	foaf:title "A nice thing" .
+ex:HumanLike chebi:name "Person" ;  # chebi properties, but not explicit type.
+	chebi:familyName "Maybe" ;
+	chebi:age 99 ;
+	chebi:knows ex:David .
 
 
-ex:x2 rdf:type foaf:DOCUMENT ;
-	foaf:title "Another thing" .
+ex:x1 rdf:type chebi:Document ;
+	chebi:depiction "A thing that is nice" ;
+	chebi:title "A nice thing" .
+
+
+ex:x2 rdf:type chebi:DOCUMENT ;
+	chebi:title "Another thing" .
 

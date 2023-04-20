@@ -6,6 +6,7 @@ import gzip
 import rdflib
 import re
 import csv
+import time
 from shexer.shaper import Shaper
 from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
 from unidecode import unidecode
@@ -14,6 +15,7 @@ from pathlib import Path
 
 # Main processing of rdf-doctor
 def doctor():
+    start_time = time.perf_counter()
     args = get_command_line_args(sys.argv[1:])
 
     if args.version:
@@ -49,6 +51,9 @@ def doctor():
 
     except:
         print("An exception error occurred. Input data format may not be correct. Please review the data.")
+
+    processing_time = time.perf_counter() - start_time
+    print("processing_time: " + str(round(processing_time, 2)) + "s")
 
     return
 
@@ -120,7 +125,7 @@ def get_input_format(input_file, compression_mode):
         else:
             # Else case does not occur.
             # Prevented by validate_command_line_args function.
-            raise ValueError(extension + '" is an unsupported extension. ".ttl", ".nt" and ".gz" are supported.')
+            raise ValueError(extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.')
 
 
 # Validate args(input, output, report, classes)
@@ -159,10 +164,10 @@ def validate_command_line_args(args):
         org_extension = os.path.splitext(os.path.splitext(args.input)[0])[1]
         # gz
         if org_extension != consts.EXTENSION_NT and org_extension != consts.EXTENSION_TTL:
-            error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt" and ".gz" are supported.'
+            error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
             return False, error_msg
     elif extension != consts.EXTENSION_NT and extension != consts.EXTENSION_TTL:
-        error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt" and ".gz" are supported.'
+        error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
         return False, error_msg
 
     # Make an error if another class name is specified with "all"
@@ -184,11 +189,29 @@ def generate_report_markdown(args, input_format, compression_mode):
 
     # Processing related to prefixes ------------------
     # Get list for result output about prefix reuse rate
-    md_result_prefix_reuse_percentage = get_md_result_prefix_reuse_percentage(args.input, input_format, compression_mode)
+    md_result_prefix_reuse_percentage = []
+    md_result_prefix_reuse_percentage.append("## Reuse percentage\n")
+    prefix_reuse_percentage = get_prefix_reuse_percentage(args.input, input_format, compression_mode)
+    if prefix_reuse_percentage == None:
+        md_result_prefix_reuse_percentage.append("```\n")
+        md_result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
+        md_result_prefix_reuse_percentage.append("```\n\n")
+    else:
+        md_result_prefix_reuse_percentage.append("```\n")
+        md_result_prefix_reuse_percentage.append(str(prefix_reuse_percentage) + "%\n")
+        md_result_prefix_reuse_percentage.append("```\n\n")
 
-    input_prefixes = get_input_prefixes(args.input, input_format, compression_mode)
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
-    md_result_prefix_errata = get_md_result_prefix_errata(input_prefixes)
+    md_result_prefix_errata = []
+    input_prefixes = get_input_prefixes(args.input, input_format, compression_mode)
+    prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
+    # When there is data to output
+    if len(prefix_comparison_result) != 0:
+        md_result_prefix_errata.append("## Found a prefix that looks incorrect.\n")
+        md_result_prefix_errata.append("```\n")
+        md_result_prefix_errata.append("Prefix\tInput URI\tSuggested URI\n")
+        md_result_prefix_errata.extend(prefix_comparison_result)
+        md_result_prefix_errata.append("```\n\n")
     # -------------------------------------------------
 
     # Processing related to classes -------------------
@@ -196,27 +219,42 @@ def generate_report_markdown(args, input_format, compression_mode):
 
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
-    md_result_class_errata, fingerprint_class_dict = get_md_result_class_errata(input_classes, defaultdict(list))
+    md_result_class_errata = []
+    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list))
+    # When there is data to output
+    if len(class_comparison_result) != 0:
+        md_result_class_errata.append("## Found a class name that looks incorrect.\n")
+        md_result_class_errata.append("```\n")
+        md_result_class_errata.append("Input class name\tSuggested class name\n")
+        md_result_class_errata.extend(class_comparison_result)
+        md_result_class_errata.append("```\n\n")
 
     # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
-    md_result_class_fingerprint = get_md_result_class_fingerprint(fingerprint_class_dict)
+    md_result_class_fingerprint = []
+    fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
+    # When there is data to output
+    if len(fingerprint_comparison_result) != 0:
+        md_result_class_fingerprint.append("## Multiple strings were found that appear to represent the same class name.\n")
+        md_result_class_fingerprint.append("```")
+        md_result_class_fingerprint.extend(fingerprint_comparison_result)
+        md_result_class_fingerprint.append("\n```\n\n")
     # -------------------------------------------------
 
     # List for storing the final result
     md_final_result = []
 
     # Merge result
-    if len(md_result_prefix_reuse_percentage) != 0 or len(md_result_prefix_errata) != 0  :
+    prefix_result_exists = len(md_result_prefix_reuse_percentage) != 0 or len(md_result_prefix_errata) != 0
+    if prefix_result_exists:
         md_final_result.append("# Prefix\n\n")
+        md_final_result.extend(md_result_prefix_reuse_percentage)
+        md_final_result.extend(md_result_prefix_errata)
 
-    md_final_result.extend(md_result_prefix_reuse_percentage)
-    md_final_result.extend(md_result_prefix_errata)
-
-    if len(md_result_class_errata) != 0 or len(md_result_class_fingerprint) != 0  :
+    class_result_exists = len(md_result_class_errata) != 0 or len(md_result_class_fingerprint) != 0
+    if class_result_exists:
         md_final_result.append("# Class\n\n")
-
-    md_final_result.extend(md_result_class_errata)
-    md_final_result.extend(md_result_class_fingerprint)
+        md_final_result.extend(md_result_class_errata)
+        md_final_result.extend(md_result_class_fingerprint)
 
     # Output results to specified destination (standard output or file)
     if args.output is None:
@@ -227,10 +265,79 @@ def generate_report_markdown(args, input_format, compression_mode):
 
 
 # Processing when the report format is "shex+"
-# todo: Develop processing for shex+
-# todo: Include validating specification
 def generate_report_shex_plus(args, input_format, compression_mode):
     call_shexer_shaper(args, input_format, compression_mode)
+
+    # Processing related to prefixes ------------------
+    # Get list for result output about prefix reuse rate
+    md_result_prefix_reuse_percentage = []
+    md_result_prefix_reuse_percentage.append("# Prefix reuse percentage\n")
+    prefix_reuse_percentage = get_prefix_reuse_percentage(args.input, input_format, compression_mode)
+    if prefix_reuse_percentage == None:
+        md_result_prefix_reuse_percentage.append("# Not calculated because there is no prefix defined.\n\n")
+    else:
+        md_result_prefix_reuse_percentage.append("# " + str(prefix_reuse_percentage) + "%\n\n")
+
+    # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
+    md_result_prefix_errata = []
+    input_prefixes = get_input_prefixes(args.input, input_format, compression_mode)
+    prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
+    # When there is data to output
+    if len(prefix_comparison_result) != 0:
+        md_result_prefix_errata.append("# Found prefixes that looks incorrect.\n")
+        md_result_prefix_errata.append("# Prefix\tInput URI\tSuggested URI\n")
+        md_result_prefix_errata.extend(['# ' + s for s in prefix_comparison_result])
+        md_result_prefix_errata.append("\n\n")
+    # -------------------------------------------------
+
+    # Processing related to classes -------------------
+    input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
+
+    # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
+    # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
+    md_result_class_errata = []
+    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list))
+    # When there is data to output
+    if len(class_comparison_result) != 0:
+        md_result_class_errata.append("# Found class names that looks incorrect.\n")
+        md_result_class_errata.append("# Input class name\tSuggested class name\n")
+        # Add "# " to the beginning of the line
+        md_result_class_errata.extend(['# ' + s for s in class_comparison_result])
+        md_result_class_errata.append("\n\n")
+
+    # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
+    md_result_class_fingerprint = []
+    fingerprint_comparison_result = get_fingerprint_comparison_result_as_comment(fingerprint_class_dict)
+    # When there is data to output
+    if len(fingerprint_comparison_result) != 0:
+        md_result_class_fingerprint.append("# Found multiple strings that appear to represent the same class name.\n")
+        # Add "# " to the beginning of the line
+        md_result_class_fingerprint.extend(fingerprint_comparison_result)
+        md_result_class_fingerprint.append("\n\n")
+    # -------------------------------------------------
+
+    # List for storing the final result
+    md_final_result = []
+
+    # Merge result
+    prefix_result_exists = len(md_result_prefix_reuse_percentage) != 0 or len(md_result_prefix_errata) != 0
+    if prefix_result_exists:
+        md_final_result.append("# Prefix\n\n")
+        md_final_result.extend(md_result_prefix_reuse_percentage)
+        md_final_result.extend(md_result_prefix_errata)
+
+    class_result_exists = len(md_result_class_errata) != 0 or len(md_result_class_fingerprint) != 0
+    if class_result_exists:
+        md_final_result.append("# Class\n\n")
+        md_final_result.extend(md_result_class_errata)
+        md_final_result.extend(md_result_class_fingerprint)
+
+    # Output results to specified destination (standard output or file)
+    if args.output is None:
+        print("".join(md_final_result))
+    else:
+        with open(args.output, "a", encoding="utf-8") as f:
+            f.write("".join(md_final_result))
 
 
 # Call the shex_graph method of shexer's shaper class and output the result
@@ -249,7 +356,8 @@ def call_shexer_shaper(args, input_format, compression_mode):
                     all_classes_mode=all_classes_mode,
                     input_format=input_format,
                     compression_mode=compression_mode,
-                    instances_report_mode=MIXED_INSTANCES)
+                    instances_report_mode=MIXED_INSTANCES,
+                    detect_minimal_iri=True)
 
     # Output results to specified destination (standard output or file)
     if args.output is None:
@@ -260,19 +368,14 @@ def call_shexer_shaper(args, input_format, compression_mode):
 
 # Calculates the percentage of prefixes in the input file that exist in the prefix list file prepared in advance,
 # and returns it after rounding to the second decimal place.
-# If the prefix is not detected, do not calculate and return an error message in the second return value.
-def get_md_result_prefix_reuse_percentage(input_file, input_format, compression_mode):
-    result_prefix_reuse_percentage = []
+# If the prefix is not detected, do not calculate and return None.
+def get_prefix_reuse_percentage(input_file, input_format, compression_mode):
     input_prefixes = get_input_prefixes(input_file, input_format, compression_mode)
     correct_prefixes = get_correct_prefixes()
 
-    result_prefix_reuse_percentage.append("## Reuse percentage\n")
-
     input_prefixes_count = len(input_prefixes)
     if input_prefixes_count == 0:
-        result_prefix_reuse_percentage.append("```\n")
-        result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
-        result_prefix_reuse_percentage.append("```\n\n")
+        return None
     else:
         correct_count = 0
         for prefix in input_prefixes:
@@ -280,11 +383,7 @@ def get_md_result_prefix_reuse_percentage(input_file, input_format, compression_
                 correct_count+=1
 
         prefix_reuse_percentage = round(correct_count / input_prefixes_count * 100, 2)
-        result_prefix_reuse_percentage.append("```\n")
-        result_prefix_reuse_percentage.append(str(prefix_reuse_percentage) + "%\n")
-        result_prefix_reuse_percentage.append("```\n\n")
-
-    return result_prefix_reuse_percentage
+        return prefix_reuse_percentage
 
 
 # Get the classes contained within the input file
@@ -342,72 +441,60 @@ def get_prefix_errata():
 
 # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
 # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
-def get_md_result_class_errata(input_classes, fingerprint_class_dict):
+def get_class_comparison_result(input_classes, fingerprint_class_dict):
     class_errata = get_class_errata()
-    result_body = []
+    class_comparison_result = []
 
     # Perform clustering by fingerprint for the acquired class name
     for cls in input_classes:
         fingerprint_class_dict[fingerprint(cls)].append(cls)
         for eratta in class_errata:
             if cls == eratta[0]:
-                result_body.append(cls+"\t"+eratta[1]+"\n")
+                class_comparison_result.append(cls+"\t"+eratta[1]+"\n")
 
-    md_result_class_errata = []
-    # When there is data to output
-    if len(result_body) != 0:
-        md_result_class_errata.append("## Found a class name that looks incorrect.\n")
-        md_result_class_errata.append("```\n")
-        md_result_class_errata.append("Input class name\tSuggested class name\n")
-        md_result_class_errata.extend(result_body)
-        md_result_class_errata.append("```\n\n")
-
-    return md_result_class_errata, fingerprint_class_dict
+    return class_comparison_result, fingerprint_class_dict
 
 
-# Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
-def get_md_result_prefix_errata(input_prefixes):
+# Refer to the errata of prefixes and obtain a list that combines incorrect prefixes and correct prefixes
+def get_prefix_comparison_result(input_prefixes):
     prefix_errata = get_prefix_errata()
-    result_body = []
+    prefix_comparison_result = []
 
     # Perform clustering by fingerprint for the acquired class name
     for prefix in input_prefixes:
         for eratta in prefix_errata:
             if str(prefix[1]) == eratta[1] and eratta[0] != ""and eratta[2] != "":
-                result_body.append(eratta[0]+"\t"+prefix[1]+"\t"+eratta[2]+"\n")
+                prefix_comparison_result.append(str(eratta[0]+"\t"+prefix[1]+"\t"+eratta[2]+"\n"))
 
-    md_result_prefix_errata = []
-    # When there is data to output
-    if len(result_body) != 0:
-        md_result_prefix_errata.append("## Found a prefix that looks incorrect.\n")
-        md_result_prefix_errata.append("```\n")
-        md_result_prefix_errata.append("Prefix\tInput URI\tSuggested URI\n")
-        md_result_prefix_errata.extend(result_body)
-        md_result_prefix_errata.append("```\n\n")
-
-    return md_result_prefix_errata
+    return prefix_comparison_result
 
 
 # Get the output result when there are multiple different strings with the same key for the class
-def get_md_result_class_fingerprint(fingerprint_class_dict):
-    result_body = []
+def get_fingerprint_comparison_result(fingerprint_class_dict):
+    fingerprint_comparison_result = []
     # Extract if there are multiple different strings with the same key
     for value in fingerprint_class_dict.values():
         if len(value) >= 2:
-            if len(result_body) != 0:
-                result_body.append("\n")
+            if len(fingerprint_comparison_result) != 0:
+                fingerprint_comparison_result.append("\n")
             for v in value:
-                result_body.append("\n"+v)
+                fingerprint_comparison_result.append("\n"+v)
 
-    md_result_class_fingerprint = []
-    # When there is data to output
-    if len(result_body) != 0:
-        md_result_class_fingerprint.append("## Multiple strings were found that appear to represent the same class name.\n")
-        md_result_class_fingerprint.append("```")
-        md_result_class_fingerprint.extend(result_body)
-        md_result_class_fingerprint.append("\n```\n\n")
+    return fingerprint_comparison_result
 
-    return md_result_class_fingerprint
+
+# Get the output result when there are multiple different strings with the same key for the class, as a commnet
+def get_fingerprint_comparison_result_as_comment(fingerprint_class_dict):
+    fingerprint_comparison_result = []
+    # Extract if there are multiple different strings with the same key
+    for value in fingerprint_class_dict.values():
+        if len(value) >= 2:
+            if len(fingerprint_comparison_result) != 0:
+                fingerprint_comparison_result.append("\n")
+            for v in value:
+                fingerprint_comparison_result.append("\n"+"# "+v)
+
+    return fingerprint_comparison_result
 
 
 # Get the prefixes contained within the input file
