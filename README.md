@@ -100,7 +100,7 @@ PREFIX ex: <http://example.org/>
 }
 ```
 
-`````
+````
 $ rdf-doctor -i test_turtle_2.ttl -r md
 # Prefix
 
@@ -109,7 +109,7 @@ $ rdf-doctor -i test_turtle_2.ttl -r md
 50.0%
 ```
 
-## A prefix that appears to be incorrect was found.
+## Found a prefix that looks incorrect.
 ```
 Input	Correct
 http://xmlns.com/foaf/0.1#	http://xmlns.com/foaf/0.1/
@@ -117,7 +117,7 @@ http://xmlns.com/foaf/0.1#	http://xmlns.com/foaf/0.1/
 
 # Class
 
-## A class name that appears to be incorrect was found.
+## Found a class name that looks incorrect.
 ```
 Input	Correct
 http://xmlns.com/foaf/0.1#Person	http://xmlns.com/foaf/0.1/Person
@@ -133,4 +133,4 @@ http://xmlns.com/foaf/0.1#PERSON
 http://xmlns.com/foaf/0.1#Document
 http://xmlns.com/foaf/0.1#DOCUMENT
 ```
-`````
+````
