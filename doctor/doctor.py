@@ -17,7 +17,6 @@ from pathlib import Path
 
 # Main processing of rdf-doctor
 def doctor():
-    start_time = time.perf_counter()
     args = get_command_line_args(sys.argv[1:])
 
     if args.version:
@@ -53,9 +52,6 @@ def doctor():
 
     except:
         print("An exception error occurred. Input data format may not be correct. Please review the data.")
-
-    processing_time = time.perf_counter() - start_time
-    #print(str(round(processing_time, 2)) + "s")
 
     return
 
