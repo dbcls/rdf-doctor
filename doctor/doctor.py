@@ -5,7 +5,6 @@ import gzip
 import rdflib
 import re
 import csv
-import time
 from doctor.consts import VERSION, REPORT_FORMAT_SHEX, REPORT_FORMAT_SHEX_PLUS, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
                             TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, CORRECT_PREFIXES_FILE_PATH, \
                             CLASS_ERRATA_FILE_PATH, PREFIX_ERRATA_FILE_PATH
@@ -179,7 +178,14 @@ def validate_command_line_args(args):
 
 # Processing when the report format is "shex"
 def generate_report_shex(args, input_format, compression_mode):
-    call_shexer_shaper(args, input_format, compression_mode)
+    shaper_result = get_shaper_result(args, input_format, compression_mode)
+
+    # Output results to specified destination (standard output or file)
+    if args.output is None:
+        print("".join(shaper_result))
+    else:
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write("".join(shaper_result))
 
 
 # Processing when the report format is "md/markdown"
@@ -187,29 +193,29 @@ def generate_report_markdown(args, input_format, compression_mode):
 
     # Processing related to prefixes ------------------
     # Get list for result output about prefix reuse rate
-    md_result_prefix_reuse_percentage = []
-    md_result_prefix_reuse_percentage.append("## Reuse percentage\n")
+    result_prefix_reuse_percentage = []
+    result_prefix_reuse_percentage.append("## Reuse percentage\n")
     prefix_reuse_percentage = get_prefix_reuse_percentage(args.input, input_format, compression_mode)
     if prefix_reuse_percentage == None:
-        md_result_prefix_reuse_percentage.append("```\n")
-        md_result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
-        md_result_prefix_reuse_percentage.append("```\n\n")
+        result_prefix_reuse_percentage.append("```\n")
+        result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
+        result_prefix_reuse_percentage.append("```\n\n")
     else:
-        md_result_prefix_reuse_percentage.append("```\n")
-        md_result_prefix_reuse_percentage.append(str(prefix_reuse_percentage) + "%\n")
-        md_result_prefix_reuse_percentage.append("```\n\n")
+        result_prefix_reuse_percentage.append("```\n")
+        result_prefix_reuse_percentage.append(str(prefix_reuse_percentage) + "%\n")
+        result_prefix_reuse_percentage.append("```\n\n")
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
-    md_result_prefix_errata = []
+    result_prefix_errata = []
     input_prefixes = get_input_prefixes(args.input, input_format, compression_mode)
     prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
     # When there is data to output
     if len(prefix_comparison_result) != 0:
-        md_result_prefix_errata.append("## Found a prefix that looks incorrect.\n")
-        md_result_prefix_errata.append("```\n")
-        md_result_prefix_errata.append("Prefix\tInput URI\tSuggested URI\n")
-        md_result_prefix_errata.extend(prefix_comparison_result)
-        md_result_prefix_errata.append("```\n\n")
+        result_prefix_errata.append("## Found a prefix that looks incorrect.\n")
+        result_prefix_errata.append("```\n")
+        result_prefix_errata.append("Prefix\tInput URI\tSuggested URI\n")
+        result_prefix_errata.extend(prefix_comparison_result)
+        result_prefix_errata.append("```\n\n")
     # -------------------------------------------------
 
     # Processing related to classes -------------------
@@ -217,42 +223,42 @@ def generate_report_markdown(args, input_format, compression_mode):
 
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
-    md_result_class_errata = []
+    result_class_errata = []
     class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list))
     # When there is data to output
     if len(class_comparison_result) != 0:
-        md_result_class_errata.append("## Found a class name that looks incorrect.\n")
-        md_result_class_errata.append("```\n")
-        md_result_class_errata.append("Input class name\tSuggested class name\n")
-        md_result_class_errata.extend(class_comparison_result)
-        md_result_class_errata.append("```\n\n")
+        result_class_errata.append("## Found a class name that looks incorrect.\n")
+        result_class_errata.append("```\n")
+        result_class_errata.append("Input class name\tSuggested class name\n")
+        result_class_errata.extend(class_comparison_result)
+        result_class_errata.append("```\n\n")
 
     # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
-    md_result_class_fingerprint = []
+    result_class_fingerprint = []
     fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
     # When there is data to output
     if len(fingerprint_comparison_result) != 0:
-        md_result_class_fingerprint.append("## Multiple strings were found that appear to represent the same class name.\n")
-        md_result_class_fingerprint.append("```")
-        md_result_class_fingerprint.extend(fingerprint_comparison_result)
-        md_result_class_fingerprint.append("\n```\n\n")
+        result_class_fingerprint.append("## Multiple strings were found that appear to represent the same class name.\n")
+        result_class_fingerprint.append("```")
+        result_class_fingerprint.extend(fingerprint_comparison_result)
+        result_class_fingerprint.append("\n```\n\n")
     # -------------------------------------------------
 
     # List for storing the final result
     md_final_result = []
 
     # Merge result
-    prefix_result_exists = len(md_result_prefix_reuse_percentage) != 0 or len(md_result_prefix_errata) != 0
+    prefix_result_exists = len(result_prefix_reuse_percentage) != 0 or len(result_prefix_errata) != 0
     if prefix_result_exists:
         md_final_result.append("# Prefix\n\n")
-        md_final_result.extend(md_result_prefix_reuse_percentage)
-        md_final_result.extend(md_result_prefix_errata)
+        md_final_result.extend(result_prefix_reuse_percentage)
+        md_final_result.extend(result_prefix_errata)
 
-    class_result_exists = len(md_result_class_errata) != 0 or len(md_result_class_fingerprint) != 0
+    class_result_exists = len(result_class_errata) != 0 or len(result_class_fingerprint) != 0
     if class_result_exists:
         md_final_result.append("# Class\n\n")
-        md_final_result.extend(md_result_class_errata)
-        md_final_result.extend(md_result_class_fingerprint)
+        md_final_result.extend(result_class_errata)
+        md_final_result.extend(result_class_fingerprint)
 
     # Output results to specified destination (standard output or file)
     if args.output is None:
@@ -264,28 +270,35 @@ def generate_report_markdown(args, input_format, compression_mode):
 
 # Processing when the report format is "shex+"
 def generate_report_shex_plus(args, input_format, compression_mode):
-    call_shexer_shaper(args, input_format, compression_mode)
+    shaper_result = get_shaper_result(args, input_format, compression_mode)
 
     # Processing related to prefixes ------------------
     # Get list for result output about prefix reuse rate
-    md_result_prefix_reuse_percentage = []
-    md_result_prefix_reuse_percentage.append("# Prefix reuse percentage\n")
+    result_prefix_reuse_percentage = []
+    result_prefix_reuse_percentage.append("# Prefix reuse percentage\n")
     prefix_reuse_percentage = get_prefix_reuse_percentage(args.input, input_format, compression_mode)
     if prefix_reuse_percentage == None:
-        md_result_prefix_reuse_percentage.append("# Not calculated because there is no prefix defined.\n\n")
+        result_prefix_reuse_percentage.append("# Not calculated because there is no prefix defined.\n\n")
     else:
-        md_result_prefix_reuse_percentage.append("# " + str(prefix_reuse_percentage) + "%\n\n")
+        result_prefix_reuse_percentage.append("# " + str(prefix_reuse_percentage) + "%\n\n")
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
-    md_result_prefix_errata = []
+    result_prefix_errata = []
     input_prefixes = get_input_prefixes(args.input, input_format, compression_mode)
     prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
     # When there is data to output
     if len(prefix_comparison_result) != 0:
-        md_result_prefix_errata.append("# Found prefixes that looks incorrect.\n")
-        md_result_prefix_errata.append("# Prefix\tInput URI\tSuggested URI\n")
-        md_result_prefix_errata.extend(['# ' + s for s in prefix_comparison_result])
-        md_result_prefix_errata.append("\n\n")
+        result_prefix_errata.append("# Found prefixes that looks incorrect.\n")
+        result_prefix_errata.append("# Prefix\tInput URI\tSuggested URI\n")
+        result_prefix_errata.extend(['# ' + s for s in prefix_comparison_result])
+        result_prefix_errata.append("\n\n")
+
+    correct_prefixes = get_correct_prefixes()
+    suggested_qname = get_suggested_qname(shaper_result, correct_prefixes)
+    result_suggested_qname = []
+    result_suggested_qname.append("# Suggested QName\tURI\n")
+    result_suggested_qname.extend(['# ' + s for s in suggested_qname])
+    result_suggested_qname.append("\n\n")
     # -------------------------------------------------
 
     # Processing related to classes -------------------
@@ -293,53 +306,54 @@ def generate_report_shex_plus(args, input_format, compression_mode):
 
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
-    md_result_class_errata = []
+    result_class_errata = []
     class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list))
     # When there is data to output
     if len(class_comparison_result) != 0:
-        md_result_class_errata.append("# Found class names that looks incorrect.\n")
-        md_result_class_errata.append("# Input class name\tSuggested class name\n")
+        result_class_errata.append("# Found class names that looks incorrect.\n")
+        result_class_errata.append("# Input class name\tSuggested class name\n")
         # Add "# " to the beginning of the line
-        md_result_class_errata.extend(['# ' + s for s in class_comparison_result])
-        md_result_class_errata.append("\n\n")
+        result_class_errata.extend(['# ' + s for s in class_comparison_result])
+        result_class_errata.append("\n\n")
 
     # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
-    md_result_class_fingerprint = []
+    result_class_fingerprint = []
     fingerprint_comparison_result = get_fingerprint_comparison_result_as_comment(fingerprint_class_dict)
     # When there is data to output
     if len(fingerprint_comparison_result) != 0:
-        md_result_class_fingerprint.append("# Found multiple strings that appear to represent the same class name.\n")
-        # Add "# " to the beginning of the line
-        md_result_class_fingerprint.extend(fingerprint_comparison_result)
-        md_result_class_fingerprint.append("\n\n")
+        result_class_fingerprint.append("# Found multiple strings that appear to represent the same class name.\n")
+        result_class_fingerprint.extend(fingerprint_comparison_result)
+        result_class_fingerprint.append("\n\n")
     # -------------------------------------------------
 
     # List for storing the final result
-    md_final_result = []
+    shex_plus_final_result = []
+    shex_plus_final_result.append(shaper_result)
 
     # Merge result
-    prefix_result_exists = len(md_result_prefix_reuse_percentage) != 0 or len(md_result_prefix_errata) != 0
+    prefix_result_exists = len(result_prefix_reuse_percentage) != 0 or len(result_prefix_errata) != 0 or len(result_suggested_qname) != 0
     if prefix_result_exists:
-        md_final_result.append("# Prefix\n\n")
-        md_final_result.extend(md_result_prefix_reuse_percentage)
-        md_final_result.extend(md_result_prefix_errata)
+        shex_plus_final_result.append("# Prefix\n\n")
+        shex_plus_final_result.extend(result_prefix_reuse_percentage)
+        shex_plus_final_result.extend(result_prefix_errata)
+        shex_plus_final_result.extend(result_suggested_qname)
 
-    class_result_exists = len(md_result_class_errata) != 0 or len(md_result_class_fingerprint) != 0
+    class_result_exists = len(result_class_errata) != 0 or len(result_class_fingerprint) != 0
     if class_result_exists:
-        md_final_result.append("# Class\n\n")
-        md_final_result.extend(md_result_class_errata)
-        md_final_result.extend(md_result_class_fingerprint)
+        shex_plus_final_result.append("# Class\n\n")
+        shex_plus_final_result.extend(result_class_errata)
+        shex_plus_final_result.extend(result_class_fingerprint)
 
     # Output results to specified destination (standard output or file)
     if args.output is None:
-        print("".join(md_final_result))
+        print("".join(shex_plus_final_result))
     else:
-        with open(args.output, "a", encoding="utf-8") as f:
-            f.write("".join(md_final_result))
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write("".join(shex_plus_final_result))
 
 
 # Call the shex_graph method of shexer's shaper class and output the result
-def call_shexer_shaper(args, input_format, compression_mode):
+def get_shaper_result(args, input_format, compression_mode):
     # Set parameters when calling the shaper class depending on whether the class is specified as an argument
     if TARGET_CLASS_ALL in args.classes:
         target_classes = None
@@ -357,11 +371,7 @@ def call_shexer_shaper(args, input_format, compression_mode):
                     instances_report_mode=MIXED_INSTANCES,
                     detect_minimal_iri=True)
 
-    # Output results to specified destination (standard output or file)
-    if args.output is None:
-        print(shaper.shex_graph(string_output=True))
-    else:
-        shaper.shex_graph(output_file=args.output)
+    return shaper.shex_graph(string_output=True)
 
 
 # Calculates the percentage of prefixes in the input file that exist in the prefix list file prepared in advance,
@@ -377,8 +387,10 @@ def get_prefix_reuse_percentage(input_file, input_format, compression_mode):
     else:
         correct_count = 0
         for prefix in input_prefixes:
-            if str(prefix[1]) in correct_prefixes:
-                correct_count+=1
+            for correct_prefix in correct_prefixes:
+                if str(prefix[1]) == correct_prefix[1]:
+                    correct_count+=1
+                    break
 
         prefix_reuse_percentage = round(correct_count / input_prefixes_count * 100, 2)
         return prefix_reuse_percentage
@@ -449,6 +461,7 @@ def get_class_comparison_result(input_classes, fingerprint_class_dict):
         for eratta in class_errata:
             if cls == eratta[0]:
                 class_comparison_result.append(cls+"\t"+eratta[1]+"\n")
+                break
 
     return class_comparison_result, fingerprint_class_dict
 
@@ -461,8 +474,9 @@ def get_prefix_comparison_result(input_prefixes):
     # Perform clustering by fingerprint for the acquired class name
     for prefix in input_prefixes:
         for eratta in prefix_errata:
-            if str(prefix[1]) == eratta[1] and eratta[0] != ""and eratta[2] != "":
+            if str(prefix[1]) == eratta[1] and eratta[0] != "" and eratta[2] != "":
                 prefix_comparison_result.append(str(eratta[0]+"\t"+prefix[1]+"\t"+eratta[2]+"\n"))
+                break
 
     return prefix_comparison_result
 
@@ -516,10 +530,25 @@ def get_input_prefixes(input_file, input_format, compression_mode):
 
 # Get the correct prefix from a prepared prefix list
 def get_correct_prefixes():
-    with open(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH), 'r') as f:
-        correct_prefixes = f.read().splitlines()
+    with open(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
+        tsv_reader = csv.reader(f, delimiter='\t')
+        correct_prefixes = [row for row in tsv_reader]
 
     return correct_prefixes
+
+
+# Get suggested QName from prepared prefix list
+def get_suggested_qname(shaper_result, correct_prefixes):
+    suggest_qname = []
+    for line in shaper_result.splitlines():
+        if ("[<http" in line and ">~]" in line):
+            uri = line[line.find("[<http")+2:line.find(">~]")]
+            for correct_prefix in correct_prefixes:
+                append_str = correct_prefix[0]+"\t"+uri+"\n"
+                if (str(uri) == correct_prefix[1] and append_str not in suggest_qname):
+                    suggest_qname.append(append_str)
+
+    return suggest_qname
 
 
 # Generates a key from the received string, excluding case differences, symbols, control characters, etc.
