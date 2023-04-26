@@ -194,8 +194,9 @@ def generate_report_markdown(args, input_format, compression_mode):
     # Processing related to prefixes ------------------
     # Get list for result output about prefix reuse rate
     result_prefix_reuse_percentage = []
+    input_prefixes = get_input_prefixes(args.input, compression_mode)
     result_prefix_reuse_percentage.append("## Reuse percentage\n")
-    prefix_reuse_percentage = get_prefix_reuse_percentage(args.input, input_format, compression_mode)
+    prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
     if prefix_reuse_percentage == None:
         result_prefix_reuse_percentage.append("```\n")
         result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
@@ -207,7 +208,6 @@ def generate_report_markdown(args, input_format, compression_mode):
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
     result_prefix_errata = []
-    input_prefixes = get_input_prefixes(args.input, input_format, compression_mode)
     prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
     # When there is data to output
     if len(prefix_comparison_result) != 0:
@@ -275,8 +275,9 @@ def generate_report_shex_plus(args, input_format, compression_mode):
     # Processing related to prefixes ------------------
     # Get list for result output about prefix reuse rate
     result_prefix_reuse_percentage = []
+    input_prefixes = get_input_prefixes(args.input, compression_mode)
     result_prefix_reuse_percentage.append("# Prefix reuse percentage\n")
-    prefix_reuse_percentage = get_prefix_reuse_percentage(args.input, input_format, compression_mode)
+    prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
     if prefix_reuse_percentage == None:
         result_prefix_reuse_percentage.append("# Not calculated because there is no prefix defined.\n\n")
     else:
@@ -284,7 +285,6 @@ def generate_report_shex_plus(args, input_format, compression_mode):
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
     result_prefix_errata = []
-    input_prefixes = get_input_prefixes(args.input, input_format, compression_mode)
     prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
     # When there is data to output
     if len(prefix_comparison_result) != 0:
@@ -293,12 +293,14 @@ def generate_report_shex_plus(args, input_format, compression_mode):
         result_prefix_errata.extend(['# ' + s for s in prefix_comparison_result])
         result_prefix_errata.append("\n\n")
 
+    result_suggested_qname = []
     correct_prefixes = get_correct_prefixes()
     suggested_qname = get_suggested_qname(shaper_result, correct_prefixes)
-    result_suggested_qname = []
-    result_suggested_qname.append("# Suggested QName\tURI\n")
-    result_suggested_qname.extend(['# ' + s for s in suggested_qname])
-    result_suggested_qname.append("\n\n")
+    if len(suggested_qname) != 0:
+        result_suggested_qname = []
+        result_suggested_qname.append("# Suggested QName\tURI\n")
+        result_suggested_qname.extend(['# ' + s for s in suggested_qname])
+        result_suggested_qname.append("\n\n")
     # -------------------------------------------------
 
     # Processing related to classes -------------------
@@ -377,8 +379,7 @@ def get_shaper_result(args, input_format, compression_mode):
 # Calculates the percentage of prefixes in the input file that exist in the prefix list file prepared in advance,
 # and returns it after rounding to the second decimal place.
 # If the prefix is not detected, do not calculate and return None.
-def get_prefix_reuse_percentage(input_file, input_format, compression_mode):
-    input_prefixes = get_input_prefixes(input_file, input_format, compression_mode)
+def get_prefix_reuse_percentage(input_prefixes):
     correct_prefixes = get_correct_prefixes()
 
     input_prefixes_count = len(input_prefixes)
@@ -388,7 +389,7 @@ def get_prefix_reuse_percentage(input_file, input_format, compression_mode):
         correct_count = 0
         for prefix in input_prefixes:
             for correct_prefix in correct_prefixes:
-                if str(prefix[1]) == correct_prefix[1]:
+                if prefix[1] == correct_prefix[1]:
                     correct_count+=1
                     break
 
@@ -474,7 +475,7 @@ def get_prefix_comparison_result(input_prefixes):
     # Perform clustering by fingerprint for the acquired class name
     for prefix in input_prefixes:
         for eratta in prefix_errata:
-            if str(prefix[1]) == eratta[1] and eratta[0] != "" and eratta[2] != "":
+            if prefix[1] == eratta[1] and eratta[0] != "" and eratta[2] != "":
                 prefix_comparison_result.append(str(eratta[0]+"\t"+prefix[1]+"\t"+eratta[2]+"\n"))
                 break
 
@@ -510,20 +511,22 @@ def get_fingerprint_comparison_result_as_comment(fingerprint_class_dict):
 
 
 # Get the prefixes contained within the input file
-def get_input_prefixes(input_file, input_format, compression_mode):
-    g = rdflib.Graph()
+def get_input_prefixes(input_file, compression_mode):
     if compression_mode != None:
-        with gzip.open(input_file, "rb") as f:
-            data = f.read()
-        g.parse(data=data, format=input_format)
+        with gzip.open(input_file, mode='rt', encoding='utf-8') as f:
+            data = f.read().splitlines()
     else:
-        g.parse(input_file, format=input_format)
+        with open(input_file, mode='r', newline='\n', encoding='utf-8') as f:
+            data = f.read().splitlines()
 
     input_prefixes = []
-    exclude_list = ["owl", "rdf", "rdfs", "xsd", "xml"]
-    for prefix in g.namespaces():
-        if str(prefix[0]) not in exclude_list:
-            input_prefixes.append(prefix)
+    for line in data:
+        if ("@prefix" in line or "@PREFIX" in line):
+            line_mod = line.replace("@prefix", "").replace("@PREFIX", "").replace(" ", "").replace("\t","")
+            qname = line_mod[:line_mod.find(":")]
+            uri = line_mod[line_mod.find("<")+1:line_mod.find(">")]
+            if [qname, uri] not in input_prefixes:
+                input_prefixes.append([qname, uri])
 
     return input_prefixes
 
