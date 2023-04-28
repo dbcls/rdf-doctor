@@ -20,3 +20,6 @@ CORRECT_PREFIXES_FILE_PATH = "reference/correct-prefixes.tsv"
 # Errata
 CLASS_ERRATA_FILE_PATH = "reference/refine-classes.tsv"
 PREFIX_ERRATA_FILE_PATH = "reference/refine-prefixes.tsv"
+
+# Help link URL
+HELP_LINK_URL = "https://github.com/dbcls/rdf-doctor#output-description"

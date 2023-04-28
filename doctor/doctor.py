@@ -7,7 +7,7 @@ import re
 import csv
 from doctor.consts import VERSION, REPORT_FORMAT_SHEX, REPORT_FORMAT_SHEX_PLUS, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
                             TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, CORRECT_PREFIXES_FILE_PATH, \
-                            CLASS_ERRATA_FILE_PATH, PREFIX_ERRATA_FILE_PATH
+                            CLASS_ERRATA_FILE_PATH, PREFIX_ERRATA_FILE_PATH, HELP_LINK_URL
 from shexer.shaper import Shaper
 from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
 from unidecode import unidecode
@@ -85,7 +85,7 @@ def get_command_line_args(args):
     # Target class(-c、--classes、default: all、Multiple can be specified.)
     parser.add_argument("-c","--classes", type=str,
                         default=[TARGET_CLASS_ALL],
-                        nargs='+',
+                        nargs="+",
                         help="Set the shexer target_classes to be inspected to one of: all (defalut) or URL1, URL2,...",
                         metavar="")
 
@@ -128,18 +128,18 @@ def get_input_format(input_file, compression_mode):
 # Validate args(input, output, report, classes)
 def validate_command_line_args(args):
     if args.input is None:
-        error_msg = 'Input file error: No input file specified. (-i [RDF_FILE], --input [RDF_FILE])'
+        error_msg = "Input file error: No input file specified. (-i [RDF_FILE], --input [RDF_FILE])"
         return False, error_msg
 
     if os.path.isfile(args.input) == False:
-        error_msg = 'Input file error: Input file does not exist.'
+        error_msg = "Input file error: Input file does not exist."
         return False, error_msg
 
     if args.output is not None:
         # Existence check of file output destination directory
         if os.path.dirname(args.output):
             if os.path.exists(os.path.dirname(args.output)) == False:
-                error_msg = 'Output file error: Output directory does not exist.'
+                error_msg = "Output file error: Output directory does not exist."
                 return False, error_msg
 
             # Check if the file output destination has write permission
@@ -195,11 +195,12 @@ def generate_report_markdown(args, input_format, compression_mode):
     # Get list for result output about prefix reuse rate
     result_prefix_reuse_percentage = []
     input_prefixes = get_input_prefixes(args.input, compression_mode)
-    result_prefix_reuse_percentage.append("## Reuse percentage\n")
+    result_prefix_reuse_percentage.append("## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n")
+    result_prefix_reuse_percentage.append("Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
     prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
     if prefix_reuse_percentage == None:
         result_prefix_reuse_percentage.append("```\n")
-        result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
+        result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined. ([?](" + HELP_LINK_URL + "))\n")
         result_prefix_reuse_percentage.append("```\n\n")
     else:
         result_prefix_reuse_percentage.append("```\n")
@@ -211,7 +212,7 @@ def generate_report_markdown(args, input_format, compression_mode):
     prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
     # When there is data to output
     if len(prefix_comparison_result) != 0:
-        result_prefix_errata.append("## Found a prefix that looks incorrect.\n")
+        result_prefix_errata.append("Found prefixes that looks incorrect.\n")
         result_prefix_errata.append("```\n")
         result_prefix_errata.append("Prefix\tInput URI\tSuggested URI\n")
         result_prefix_errata.extend(prefix_comparison_result)
@@ -227,7 +228,7 @@ def generate_report_markdown(args, input_format, compression_mode):
     class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list))
     # When there is data to output
     if len(class_comparison_result) != 0:
-        result_class_errata.append("## Found a class name that looks incorrect.\n")
+        result_class_errata.append("Found class names that looks incorrect.\n")
         result_class_errata.append("```\n")
         result_class_errata.append("Input class name\tSuggested class name\n")
         result_class_errata.extend(class_comparison_result)
@@ -238,7 +239,7 @@ def generate_report_markdown(args, input_format, compression_mode):
     fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
     # When there is data to output
     if len(fingerprint_comparison_result) != 0:
-        result_class_fingerprint.append("## Multiple strings were found that appear to represent the same class name.\n")
+        result_class_fingerprint.append("Found multiple strings that appear to represent the same class name.\n")
         result_class_fingerprint.append("```")
         result_class_fingerprint.extend(fingerprint_comparison_result)
         result_class_fingerprint.append("\n```\n\n")
@@ -247,16 +248,19 @@ def generate_report_markdown(args, input_format, compression_mode):
     # List for storing the final result
     md_final_result = []
 
+    md_final_result.append("# Report on " + os.path.basename(args.input) + "\n\n")
+
     # Merge result
-    prefix_result_exists = len(result_prefix_reuse_percentage) != 0 or len(result_prefix_errata) != 0
+    md_final_result.extend(result_prefix_reuse_percentage)
+
+    prefix_result_exists = len(result_prefix_errata) != 0
     if prefix_result_exists:
-        md_final_result.append("# Prefix\n\n")
-        md_final_result.extend(result_prefix_reuse_percentage)
+        md_final_result.append("## Refine prefixes ([?](" + HELP_LINK_URL + "))\n")
         md_final_result.extend(result_prefix_errata)
 
     class_result_exists = len(result_class_errata) != 0 or len(result_class_fingerprint) != 0
     if class_result_exists:
-        md_final_result.append("# Class\n\n")
+        md_final_result.append("## Refine classes ([?](" + HELP_LINK_URL + "))\n")
         md_final_result.extend(result_class_errata)
         md_final_result.extend(result_class_fingerprint)
 
@@ -277,6 +281,7 @@ def generate_report_shex_plus(args, input_format, compression_mode):
     result_prefix_reuse_percentage = []
     input_prefixes = get_input_prefixes(args.input, compression_mode)
     result_prefix_reuse_percentage.append("# Prefix reuse percentage\n")
+    result_prefix_reuse_percentage.append("# Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
     prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
     if prefix_reuse_percentage == None:
         result_prefix_reuse_percentage.append("# Not calculated because there is no prefix defined.\n\n")
@@ -290,16 +295,17 @@ def generate_report_shex_plus(args, input_format, compression_mode):
     if len(prefix_comparison_result) != 0:
         result_prefix_errata.append("# Found prefixes that looks incorrect.\n")
         result_prefix_errata.append("# Prefix\tInput URI\tSuggested URI\n")
-        result_prefix_errata.extend(['# ' + s for s in prefix_comparison_result])
+        result_prefix_errata.extend(["# " + s for s in prefix_comparison_result])
         result_prefix_errata.append("\n\n")
 
     result_suggested_qname = []
     correct_prefixes = get_correct_prefixes()
-    suggested_qname = get_suggested_qname(shaper_result, correct_prefixes)
+    suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
     if len(suggested_qname) != 0:
         result_suggested_qname = []
-        result_suggested_qname.append("# Suggested QName\tURI\n")
-        result_suggested_qname.extend(['# ' + s for s in suggested_qname])
+        result_suggested_qname.append("# There may be a better QName.\n\n")
+        result_suggested_qname.append("# Input QName\tSuggested QName\tURI\n")
+        result_suggested_qname.extend(["# " + s for s in suggested_qname])
         result_suggested_qname.append("\n\n")
     # -------------------------------------------------
 
@@ -312,10 +318,10 @@ def generate_report_shex_plus(args, input_format, compression_mode):
     class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list))
     # When there is data to output
     if len(class_comparison_result) != 0:
-        result_class_errata.append("# Found class names that looks incorrect.\n")
+        result_class_errata.append("# Found class names that looks incorrect.\n\n")
         result_class_errata.append("# Input class name\tSuggested class name\n")
         # Add "# " to the beginning of the line
-        result_class_errata.extend(['# ' + s for s in class_comparison_result])
+        result_class_errata.extend(["# " + s for s in class_comparison_result])
         result_class_errata.append("\n\n")
 
     # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
@@ -331,18 +337,18 @@ def generate_report_shex_plus(args, input_format, compression_mode):
     # List for storing the final result
     shex_plus_final_result = []
     shex_plus_final_result.append(shaper_result)
+    shex_plus_final_result.extend(result_prefix_reuse_percentage)
 
     # Merge result
-    prefix_result_exists = len(result_prefix_reuse_percentage) != 0 or len(result_prefix_errata) != 0 or len(result_suggested_qname) != 0
+    prefix_result_exists = len(result_prefix_errata) != 0 or len(result_suggested_qname) != 0
     if prefix_result_exists:
-        shex_plus_final_result.append("# Prefix\n\n")
-        shex_plus_final_result.extend(result_prefix_reuse_percentage)
+        shex_plus_final_result.append("# Refine prefixes\n\n")
         shex_plus_final_result.extend(result_prefix_errata)
         shex_plus_final_result.extend(result_suggested_qname)
 
     class_result_exists = len(result_class_errata) != 0 or len(result_class_fingerprint) != 0
     if class_result_exists:
-        shex_plus_final_result.append("# Class\n\n")
+        shex_plus_final_result.append("# Refine classes\n\n")
         shex_plus_final_result.extend(result_class_errata)
         shex_plus_final_result.extend(result_class_fingerprint)
 
@@ -409,7 +415,7 @@ def get_input_classes(input_file, input_format, compression_mode, target_classes
         g.parse(input_file, format=input_format)
 
     # Filter by classes(command line arguments)
-    class_filter = ','.join(target_classes)
+    class_filter = ",".join(target_classes)
 
     query = """
         SELECT DISTINCT ?class_name
@@ -434,8 +440,8 @@ def get_input_classes(input_file, input_format, compression_mode, target_classes
 
 # Return class errata in a two-dimensional array
 def get_class_errata():
-    with open(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
-        tsv_reader = csv.reader(f, delimiter='\t')
+    with open(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH), mode="r", newline="\n", encoding="utf-8") as f:
+        tsv_reader = csv.reader(f, delimiter="\t")
         class_errata = [row for row in tsv_reader]
 
     return class_errata
@@ -443,8 +449,8 @@ def get_class_errata():
 
 # Return prefix errata in a two-dimensional array
 def get_prefix_errata():
-    with open(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
-        tsv_reader = csv.reader(f, delimiter='\t')
+    with open(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH), mode="r", newline="\n", encoding="utf-8") as f:
+        tsv_reader = csv.reader(f, delimiter="\t")
         prefix_errata = [row for row in tsv_reader]
 
     return prefix_errata
@@ -513,17 +519,17 @@ def get_fingerprint_comparison_result_as_comment(fingerprint_class_dict):
 # Get the prefixes contained within the input file
 def get_input_prefixes(input_file, compression_mode):
     if compression_mode != None:
-        with gzip.open(input_file, mode='rt', encoding='utf-8') as f:
+        with gzip.open(input_file, mode="rt", encoding="utf-8") as f:
             data = f.read().splitlines()
     else:
-        with open(input_file, mode='r', newline='\n', encoding='utf-8') as f:
+        with open(input_file, mode="r", newline="\n", encoding="utf-8") as f:
             data = f.read().splitlines()
 
     input_prefixes = []
     for line in data:
         if ("@prefix" in line or "@PREFIX" in line):
             line_mod = line.replace("@prefix", "").replace("@PREFIX", "").replace(" ", "").replace("\t","")
-            qname = line_mod[:line_mod.find(":")]
+            qname = line_mod[:line_mod.find(":")+1]
             uri = line_mod[line_mod.find("<")+1:line_mod.find(">")]
             if [qname, uri] not in input_prefixes:
                 input_prefixes.append([qname, uri])
@@ -533,23 +539,51 @@ def get_input_prefixes(input_file, compression_mode):
 
 # Get the correct prefix from a prepared prefix list
 def get_correct_prefixes():
-    with open(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH), mode='r', newline='\n', encoding='utf-8') as f:
-        tsv_reader = csv.reader(f, delimiter='\t')
+    with open(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH), mode="r", newline="\n", encoding="utf-8") as f:
+        tsv_reader = csv.reader(f, delimiter="\t")
         correct_prefixes = [row for row in tsv_reader]
 
     return correct_prefixes
 
 
-# Get suggested QName from prepared prefix list
-def get_suggested_qname(shaper_result, correct_prefixes):
+# Compare the URI of the validation expression in the shexer output with the URI of the prepared prefix list
+# and get the matching QName from the prefix list
+def get_suggested_qname(shaper_result, input_prefixes, correct_prefixes):
     suggest_qname = []
     for line in shaper_result.splitlines():
         if ("[<http" in line and ">~]" in line):
+            exists_in_input_prefix = False
             uri = line[line.find("[<http")+2:line.find(">~]")]
+
+            # Determine if the same URI is included in the prefix defined in the input file,
+            # and if it is included, get the QName
+            input_qname = "Undefined"
+            for input_prefix in input_prefixes:
+                if uri == input_prefix[1]:
+                    exists_in_input_prefix = True
+                    input_qname = input_prefix[0]
+                    break
+
+            tmp_suggest_qname = []
+            is_input_correct_qname = False
             for correct_prefix in correct_prefixes:
-                append_str = correct_prefix[0]+"\t"+uri+"\n"
-                if (str(uri) == correct_prefix[1] and append_str not in suggest_qname):
-                    suggest_qname.append(append_str)
+                append_str = input_qname + "\t" + correct_prefix[0]+"\t"+uri+"\n"
+                if (uri == correct_prefix[1] and append_str not in suggest_qname):
+                    if exists_in_input_prefix:
+                        # If the prefixes defined in the input file include those with the same URI,
+                        # add them to the list only if the QName is different
+                        if correct_prefix[0] != input_qname:
+                            tmp_suggest_qname.append(append_str)
+                        else:
+                            # If the QName defined in the input file is also included in the prefix list,
+                            # do not suggest another QName with the same URI in the prefix list
+                            is_input_correct_qname = True
+                            break
+                    else:
+                        suggest_qname.append(append_str)
+
+            if is_input_correct_qname == False:
+                suggest_qname.extend(tmp_suggest_qname)
 
     return suggest_qname
 
