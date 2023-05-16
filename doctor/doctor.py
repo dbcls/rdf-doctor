@@ -553,13 +553,13 @@ def get_suggested_qname(shaper_result, input_prefixes, correct_prefixes):
     for line in shaper_result.splitlines():
         if ("[<http" in line and ">~]" in line):
             exists_in_input_prefix = False
-            uri = line[line.find("[<http")+2:line.find(">~]")]
+            shaper_result_uri = line[line.find("[<http")+2:line.find(">~]")]
 
             # Determine if the same URI is included in the prefix defined in the input file,
             # and if it is included, get the QName
             input_qname = "Undefined"
             for input_prefix in input_prefixes:
-                if uri == input_prefix[1]:
+                if shaper_result_uri == input_prefix[1]:
                     exists_in_input_prefix = True
                     input_qname = input_prefix[0]
                     break
@@ -567,8 +567,8 @@ def get_suggested_qname(shaper_result, input_prefixes, correct_prefixes):
             tmp_suggest_qname = []
             is_input_correct_qname = False
             for correct_prefix in correct_prefixes:
-                append_str = input_qname + "\t" + correct_prefix[0]+"\t"+uri+"\n"
-                if (uri == correct_prefix[1] and append_str not in suggest_qname):
+                append_str = input_qname + "\t" + correct_prefix[0]+"\t"+shaper_result_uri+"\n"
+                if (shaper_result_uri == correct_prefix[1] and append_str not in suggest_qname):
                     if exists_in_input_prefix:
                         # If the prefixes defined in the input file include those with the same URI,
                         # add them to the list only if the QName is different
