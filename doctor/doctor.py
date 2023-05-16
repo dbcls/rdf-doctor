@@ -5,7 +5,7 @@ import gzip
 import rdflib
 import re
 import csv
-from doctor.consts import VERSION, REPORT_FORMAT_SHEX, REPORT_FORMAT_SHEX_PLUS, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
+from doctor.consts import VERSION, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
                             TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, CORRECT_PREFIXES_FILE_PATH, \
                             CLASS_ERRATA_FILE_PATH, PREFIX_ERRATA_FILE_PATH, HELP_LINK_URL
 from shexer.shaper import Shaper
@@ -38,13 +38,10 @@ def doctor():
         elif args.report == REPORT_FORMAT_MARKDOWN or args.report == REPORT_FORMAT_MD:
             # markdown/md
             generate_report_markdown(args, input_format, compression_mode)
-        elif args.report == REPORT_FORMAT_SHEX_PLUS:
-            # shex+
-            generate_report_shex_plus(args, input_format, compression_mode)
         else:
             # Else case does not occur.
             # Prevented by validate_command_line_args function.
-            raise ValueError(args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '", "' + REPORT_FORMAT_MARKDOWN + '", "' + REPORT_FORMAT_MD + '" and "' + REPORT_FORMAT_SHEX_PLUS + '" are supported.')
+            raise ValueError(args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '" and "' + REPORT_FORMAT_MD+ '"(same as "' + REPORT_FORMAT_MARKDOWN + '") are supported.')
 
     except ValueError as e:
         print(e)
@@ -150,9 +147,8 @@ def validate_command_line_args(args):
     # Report Format only allows "shex" or "md/markdown" or "shex+"
     if args.report != REPORT_FORMAT_SHEX and \
         args.report != REPORT_FORMAT_MARKDOWN and \
-        args.report != REPORT_FORMAT_MD and \
-        args.report != REPORT_FORMAT_SHEX_PLUS:
-        error_msg = 'Report format error: "' + args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '", "' + REPORT_FORMAT_MARKDOWN + '", "' + REPORT_FORMAT_MD + '" and "' + REPORT_FORMAT_SHEX_PLUS + '" are supported.'
+        args.report != REPORT_FORMAT_MD:
+        error_msg = 'Report format error: "' + args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '" and "' + REPORT_FORMAT_MD + '"(same as "' + REPORT_FORMAT_MARKDOWN + '") are supported.'
         return False, error_msg
 
     # Allow only ".nt" or ".ttl" (and .gz) extensions
@@ -180,12 +176,29 @@ def validate_command_line_args(args):
 def generate_report_shex(args, input_format, compression_mode):
     shaper_result = get_shaper_result(args, input_format, compression_mode)
 
+    # Suggest QName based on URI of validation expression output by sheXer and correct-prefixes.tsv
+    result_suggested_qname = []
+    input_prefixes = get_input_prefixes(args.input, compression_mode)
+    correct_prefixes = get_correct_prefixes()
+    suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
+    if len(suggested_qname) != 0:
+        result_suggested_qname.append("# There may be a better QName.\n\n")
+        result_suggested_qname.append("# Input QName\tSuggested QName\tURI\n")
+        result_suggested_qname.extend(["# " + s for s in suggested_qname])
+        result_suggested_qname.append("\n")
+
+    # List for storing the final result
+    shex_final_result = []
+    shex_final_result.extend(shaper_result)
+    if len(result_suggested_qname) != 0:
+        shex_final_result.extend(result_suggested_qname)
+
     # Output results to specified destination (standard output or file)
     if args.output is None:
-        print("".join(shaper_result))
+        print("".join(shex_final_result))
     else:
         with open(args.output, "w", encoding="utf-8") as f:
-            f.write("".join(shaper_result))
+            f.write("".join(shex_final_result))
 
 
 # Processing when the report format is "md/markdown"
@@ -270,95 +283,6 @@ def generate_report_markdown(args, input_format, compression_mode):
     else:
         with open(args.output, "w", encoding="utf-8") as f:
             f.write("".join(md_final_result))
-
-
-# Processing when the report format is "shex+"
-def generate_report_shex_plus(args, input_format, compression_mode):
-    shaper_result = get_shaper_result(args, input_format, compression_mode)
-
-    # Processing related to prefixes ------------------
-    # Get list for result output about prefix reuse rate
-    result_prefix_reuse_percentage = []
-    input_prefixes = get_input_prefixes(args.input, compression_mode)
-    result_prefix_reuse_percentage.append("# Prefix reuse percentage\n")
-    result_prefix_reuse_percentage.append("# Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
-    prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
-    if prefix_reuse_percentage == None:
-        result_prefix_reuse_percentage.append("# Not calculated because there is no prefix defined.\n\n")
-    else:
-        result_prefix_reuse_percentage.append("# " + str(prefix_reuse_percentage) + "%\n\n")
-
-    # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
-    result_prefix_errata = []
-    prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
-    # When there is data to output
-    if len(prefix_comparison_result) != 0:
-        result_prefix_errata.append("# Found prefixes that looks incorrect.\n")
-        result_prefix_errata.append("# Prefix\tInput URI\tSuggested URI\n")
-        result_prefix_errata.extend(["# " + s for s in prefix_comparison_result])
-        result_prefix_errata.append("\n\n")
-
-    result_suggested_qname = []
-    correct_prefixes = get_correct_prefixes()
-    suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
-    if len(suggested_qname) != 0:
-        result_suggested_qname = []
-        result_suggested_qname.append("# There may be a better QName.\n\n")
-        result_suggested_qname.append("# Input QName\tSuggested QName\tURI\n")
-        result_suggested_qname.extend(["# " + s for s in suggested_qname])
-        result_suggested_qname.append("\n\n")
-    # -------------------------------------------------
-
-    # Processing related to classes -------------------
-    input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
-
-    # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
-    # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
-    result_class_errata = []
-    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list))
-    # When there is data to output
-    if len(class_comparison_result) != 0:
-        result_class_errata.append("# Found class names that looks incorrect.\n\n")
-        result_class_errata.append("# Input class name\tSuggested class name\n")
-        # Add "# " to the beginning of the line
-        result_class_errata.extend(["# " + s for s in class_comparison_result])
-        result_class_errata.append("\n\n")
-
-    # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
-    result_class_fingerprint = []
-    fingerprint_comparison_result = get_fingerprint_comparison_result_as_comment(fingerprint_class_dict)
-    # When there is data to output
-    if len(fingerprint_comparison_result) != 0:
-        result_class_fingerprint.append("# Found multiple strings that appear to represent the same class name.\n")
-        result_class_fingerprint.extend(fingerprint_comparison_result)
-        result_class_fingerprint.append("\n\n")
-    # -------------------------------------------------
-
-    # List for storing the final result
-    shex_plus_final_result = []
-    shex_plus_final_result.append(shaper_result)
-    shex_plus_final_result.extend(result_prefix_reuse_percentage)
-
-    # Merge result
-    prefix_result_exists = len(result_prefix_errata) != 0 or len(result_suggested_qname) != 0
-    if prefix_result_exists:
-        shex_plus_final_result.append("# Refine prefixes\n\n")
-        shex_plus_final_result.extend(result_prefix_errata)
-        shex_plus_final_result.extend(result_suggested_qname)
-
-    class_result_exists = len(result_class_errata) != 0 or len(result_class_fingerprint) != 0
-    if class_result_exists:
-        shex_plus_final_result.append("# Refine classes\n\n")
-        shex_plus_final_result.extend(result_class_errata)
-        shex_plus_final_result.extend(result_class_fingerprint)
-
-    # Output results to specified destination (standard output or file)
-    if args.output is None:
-        print("".join(shex_plus_final_result))
-    else:
-        with open(args.output, "w", encoding="utf-8") as f:
-            f.write("".join(shex_plus_final_result))
-
 
 # Call the shex_graph method of shexer's shaper class and output the result
 def get_shaper_result(args, input_format, compression_mode):

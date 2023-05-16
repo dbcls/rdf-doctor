@@ -1,6 +1,6 @@
 import unittest
 from doctor.doctor import validate_command_line_args
-from doctor.consts import REPORT_FORMAT_SHEX, REPORT_FORMAT_SHEX_PLUS, REPORT_FORMAT_MD, TARGET_CLASS_ALL
+from doctor.consts import REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, TARGET_CLASS_ALL
 import argparse
 
 class TestValidateCommnadLineArgs(unittest.TestCase):
@@ -86,32 +86,14 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
-    # [report/OK] shex+
-    def test_validate_command_line_args_report_5(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input="tests/test_files/test_ttl_1.ttl", \
-                                                                            report=REPORT_FORMAT_SHEX_PLUS, \
-                                                                            output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
-        self.assertTrue(result)
-        self.assertEqual(error_msg, None)
-
-    # [report/OK] shex+ gz
-    def test_validate_command_line_args_report_6(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input="tests/test_files/test_ttl_1.ttl.gz", \
-                                                                            report=REPORT_FORMAT_SHEX_PLUS, \
-                                                                            output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
-        self.assertTrue(result)
-        self.assertEqual(error_msg, None)
-
     # [report/ERROR] Bad report format
-    def test_validate_command_line_args_report_7(self):
+    def test_validate_command_line_args_report_5(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input="tests/test_files/test_ttl_1.ttl", \
                                                                             report="aaa", \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL]))
         self.assertFalse(result)
-        self.assertEqual(error_msg, 'Report format error: "aaa" is an unsupported report format. "shex", "markdown", "md" and "shex+" are supported.')
+        self.assertEqual(error_msg, 'Report format error: "aaa" is an unsupported report format. "shex" and "md"(same as "markdown") are supported.')
 
     # [output/OK] ./test.shex
     def test_validate_command_line_args_output_1(self):

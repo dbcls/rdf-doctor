@@ -2,7 +2,6 @@ VERSION = 0.1
 
 # Report export format
 REPORT_FORMAT_SHEX = "shex"
-REPORT_FORMAT_SHEX_PLUS = "shex+"
 REPORT_FORMAT_MD = "md"               # same as markdown
 REPORT_FORMAT_MARKDOWN = "markdown"   # same as md
 

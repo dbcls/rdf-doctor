@@ -1,6 +1,6 @@
 import unittest
 from doctor.doctor import get_command_line_args
-from doctor.consts import TARGET_CLASS_ALL, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, REPORT_FORMAT_SHEX_PLUS
+from doctor.consts import TARGET_CLASS_ALL, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD
 import argparse
 
 class TestGetCommandLineArgs(unittest.TestCase):
@@ -22,16 +22,6 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     input="tests/test_files/test_ttl_1.ttl", \
                                                     output="./output.shex", \
                                                     report=REPORT_FORMAT_MD, \
-                                                    version=False))
-
-    def test_get_command_line_args_3(self):
-        result = get_command_line_args(["--input", "tests/test_files/test_ttl_1.ttl", \
-                                        "--report", REPORT_FORMAT_SHEX_PLUS, \
-                                        "--classes", "all"])
-        self.assertEqual(result, argparse.Namespace(classes=[TARGET_CLASS_ALL], \
-                                                    input="tests/test_files/test_ttl_1.ttl", \
-                                                    output=None, \
-                                                    report=REPORT_FORMAT_SHEX_PLUS, \
                                                     version=False))
 
 if __name__ == "__main__":
