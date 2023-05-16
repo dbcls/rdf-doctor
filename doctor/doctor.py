@@ -481,8 +481,8 @@ def get_prefix_comparison_result(input_prefixes):
     # Perform clustering by fingerprint for the acquired class name
     for prefix in input_prefixes:
         for eratta in prefix_errata:
-            if prefix[1] == eratta[1] and eratta[0] != "" and eratta[2] != "":
-                prefix_comparison_result.append(str(eratta[0]+"\t"+prefix[1]+"\t"+eratta[2]+"\n"))
+            if prefix[1] == eratta[0] and eratta[1] != "":
+                prefix_comparison_result.append(str(prefix[0]+"\t"+prefix[1]+"\t"+eratta[1]+"\n"))
                 break
 
     return prefix_comparison_result
