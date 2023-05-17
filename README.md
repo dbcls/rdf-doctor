@@ -27,38 +27,22 @@ pip install rdf-doctor
 
 ```
 $ rdf-doctor --help
+usage: rdf-doctor -i RDF-FILE [Options]
 
 Home page: https://github.com/dbcls/rdf-doctor
 
-Usage:
-  rdf-doctor -i RDF-FILE [Options]
-
-Argument:
-  -i, --input        Input RDF-FILE
-
-Options:
-  -h, --help         Show this help message
-  -v, --version      Show version number
-  -r, --report       Set the output format/serializer of report to one of:
-    shex (defalut)
-    shex+
-    md    markdown
-  -o, --output FILE  Write to file instead of stdout
-  -c, --classes      Set the shexer target_classes to be inspected to one of:
-    all (default）
-    URL1, URL2,...
-    * See also https://github.com/DaniFdezAlvarez/shexer#params-to-define-target-shapes
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+  -i RDF-FILE, --input RDF-FILE
+                        input RDF file(.ttl or .nt or gziped versions of them)
+  -r FORMAT, --report FORMAT
+                        set the output format/serializer of report to one of: shex (defalut) or md or markdown(same as md)
+  -o FILE, --output FILE
+                        write to file instead of stdout
+  -c URL [URL ...], --classes URL [URL ...]
+                        set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...
 ```
-
-## TODO
-
-Implementation
-
-```
-a) クラスごとのインスタンスについてプレフィックスを取得し、バリデーション表現にしたうえでShExに含める
-b) 所与の辞書を参照し、プレフィックス及びクラス名について書き換え候補をレポートに含める
-```
-
 
 ## See Also
 - [1] https://github.com/DaniFdezAlvarez/shexer
@@ -68,69 +52,75 @@ b) 所与の辞書を参照し、プレフィックス及びクラス名につ�
 ## Example
 
 ```
-$ rdf-doctor -i test_turtle_1.ttl
+$ rdf-doctor -i example.nt
 PREFIX : <http://weso.es/shapes/>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX xml: <http://www.w3.org/XML/1998/namespace/>
-PREFIX ex: <http://example.org/>
 
-:Address   # 4 instances
+:Person  [<http://purl.obolibrary.org/obo/>~]  AND   # 5 instances
 {
-   rdf:type  [ex:Address]  ;                                   # 100.0 % (4 instances).
-   ex:city  xsd:string  ;                                      # 100.0 % (4 instances).
-   ex:state  xsd:string  ;                                     # 100.0 % (4 instances).
-   ex:zip  xsd:string  ?;
-            # 75.0 % (3 instances). obj: xsd:string. Cardinality: {1}
-   ex:street  xsd:string  ?
-            # 75.0 % (3 instances). obj: xsd:string. Cardinality: {1}
+   <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  [<http://xmlns.com/foaf/0.1/Person>]  ;          # 100.0 % (5 instances).
+   <http://xmlns.com/foaf/0.1/name>  <http://www.w3.org/2001/XMLSchema#string>  ;          # 100.0 % (5 instances).
+   <http://xmlns.com/foaf/0.1/age>  <http://www.w3.org/2001/XMLSchema#integer>  ?;
+            # 80.0 % (4 instances). obj: <http://www.w3.org/2001/XMLSchema#integer>. Cardinality: {1}
+   <http://xmlns.com/foaf/0.1/familyName>  <http://www.w3.org/2001/XMLSchema#string>  ?;
+            # 80.0 % (4 instances). obj: <http://www.w3.org/2001/XMLSchema#string>. Cardinality: {1}
+   <http://xmlns.com/foaf/0.1/knows>  IRI  ?
+            # 40.0 % (2 instances). obj: IRI. Cardinality: {1}
 }
 
 
-:Person   # 5 instances
+:Document  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
 {
-   rdf:type  [ex:Person]  ;                                    # 100.0 % (5 instances).
-   ex:name  xsd:string  ;                                      # 100.0 % (5 instances).
-   ex:hasAddress  @:Address  ?;
-            # 80.0 % (4 instances). obj: @:Address. Cardinality: {1}
-   ex:age  xsd:integer  ?
-            # 40.0 % (2 instances). obj: xsd:integer. Cardinality: {1}
+   <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  [<http://xmlns.com/foaf/0.1/Document>]  ;          # 100.0 % (1 instance).
+   <http://xmlns.com/foaf/0.1/depiction>  <http://www.w3.org/2001/XMLSchema#string>  ;          # 100.0 % (1 instance).
+   <http://xmlns.com/foaf/0.1/title>  <http://www.w3.org/2001/XMLSchema#string>            # 100.0 % (1 instance).
 }
+
+
+:Document  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
+{
+   <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  [<http://xmlns.com/foaf/0.1#Document>]  ;          # 100.0 % (1 instance).
+   <http://xmlns.com/foaf/0.1/title>  <http://www.w3.org/2001/XMLSchema#string>            # 100.0 % (1 instance).
+}
+
+
+# There may be a better QName.
+
+# Input QName   Suggested QName URI
+# Undefined     obo:    http://purl.obolibrary.org/obo/
+# Undefined     uo:     http://purl.obolibrary.org/obo/
 ```
 
 ````
-$ rdf-doctor -i test_turtle_2.ttl -r md
-# Prefix
+$ rdf-doctor -i example.ttl -r md
+# Report on example.ttl
 
-## Reuse percentage
+## Prefix reuse percentage ([?](https://github.com/dbcls/rdf-doctor#output-description))
+Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.
 ```
-50.0%
-```
-
-## Found a prefix that looks incorrect.
-```
-Input	Correct
-http://xmlns.com/foaf/0.1#	http://xmlns.com/foaf/0.1/
+75.0%
 ```
 
-# Class
-
-## Found a class name that looks incorrect.
+## Refine prefixes ([?](https://github.com/dbcls/rdf-doctor#output-description))
+Found prefixes that looks incorrect.
 ```
-Input	Correct
-http://xmlns.com/foaf/0.1#Person	http://xmlns.com/foaf/0.1/Person
-http://xmlns.com/foaf/0.1#Document	http://xmlns.com/foaf/0.1/Document
+Prefix  Input URI       Suggested URI
+chebi:  http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A http://purl.obolibrary.org/obo/CHEBI_
 ```
 
-## Multiple strings were found that appear to represent the same class name.
+## Refine classes ([?](https://github.com/dbcls/rdf-doctor#output-description))
+Found class names that looks incorrect.
 ```
-http://xmlns.com/foaf/0.1#Person
-http://xmlns.com/foaf/0.1#PErson
-http://xmlns.com/foaf/0.1#PERSON
+Input class name        Suggested class name
+http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APErson   http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APerson
+```
 
-http://xmlns.com/foaf/0.1#Document
-http://xmlns.com/foaf/0.1#DOCUMENT
+Found multiple strings that appear to represent the same class name.
+```
+http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APerson
+http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APErson
+http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APERSON
+
+http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADocument
+http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADOCUMENT
 ```
 ````
