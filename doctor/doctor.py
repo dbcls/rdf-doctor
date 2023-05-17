@@ -18,10 +18,6 @@ from pathlib import Path
 def doctor():
     args = get_command_line_args(sys.argv[1:])
 
-    if args.version:
-        print(VERSION)
-        return
-
     result, error_msg = validate_command_line_args(args)
     if result == False:
         print(error_msg)
@@ -60,31 +56,32 @@ def get_command_line_args(args):
 
     # Version info(-v, --version)
     parser.add_argument("-v","--version",
-                        action="store_true",
-                        help="Show version number")
+                        action="version",
+                        version="%(prog)s " + VERSION)
 
     # Input RDF file (-i、--input [RDF-FILE]、required)
-    parser.add_argument("-i","--input",
-                        type=str,
-                        help="Input RDF file",
-                        metavar="")
+    parser.add_argument("-i","--input", type=str,
+                        required=True,
+                        help="input RDF file(.ttl or .nt or gzipped versions of them)",
+                        metavar="RDF-FILE")
 
     # Report format (-r、--report、default: shex)
     parser.add_argument("-r","--report", type=str,
                         default=REPORT_FORMAT_SHEX,
-                        help="Set the output format/serializer of report to one of: shex (defalut) or shex+ or md|markdown",
-                        metavar="")
+                        help="set the output format/serializer of report to one of: shex (defalut) or md or markdown(same as md)",
+                        metavar="FORMAT")
 
     # Output report file (-o、--output [FILE]、default: Standard output)
     parser.add_argument("-o","--output", type=str,
-                        help="Write to file instead of stdout")
+                        help="write to file instead of stdout",
+                        metavar="FILE")
 
     # Target class(-c、--classes、default: all、Multiple can be specified.)
     parser.add_argument("-c","--classes", type=str,
                         default=[TARGET_CLASS_ALL],
                         nargs="+",
-                        help="Set the shexer target_classes to be inspected to one of: all (defalut) or URL1, URL2,...",
-                        metavar="")
+                        help="set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...",
+                        metavar="URL")
 
     return parser.parse_args(args)
 
@@ -125,6 +122,7 @@ def get_input_format(input_file, compression_mode):
 # Validate args(input, output, report, classes)
 def validate_command_line_args(args):
     if args.input is None:
+        # This case does not occur because -i / --input is required as an option when parsing command line arguments.
         error_msg = "Input file error: No input file specified. (-i [RDF_FILE], --input [RDF_FILE])"
         return False, error_msg
 
