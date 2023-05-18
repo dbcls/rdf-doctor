@@ -211,7 +211,7 @@ def generate_report_markdown(args, input_format, compression_mode):
     prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
     if prefix_reuse_percentage == None:
         result_prefix_reuse_percentage.append("```\n")
-        result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined. ([?](" + HELP_LINK_URL + "))\n")
+        result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
         result_prefix_reuse_percentage.append("```\n\n")
     else:
         result_prefix_reuse_percentage.append("```\n")
