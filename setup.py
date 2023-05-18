@@ -19,7 +19,7 @@ setup(
         ]
     },
     name = 'rdf-doctor',
-    version = '0.1.19',
+    version = '0.2.0',
     description = 'Validate RDF data, report problems, and support creation of more accurate data',
     author = 'DBCLS',
     url = 'https://github.com/dbcls/rdf-doctor',
