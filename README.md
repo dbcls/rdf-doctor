@@ -124,3 +124,10 @@ http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADocument
 http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADOCUMENT
 ```
 ````
+
+## Output Description
+* **Prefix reuse percentage**: Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.
+
+* **Refine prefixes**: The URI entered as a prefix is checked against a list (errata) defined inside rdf-doctor, and if there is matching information, output as correction suggestions.
+
+* **Refine classes**: The URI of the input class is checked against the list (errata) defined inside rdf-doctor, and if there is matching information, the correct URI is suggested. Also, if the URI of the input class is converted to a key string using the fingerprinting method and multiple different strings are found even though the key strings match, they may represent the same class. Output as correction suggestions.
