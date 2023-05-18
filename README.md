@@ -47,7 +47,7 @@ optional arguments:
 ## See Also
 - [1] https://github.com/DaniFdezAlvarez/shexer
 - [2] http://shex.io/shex-primer/#combined-constraints
-- [3] https://docs.openrefine.org/next/manual/cellediting#fingerprinting
+- [3] https://openrefine.org/docs/technical-reference/clustering-in-depth#fingerprint
 
 ## Example
 
