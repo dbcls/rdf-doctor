@@ -1,4 +1,4 @@
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 # Report export format
 REPORT_FORMAT_SHEX = "shex"
