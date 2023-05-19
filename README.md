@@ -1,7 +1,7 @@
 # rdf-doctor
+[![Pyversions](https://img.shields.io/pypi/pyversions/rdf-doctor.svg)](https://pypi.python.org/pypi/rdf-doctor)
 
 ## Motivation
-
 DBCLS has conducted to convert various life science databases to RDF and support it. This development will enable us to provide a high-quality dataset that better links existing RDF datasets stored in the RDF portal site and newly developed RDF.
 
 ## Requirements
@@ -16,15 +16,13 @@ Python
 Main memory: 32 GB or less
 Hard disk: 2TB or less
 ```
-## Install
 
+## Install
 ```
 pip install rdf-doctor
 ```
 
-
 ## Command Line Interface
-
 ```
 $ rdf-doctor --help
 usage: rdf-doctor -i RDF-FILE [Options]
@@ -50,7 +48,6 @@ optional arguments:
 - [3] https://openrefine.org/docs/technical-reference/clustering-in-depth#fingerprint
 
 ## Example
-
 ```
 $ rdf-doctor -i example.nt
 PREFIX : <http://weso.es/shapes/>
