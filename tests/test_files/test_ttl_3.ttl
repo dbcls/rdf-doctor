@@ -1,39 +1,39 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-
-@prefix ex: <http://example.org/> .
+@prefix oboc: <http://purl.obolibrary.org/obo/CHEBI_> .
 @prefix chebi: <http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix pobo: <http://purl.obolibrary.org/obo/> .
 
-ex:Jimmy a chebi:Person ;  # Complete
+oboc:Jimmy a chebi:Person ;
 	chebi:age "23"^^xsd:integer ;
 	chebi:name "Jimmy" ;
 	chebi:familyName "Jones" .
 
-ex:Sarah a chebi:PErson ;  # Complete implicit type for age
+oboc:Sarah a chebi:PErson ;
 	chebi:age 22 ;
 	chebi:name "Sarah" ;
 	chebi:familyName "Salem" .
 
-ex:Bella a chebi:PERSON ;  # Missing familyName
+oboc:Bella a chebi:PERSON ;
 	chebi:age "56"^^xsd:integer ;
 	chebi:name "Isabella" .
 
-ex:David a chebi:Parson ;  # Missing age and use knows
+oboc:David a chebi:Parson ;
 	chebi:name "David" ;
 	chebi:familyName "Doulofeau" ;
-	chebi:knows ex:Sarah .
+	chebi:knows oboc:Sarah .
 
-ex:HumanLike chebi:name "Person" ;  # chebi properties, but not explicit type.
+oboc:HumanLike chebi:name "Person" ;
 	chebi:familyName "Maybe" ;
 	chebi:age 99 ;
-	chebi:knows ex:David .
+	chebi:knows oboc:David .
 
 
-ex:x1 rdf:type chebi:Document ;
+oboc:x1 rdf:type chebi:Document ;
 	chebi:depiction "A thing that is nice" ;
 	chebi:title "A nice thing" .
 
 
-ex:x2 rdf:type chebi:DOCUMENT ;
+oboc:x2 rdf:type chebi:DOCUMENT ;
 	chebi:title "Another thing" .
 

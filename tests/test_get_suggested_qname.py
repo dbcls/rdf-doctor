@@ -5,7 +5,7 @@ from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
 
 class TestGetSuggestedQName(unittest.TestCase):
 
-    def test_get_sugggested_qname_nt(self):
+    def test_get_sugggested_qname_nt_1(self):
         input_file = "tests/test_files/test_nt_1.nt"
         shaper = Shaper(graph_file_input=input_file,
                         target_classes=None,
@@ -21,7 +21,23 @@ class TestGetSuggestedQName(unittest.TestCase):
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, ["Undefined\tex:\thttp://example.org/\n"])
 
-    def test_get_sugggested_qname_ttl(self):
+    def test_get_sugggested_qname_nt_2(self):
+        input_file = "tests/test_files/test_nt_3.nt"
+        shaper = Shaper(graph_file_input=input_file,
+                        target_classes=None,
+                        all_classes_mode=True,
+                        input_format=NT,
+                        compression_mode=None,
+                        instances_report_mode=MIXED_INSTANCES,
+                        detect_minimal_iri=True)
+
+        shaper_result = shaper.shex_graph(string_output=True)
+        input_prefixes = get_input_prefixes(input_file, None)
+        correct_prefixes = get_correct_prefixes()
+        suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
+        self.assertEqual(suggested_qname, ["Undefined\tobo:\thttp://purl.obolibrary.org/obo/\n", "Undefined\tuo:\thttp://purl.obolibrary.org/obo/\n"])
+
+    def test_get_sugggested_qname_ttl_1(self):
         input_file = "tests/test_files/test_ttl_1.ttl"
         shaper = Shaper(graph_file_input=input_file,
                         target_classes=None,
@@ -36,6 +52,22 @@ class TestGetSuggestedQName(unittest.TestCase):
         correct_prefixes = get_correct_prefixes()
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, [])
+
+    def test_get_sugggested_qname_ttl_2(self):
+        input_file = "tests/test_files/test_ttl_3.ttl"
+        shaper = Shaper(graph_file_input=input_file,
+                        target_classes=None,
+                        all_classes_mode=True,
+                        input_format=TURTLE,
+                        compression_mode=None,
+                        instances_report_mode=MIXED_INSTANCES,
+                        detect_minimal_iri=True)
+
+        shaper_result = shaper.shex_graph(string_output=True)
+        input_prefixes = get_input_prefixes(input_file, None)
+        correct_prefixes = get_correct_prefixes()
+        suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
+        self.assertEqual(suggested_qname, ["pobo:\tobo:\thttp://purl.obolibrary.org/obo/\n", "pobo:\tuo:\thttp://purl.obolibrary.org/obo/\n"])
 
     def test_get_sugggested_qname_nt_gz(self):
         input_file = "tests/test_files/test_nt_1.nt.gz"
