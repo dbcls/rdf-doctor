@@ -33,7 +33,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
   -i RDF-FILE, --input RDF-FILE
-                        input RDF file(.ttl or .nt or gziped versions of them)
+                        input RDF file(.ttl or .nt or gzip-compressed versions of them)
   -r FORMAT, --report FORMAT
                         set the output format/serializer of report to one of: shex (defalut) or md or markdown(same as md)
   -o FILE, --output FILE
