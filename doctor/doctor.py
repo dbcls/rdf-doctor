@@ -142,7 +142,7 @@ def validate_command_line_args(args):
                 error_msg = "Output file error: You don't have write permission on the output directory."
                 return False, error_msg
 
-    # Report Format only allows "shex" or "md/markdown" or "shex+"
+    # Report Format only allows "shex" or "md/markdown"
     if args.report != REPORT_FORMAT_SHEX and \
         args.report != REPORT_FORMAT_MARKDOWN and \
         args.report != REPORT_FORMAT_MD:
@@ -282,6 +282,7 @@ def generate_report_markdown(args, input_format, compression_mode):
         with open(args.output, "w", encoding="utf-8") as f:
             f.write("".join(md_final_result))
 
+
 # Call the shex_graph method of shexer's shaper class and output the result
 def get_shaper_result(args, input_format, compression_mode):
     # Set parameters when calling the shaper class depending on whether the class is specified as an argument
@@ -378,8 +379,9 @@ def get_prefix_errata():
     return prefix_errata
 
 
-# Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
-# and returns the class corresponding to each key in fingerprint format stored in dictionary format.
+# Get a combined list of incorrect and correct classes obtained by referencing the class errata list.
+# Create a dictionary with a class corresponding to each key in the stored fingerprint format.
+# Return the two.
 def get_class_comparison_result(input_classes, fingerprint_class_dict):
     class_errata = get_class_errata()
     class_comparison_result = []
@@ -420,20 +422,6 @@ def get_fingerprint_comparison_result(fingerprint_class_dict):
                 fingerprint_comparison_result.append("\n")
             for v in value:
                 fingerprint_comparison_result.append("\n"+v)
-
-    return fingerprint_comparison_result
-
-
-# Get the output result when there are multiple different strings with the same key for the class, as a commnet
-def get_fingerprint_comparison_result_as_comment(fingerprint_class_dict):
-    fingerprint_comparison_result = []
-    # Extract if there are multiple different strings with the same key
-    for value in fingerprint_class_dict.values():
-        if len(value) >= 2:
-            if len(fingerprint_comparison_result) != 0:
-                fingerprint_comparison_result.append("\n")
-            for v in value:
-                fingerprint_comparison_result.append("\n"+"# "+v)
 
     return fingerprint_comparison_result
 
