@@ -18,26 +18,35 @@ from pathlib import Path
 def doctor():
     args = get_command_line_args(sys.argv[1:])
 
-    result, error_msg = validate_command_line_args(args)
-    if result == False:
+    validation_result, error_msg = validate_command_line_args(args)
+    if validation_result == False:
         print(error_msg)
         return
 
     compression_mode = get_compression_mode(args.input)
     input_format = get_input_format(args.input, compression_mode)
+    output_result = []
 
     try:
         # Processing branch by report format
         if args.report == REPORT_FORMAT_SHEX:
             # shex
-            generate_report_shex(args, input_format, compression_mode)
+            output_result = get_shex_result(args, input_format, compression_mode)
+
         elif args.report == REPORT_FORMAT_MARKDOWN or args.report == REPORT_FORMAT_MD:
             # markdown/md
-            generate_report_markdown(args, input_format, compression_mode)
+            output_result = get_markdown_result(args, input_format, compression_mode)
         else:
             # Else case does not occur.
             # Prevented by validate_command_line_args function.
             raise ValueError(args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '" and "' + REPORT_FORMAT_MD+ '"(same as "' + REPORT_FORMAT_MARKDOWN + '") are supported.')
+
+        # Output result to specified destination (standard output or file)
+        if args.output is None:
+            print("".join(output_result))
+        else:
+            with open(args.output, "w", encoding="utf-8") as f:
+                f.write("".join(output_result))
 
     except ValueError as e:
         print(e)
@@ -171,7 +180,7 @@ def validate_command_line_args(args):
 
 
 # Processing when the report format is "shex"
-def generate_report_shex(args, input_format, compression_mode):
+def get_shex_result(args, input_format, compression_mode):
     shaper_result = get_shaper_result(args, input_format, compression_mode)
 
     # Suggest QName based on URI of validation expression output by sheXer and correct-prefixes.tsv
@@ -191,16 +200,11 @@ def generate_report_shex(args, input_format, compression_mode):
     if len(result_suggested_qname) != 0:
         shex_final_result.extend(result_suggested_qname)
 
-    # Output results to specified destination (standard output or file)
-    if args.output is None:
-        print("".join(shex_final_result))
-    else:
-        with open(args.output, "w", encoding="utf-8") as f:
-            f.write("".join(shex_final_result))
+    return shex_final_result
 
 
 # Processing when the report format is "md/markdown"
-def generate_report_markdown(args, input_format, compression_mode):
+def get_markdown_result(args, input_format, compression_mode):
 
     # Processing related to prefixes ------------------
     # Get list for result output about prefix reuse rate
@@ -275,12 +279,7 @@ def generate_report_markdown(args, input_format, compression_mode):
         md_final_result.extend(result_class_errata)
         md_final_result.extend(result_class_fingerprint)
 
-    # Output results to specified destination (standard output or file)
-    if args.output is None:
-        print("".join(md_final_result))
-    else:
-        with open(args.output, "w", encoding="utf-8") as f:
-            f.write("".join(md_final_result))
+    return md_final_result
 
 
 # Call the shex_graph method of shexer's shaper class and output the result
