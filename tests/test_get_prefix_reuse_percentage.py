@@ -9,10 +9,20 @@ class TestGetPrefixReusePercentage(unittest.TestCase):
         result = get_prefix_reuse_percentage(input_prefixes)
         self.assertEqual(result, None)
 
-    def test_get_prefix_reuse_percentage_ttl(self):
+    def test_get_prefix_reuse_percentage_ttl_1(self):
         input_prefixes = get_input_prefixes("tests/test_files/test_ttl_1.ttl", None)
         result = get_prefix_reuse_percentage(input_prefixes)
         self.assertEqual(result, 100.0)
+
+    def test_get_prefix_reuse_percentage_ttl_2(self):
+        input_prefixes = get_input_prefixes("tests/test_files/test_ttl_2.ttl", None)
+        result = get_prefix_reuse_percentage(input_prefixes)
+        self.assertEqual(result, 50.0)
+
+    def test_get_prefix_reuse_percentage_ttl_3(self):
+        input_prefixes = get_input_prefixes("tests/test_files/test_ttl_3.ttl", None)
+        result = get_prefix_reuse_percentage(input_prefixes)
+        self.assertEqual(result, 80.0)
 
     def test_get_prefix_reuse_percentage_nt_gz(self):
         input_prefixes = get_input_prefixes("tests/test_files/test_nt_1.nt.gz", GZ)

@@ -1,8 +1,7 @@
 import unittest
 from doctor.doctor import get_prefix_comparison_result, get_input_prefixes
-from shexer.consts import NT, TURTLE
 
-class TestGetMdResultClassErrata(unittest.TestCase):
+class TestGetPrefixComparisonResult(unittest.TestCase):
 
     def test_get_prefix_comparison_result_nt(self):
         input_prefixes = get_input_prefixes("tests/test_files/test_nt_2.nt", None)

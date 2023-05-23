@@ -1,9 +1,9 @@
 import unittest
 from doctor.doctor import get_class_comparison_result, get_input_classes
-from shexer.consts import NT, TURTLE, GZ
+from shexer.consts import TURTLE
 from collections import defaultdict
 
-class TestGetMdResultClassErrata(unittest.TestCase):
+class TestGetClassComparisonResult(unittest.TestCase):
 
     def test_get_class_comparison_result_nt(self):
         input_classes = get_input_classes("tests/test_files/test_nt_2.nt", TURTLE, None, ["all"])
