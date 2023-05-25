@@ -141,13 +141,14 @@ def validate_command_line_args(args):
 
     if args.output is not None:
         # Existence check of file output destination directory
-        if os.path.dirname(args.output):
-            if os.path.exists(os.path.dirname(args.output)) == False:
+        output_dir = os.path.dirname(args.output)
+        if output_dir:
+            if os.path.exists(output_dir) == False:
                 error_msg = "Output file error: Output directory does not exist."
                 return False, error_msg
 
             # Check if the file output destination has write permission
-            if os.access(os.path.dirname(args.output), os.W_OK) == False:
+            if os.access(output_dir, os.W_OK) == False:
                 error_msg = "Output file error: You don't have write permission on the output directory."
                 return False, error_msg
 
