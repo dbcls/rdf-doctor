@@ -1,15 +1,16 @@
 import unittest
 from doctor.doctor import get_prefix_comparison_result, get_input_prefixes
+from tests.consts import NT_1, TTL_3
 
 class TestGetPrefixComparisonResult(unittest.TestCase):
 
-    def test_get_prefix_comparison_result_nt(self):
-        input_prefixes = get_input_prefixes("tests/test_files/test_nt_2.nt", None)
+    def test_nt(self):
+        input_prefixes = get_input_prefixes(NT_1, None)
         prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
         self.assertEqual(prefix_comparison_result, [])
 
-    def test_get_prefix_comparison_result_ttl(self):
-        input_prefixes = get_input_prefixes("tests/test_files/test_ttl_3.ttl", None)
+    def test_ttl(self):
+        input_prefixes = get_input_prefixes(TTL_3, None)
         prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
         self.assertEqual(prefix_comparison_result, ['chebi:\thttp://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A\thttp://purl.obolibrary.org/obo/CHEBI_\n'])
 
