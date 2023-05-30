@@ -387,11 +387,11 @@ def get_class_comparison_result(input_classes, fingerprint_class_dict):
     class_comparison_result = []
 
     # Perform clustering by fingerprint for the acquired class name
-    for cls in input_classes:
-        fingerprint_class_dict[fingerprint(cls)].append(cls)
+    for input_class in input_classes:
+        fingerprint_class_dict[fingerprint(input_class)].append(input_class)
         for eratta in class_errata:
-            if cls == eratta[0]:
-                class_comparison_result.append(cls+"\t"+eratta[1]+"\n")
+            if input_class == eratta[0]:
+                class_comparison_result.append(input_class+"\t"+eratta[1]+"\n")
                 break
 
     return class_comparison_result, fingerprint_class_dict
@@ -403,10 +403,10 @@ def get_prefix_comparison_result(input_prefixes):
     prefix_comparison_result = []
 
     # Perform clustering by fingerprint for the acquired class name
-    for prefix in input_prefixes:
+    for input_prefix in input_prefixes:
         for eratta in prefix_errata:
-            if prefix[1] == eratta[0] and eratta[1] != "":
-                prefix_comparison_result.append(str(prefix[0]+"\t"+prefix[1]+"\t"+eratta[1]+"\n"))
+            if input_prefix[1] == eratta[0] and eratta[1] != "":
+                prefix_comparison_result.append(str(input_prefix[0]+"\t"+input_prefix[1]+"\t"+eratta[1]+"\n"))
                 break
 
     return prefix_comparison_result
