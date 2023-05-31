@@ -1,8 +1,5 @@
 from setuptools import setup
 from setuptools import find_packages
-from glob import glob
-from os.path import basename
-from os.path import splitext
 
 def read(file_path):
 	with open(file_path, "r") as f:
