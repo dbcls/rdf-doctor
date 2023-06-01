@@ -182,11 +182,11 @@ def validate_command_line_args(args):
 
 # Processing when the report format is "shex"
 def get_shex_result(args, input_format, compression_mode):
-    shaper_result = get_shaper_result(args, input_format, compression_mode)
+    input_prefixes = get_input_prefixes(args.input, compression_mode)
+    shaper_result = get_shaper_result(args, input_format, compression_mode, input_prefixes)
 
     # Suggest QName based on URI of validation expression output by sheXer and correct-prefixes.tsv
     result_suggested_qname = []
-    input_prefixes = get_input_prefixes(args.input, compression_mode)
     correct_prefixes = get_correct_prefixes()
     suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
     if len(suggested_qname) != 0:
@@ -284,7 +284,7 @@ def get_markdown_result(args, input_format, compression_mode):
 
 
 # Call the shex_graph method of shexer's shaper class and output the result
-def get_shaper_result(args, input_format, compression_mode):
+def get_shaper_result(args, input_format, compression_mode, input_prefixes):
     # Set parameters when calling the shaper class depending on whether the class is specified as an argument
     if TARGET_CLASS_ALL in args.classes:
         target_classes = None
@@ -293,11 +293,16 @@ def get_shaper_result(args, input_format, compression_mode):
         target_classes = args.classes
         all_classes_mode = False
 
+    namespaces_dict = {}
+    for input_prefix in input_prefixes:
+        namespaces_dict[input_prefix[1]] = input_prefix[0].replace(":","")
+
     # Init shexer's shaper class
     shaper = Shaper(graph_file_input=args.input,
                     target_classes=target_classes,
                     all_classes_mode=all_classes_mode,
                     input_format=input_format,
+                    namespaces_dict=namespaces_dict,
                     compression_mode=compression_mode,
                     instances_report_mode=MIXED_INSTANCES,
                     detect_minimal_iri=True)
