@@ -17,3 +17,6 @@ OUTPUT_NT_1_GZ_MD = OUTPUT_DIR + "test_nt_1_gz.md"
 OUTPUT_NT_3_MD = OUTPUT_DIR + "test_nt_3.md"
 OUTPUT_TTL_1_GZ_MD = OUTPUT_DIR + "test_ttl_1_gz.md"
 OUTPUT_TTL_3_MD = OUTPUT_DIR + "test_ttl_3.md"
+
+CLASS_ERRATA_FILE_PATH = "reference/refine-classes.tsv"
+PREFIX_ERRATA_FILE_PATH = "reference/refine-prefixes.tsv"

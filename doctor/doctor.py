@@ -92,6 +92,18 @@ def get_command_line_args(args):
                         help="set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...",
                         metavar="URL")
 
+    # Prefix errata file path(-p, --prefix-dict [FILE]、default: reference/refine-prefixes.tsv)
+    parser.add_argument("-p","--prefix-dict", type=str,
+                        default=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)),
+                        help="path to a tab delimited file listing incorrect and correct URI pairs for the prefix (default: predefined file in rdf-doctor)",
+                        metavar="FILE")
+
+    # Class errata file path(-l, --class-dict [FILE]、default: reference/refine-classes.tsv)
+    parser.add_argument("-l","--class-dict", type=str,
+                        default=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)),
+                        help="path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)",
+                        metavar="FILE")
+
     return parser.parse_args(args)
 
 
@@ -177,6 +189,17 @@ def validate_command_line_args(args):
             error_msg = 'Target class error: If "all" is specified, other classes cannot be specified.'
             return False, error_msg
 
+
+    if os.path.isfile(args.prefix_dict) == False:
+        error_msg = "Prefix dictionary file error: Prefix dictionary does not exist."
+        return False, error_msg
+
+
+    if os.path.isfile(args.class_dict) == False:
+        error_msg = "Class dictionary file error: Class dictionary does not exist."
+        return False, error_msg
+
+
     return True, None
 
 
@@ -225,7 +248,7 @@ def get_markdown_result(args, input_format, compression_mode):
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
     result_prefix_errata = []
-    prefix_comparison_result = get_prefix_comparison_result(input_prefixes)
+    prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
     # When there is data to output
     if len(prefix_comparison_result) != 0:
         result_prefix_errata.append("Found prefixes that looks incorrect.\n")
@@ -241,7 +264,7 @@ def get_markdown_result(args, input_format, compression_mode):
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
     result_class_errata = []
-    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list))
+    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list), args.class_dict)
     # When there is data to output
     if len(class_comparison_result) != 0:
         result_class_errata.append("Found class names that looks incorrect.\n")
@@ -367,8 +390,8 @@ def get_input_classes(input_file, input_format, compression_mode, target_classes
 
 
 # Return class errata in a two-dimensional array
-def get_class_errata():
-    with open(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH), mode="r", newline="\n", encoding="utf-8") as f:
+def get_class_errata(class_errata_file):
+    with open(class_errata_file, mode="r", newline="\n", encoding="utf-8") as f:
         tsv_reader = csv.reader(f, delimiter="\t")
         class_errata = [row for row in tsv_reader]
 
@@ -376,8 +399,8 @@ def get_class_errata():
 
 
 # Return prefix errata in a two-dimensional array
-def get_prefix_errata():
-    with open(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH), mode="r", newline="\n", encoding="utf-8") as f:
+def get_prefix_errata(prefix_errata_file):
+    with open(prefix_errata_file, mode="r", newline="\n", encoding="utf-8") as f:
         tsv_reader = csv.reader(f, delimiter="\t")
         prefix_errata = [row for row in tsv_reader]
 
@@ -387,8 +410,8 @@ def get_prefix_errata():
 # Get a combined list of incorrect and correct classes obtained by referencing the class errata list.
 # Create a dictionary with a class corresponding to each key in the stored fingerprint format.
 # Return the two.
-def get_class_comparison_result(input_classes, fingerprint_class_dict):
-    class_errata = get_class_errata()
+def get_class_comparison_result(input_classes, fingerprint_class_dict, class_errata_file):
+    class_errata = get_class_errata(class_errata_file)
     class_comparison_result = []
 
     # Perform clustering by fingerprint for the acquired class name
@@ -403,8 +426,8 @@ def get_class_comparison_result(input_classes, fingerprint_class_dict):
 
 
 # Refer to the errata of prefixes and obtain a list that combines incorrect prefixes and correct prefixes
-def get_prefix_comparison_result(input_prefixes):
-    prefix_errata = get_prefix_errata()
+def get_prefix_comparison_result(input_prefixes, prefix_errata_file):
+    prefix_errata = get_prefix_errata(prefix_errata_file)
     prefix_comparison_result = []
 
     # Perform clustering by fingerprint for the acquired class name

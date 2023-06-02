@@ -1,0 +1,10 @@
+http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A	http://purl.obolibrary.org/obo/CHEBI_
+http://rdf.ebi.ac.uk/resource/chembl/molecule/	
+http://identifiers.org/dbsnp/	https://identifiers.org/dbsnp:
+http://identifiers.org/dbsnp	https://identifiers.org/dbsnp:
+http://purl.jp/bio/10/dbsnp/	https://identifiers.org/dbsnp:
+http://identifiers.org/chebi/CHEBI:	http://purl.obolibrary.org/obo/CHEBI_
+http://purl.obolibrary.org/obo/chebi/	http://purl.obolibrary.org/obo/CHEBI_
+http://purl.obolibrary.org/obo/chebi.	http://purl.obolibrary.org/obo/CHEBI_
+http://purl.obolibrary.org/obo/chebi#	http://purl.obolibrary.org/obo/CHEBI_
+http://rdf.ebi.ac.uk/resource/chembl/molecule/CHEMBL	

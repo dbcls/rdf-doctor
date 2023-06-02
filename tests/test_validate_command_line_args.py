@@ -1,8 +1,9 @@
 import unittest
 from doctor.doctor import validate_command_line_args
 from doctor.consts import REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, TARGET_CLASS_ALL
-from tests.consts import BASE_DIR, NT_1, NT_1_GZ, TTL_1, TTL_1_GZ
+from tests.consts import BASE_DIR, NT_1, NT_1_GZ, TTL_1, TTL_1_GZ, PREFIX_ERRATA_FILE_PATH, CLASS_ERRATA_FILE_PATH
 import argparse
+from pathlib import Path
 
 class TestValidateCommnadLineArgs(unittest.TestCase):
 
@@ -11,7 +12,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=NT_1, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -20,7 +23,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -29,7 +34,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=NT_1_GZ, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -38,7 +45,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=NT_1_GZ, \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -47,7 +56,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1_GZ, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -56,7 +67,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1_GZ, \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -65,7 +78,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=BASE_DIR + "aaa.txt", \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Input file error: Input file does not exist.")
 
@@ -74,7 +89,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -83,7 +100,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -92,7 +111,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report="markdown", \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -101,7 +122,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report="aaa", \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertFalse(result)
         self.assertEqual(error_msg, 'Report format error: "aaa" is an unsupported report format. "shex" and "md"(same as "markdown") are supported.')
 
@@ -110,7 +133,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output="./output.shex", \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -119,7 +144,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output="/output.shex", \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Output file error: You don't have write permission on the output directory.")
 
@@ -128,7 +155,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output="./aaa/output.shex", \
-                                                                            classes=[TARGET_CLASS_ALL]))
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Output file error: Output directory does not exist.")
 
@@ -137,7 +166,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
-                                                                            classes=["<http://xmlns.com/foaf/0.1/Person>"]))
+                                                                            classes=["<http://xmlns.com/foaf/0.1/Person>"], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -146,7 +177,9 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
-                                                                            classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"]))
+                                                                            classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
@@ -155,9 +188,17 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
-                                                                            classes=[TARGET_CLASS_ALL, "<http://xmlns.com/foaf/0.1/Person>"]))
+                                                                            classes=[TARGET_CLASS_ALL, "<http://xmlns.com/foaf/0.1/Person>"], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertFalse(result)
         self.assertEqual(error_msg, 'Target class error: If "all" is specified, other classes cannot be specified.')
+
+    # [prefix_dict]
+
+
+    # [class_dict]
+
 
 if __name__ == "__main__":
     unittest.main()
