@@ -9,7 +9,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [input/OK] n-triple
     def test_input_nt(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=NT_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -20,7 +20,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [input/OK] turtle
     def test_input_ttl(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -31,7 +31,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [input/OK] n-triple gz
     def test_input_nt_gz(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=NT_1_GZ, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1_GZ], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -42,7 +42,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [input/OK] n-triple gz(report=md)
     def test_report_md_nt_gz(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=NT_1_GZ, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1_GZ], \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -53,7 +53,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [input/OK] turtle gz
     def test_input_ttl_gz(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1_GZ, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1_GZ], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -64,7 +64,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [input/OK] turtle gz(report=md)
     def test_report_md_ttl_gz(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1_GZ, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1_GZ], \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -75,18 +75,18 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [input/ERROR] Nonexistent file
     def test_input_nonexistent_file(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=BASE_DIR + "aaa.txt", \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[BASE_DIR + "aaa.txt"], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
         self.assertFalse(result)
-        self.assertEqual(error_msg, "Input file error: Input file does not exist.")
+        self.assertEqual(error_msg, "Input file error: " + BASE_DIR + "aaa.txt" + " does not exist.")
 
     # [report/OK] shex
     def test_report_shex(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -97,7 +97,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [report/OK] md
     def test_report_md(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -108,7 +108,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [report/OK] markdown
     def test_report_markdown(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report="markdown", \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -119,7 +119,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [report/ERROR] Bad report format
     def test_report_incorrect(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report="aaa", \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -130,7 +130,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [output/OK] ./output.shex
     def test_output_shex(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output="./output.shex", \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -141,7 +141,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [output/ERROR] Permission denied directory
     def test_output_permission_denied(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output="/output.shex", \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -152,7 +152,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [output/ERROR] Nonexistent directory
     def test_output_nonexistent_dir(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output="./aaa/output.shex", \
                                                                             classes=[TARGET_CLASS_ALL], \
@@ -163,7 +163,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [class/OK] Specify one class
     def test_class_specify_one(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=["<http://xmlns.com/foaf/0.1/Person>"], \
@@ -174,7 +174,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [class/OK] Specify multiple classes
     def test_class_specify_two(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"], \
@@ -185,7 +185,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
 
     # [class/ERROR] Specify one class in addition to "all"
     def test_class_specify_one_and_all(self):
-        result, error_msg = validate_command_line_args(argparse.Namespace(input=TTL_1, \
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL, "<http://xmlns.com/foaf/0.1/Person>"], \

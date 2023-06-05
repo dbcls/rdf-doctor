@@ -9,7 +9,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
 
     def test_nt(self):
         result = get_command_line_args(["--input", NT_1])
-        self.assertEqual(result, argparse.Namespace(input=NT_1, \
+        self.assertEqual(result, argparse.Namespace(input=[NT_1], \
                                                     report=REPORT_FORMAT_SHEX, \
                                                     output=None, \
                                                     classes=[TARGET_CLASS_ALL], \
@@ -23,7 +23,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                         "--classes", "<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>", \
                                         "--prefix-dict", str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                         "--class-dict", str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))])
-        self.assertEqual(result, argparse.Namespace(input=TTL_1, \
+        self.assertEqual(result, argparse.Namespace(input=[TTL_1], \
                                                     report=REPORT_FORMAT_MD, \
                                                     output="./output.shex", \
                                                     classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"], \

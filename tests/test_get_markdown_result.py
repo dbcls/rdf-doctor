@@ -9,7 +9,7 @@ from pathlib import Path
 class TestGetOutputMarkdown(unittest.TestCase):
 
     def test_nt(self):
-        output = get_markdown_result(argparse.Namespace(input=NT_3, \
+        output = get_markdown_result(argparse.Namespace(input=[NT_3], \
                                                         report=REPORT_FORMAT_MD, \
                                                         output=None, \
                                                         classes=[TARGET_CLASS_ALL], \
@@ -24,7 +24,7 @@ class TestGetOutputMarkdown(unittest.TestCase):
         self.assertEqual("".join(output), correct_output)
 
     def test_nt_gz(self):
-        output = get_markdown_result(argparse.Namespace(input=NT_1_GZ, \
+        output = get_markdown_result(argparse.Namespace(input=[NT_1_GZ], \
                                                         report=REPORT_FORMAT_MD, \
                                                         output=None, \
                                                         classes=[TARGET_CLASS_ALL], \
@@ -39,7 +39,7 @@ class TestGetOutputMarkdown(unittest.TestCase):
         self.assertEqual("".join(output), correct_output)
 
     def test_ttl(self):
-        output = get_markdown_result(argparse.Namespace(input=TTL_3, \
+        output = get_markdown_result(argparse.Namespace(input=[TTL_3], \
                                                         report=REPORT_FORMAT_MD, \
                                                         output=None, \
                                                         classes=[TARGET_CLASS_ALL], \
@@ -54,7 +54,7 @@ class TestGetOutputMarkdown(unittest.TestCase):
         self.assertEqual("".join(output), correct_output)
 
     def test_ttl_gz(self):
-        output = get_markdown_result(argparse.Namespace(input=TTL_1_GZ, \
+        output = get_markdown_result(argparse.Namespace(input=[TTL_1_GZ], \
                                                         report=REPORT_FORMAT_MD, \
                                                         output=None, \
                                                         classes=[TARGET_CLASS_ALL], \

@@ -23,8 +23,8 @@ def doctor():
         print(error_msg)
         return
 
-    compression_mode = get_compression_mode(args.input)
-    input_format = get_input_format(args.input, compression_mode)
+    compression_mode = get_compression_mode(args.input[0])
+    input_format = get_input_format(args.input[0], compression_mode)
     output_result = []
 
     try:
@@ -71,7 +71,8 @@ def get_command_line_args(args):
     # Input RDF file (-i、--input [RDF-FILE]、required)
     parser.add_argument("-i","--input", type=str,
                         required=True,
-                        help="input RDF file(.ttl or .nt or gzip-compressed versions of them)",
+                        nargs="+",
+                        help="input RDF file(s)(.ttl or .nt or gzip-compressed versions of them). Use the same extension when specifying multiple.",
                         metavar="RDF-FILE")
 
     # Report format (-r、--report、default: shex)
@@ -142,14 +143,43 @@ def get_input_format(input_file, compression_mode):
 
 # Validate args(input, output, report, classes)
 def validate_command_line_args(args):
-    if args.input is None:
-        # This case does not occur because -i / --input is required as an option when parsing command line arguments.
-        error_msg = "Input file error: No input file specified. (-i [RDF_FILE], --input [RDF_FILE])"
-        return False, error_msg
+    compression_mode = ""
+    input_format = ""
+    for input_file in args.input:
+        if input_file is None:
+            # This case does not occur because -i / --input is required as an option when parsing command line arguments.
+            error_msg = "Input file error: No input file specified. (-i [RDF_FILE], --input [RDF_FILE])"
+            return False, error_msg
 
-    if os.path.isfile(args.input) == False:
-        error_msg = "Input file error: Input file does not exist."
-        return False, error_msg
+        if os.path.isfile(input_file) == False:
+            error_msg = "Input file error: " + input_file + " does not exist."
+            return False, error_msg
+
+        if compression_mode == "":
+            compression_mode = get_compression_mode(input_file)
+        else:
+            if compression_mode != get_compression_mode(input_file):
+                error_msg = "Input file error: If you enter multiple files, please use the same extension."
+                return False, error_msg
+
+        if input_format == "":
+            input_format = get_input_format(input_file, compression_mode)
+        else:
+            if input_format != get_input_format(input_file, compression_mode):
+                error_msg = "Input file error: If you enter multiple files, please use the same extension."
+                return False, error_msg
+
+        # Allow only ".nt" or ".ttl" (and .gz) extensions
+        extension = os.path.splitext(input_file)[1]
+        if extension == EXTENSION_GZ:
+            org_extension = os.path.splitext(os.path.splitext(input_file)[0])[1]
+            # gz
+            if org_extension != EXTENSION_NT and org_extension != EXTENSION_TTL:
+                error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
+                return False, error_msg
+        elif extension != EXTENSION_NT and extension != EXTENSION_TTL:
+            error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
+            return False, error_msg
 
     if args.output is not None:
         # Existence check of file output destination directory
@@ -169,18 +199,6 @@ def validate_command_line_args(args):
         args.report != REPORT_FORMAT_MARKDOWN and \
         args.report != REPORT_FORMAT_MD:
         error_msg = 'Report format error: "' + args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '" and "' + REPORT_FORMAT_MD + '"(same as "' + REPORT_FORMAT_MARKDOWN + '") are supported.'
-        return False, error_msg
-
-    # Allow only ".nt" or ".ttl" (and .gz) extensions
-    extension = os.path.splitext(args.input)[1]
-    if extension == EXTENSION_GZ:
-        org_extension = os.path.splitext(os.path.splitext(args.input)[0])[1]
-        # gz
-        if org_extension != EXTENSION_NT and org_extension != EXTENSION_TTL:
-            error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
-            return False, error_msg
-    elif extension != EXTENSION_NT and extension != EXTENSION_TTL:
-        error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
         return False, error_msg
 
     # Make an error if another class name is specified with "all"
@@ -205,7 +223,7 @@ def validate_command_line_args(args):
 
 # Processing when the report format is "shex"
 def get_shex_result(args, input_format, compression_mode):
-    input_prefixes = get_input_prefixes(args.input, compression_mode)
+    input_prefixes = get_input_prefixes_from_multi_files(args.input, compression_mode)
     shaper_result = get_shaper_result(args, input_format, compression_mode, input_prefixes)
 
     # Suggest QName based on URI of validation expression output by sheXer and correct-prefixes.tsv
@@ -233,7 +251,7 @@ def get_markdown_result(args, input_format, compression_mode):
     # Processing related to prefixes ------------------
     # Get list for result output about prefix reuse rate
     result_prefix_reuse_percentage = []
-    input_prefixes = get_input_prefixes(args.input, compression_mode)
+    input_prefixes = get_input_prefixes(args.input[0], compression_mode)
     result_prefix_reuse_percentage.append("## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n")
     result_prefix_reuse_percentage.append("Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
     prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
@@ -259,7 +277,7 @@ def get_markdown_result(args, input_format, compression_mode):
     # -------------------------------------------------
 
     # Processing related to classes -------------------
-    input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
+    input_classes = get_input_classes(args.input[0], input_format, compression_mode, args.classes)
 
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
@@ -287,7 +305,7 @@ def get_markdown_result(args, input_format, compression_mode):
     # List for storing the final result
     md_final_result = []
 
-    md_final_result.append("# Report on " + os.path.basename(args.input) + "\n\n")
+    md_final_result.append("# Report on " + os.path.basename(args.input[0]) + "\n\n")
 
     # Merge result
     md_final_result.extend(result_prefix_reuse_percentage)
@@ -320,8 +338,15 @@ def get_shaper_result(args, input_format, compression_mode, input_prefixes):
     for input_prefix in input_prefixes:
         namespaces_dict[input_prefix[1]] = input_prefix[0].replace(":","")
 
+    if len(args.input) == 1:
+        graph_file_input = args.input[0]
+        graph_list_of_files_input = None
+    else:
+        graph_file_input = None
+        graph_list_of_files_input = args.input
     # Init shexer's shaper class
-    shaper = Shaper(graph_file_input=args.input,
+    shaper = Shaper(graph_file_input=graph_file_input,
+                    graph_list_of_files_input=graph_list_of_files_input,
                     target_classes=target_classes,
                     all_classes_mode=all_classes_mode,
                     input_format=input_format,
@@ -454,7 +479,7 @@ def get_fingerprint_comparison_result(fingerprint_class_dict):
     return fingerprint_comparison_result
 
 
-# Get the prefixes contained within the input file
+# Get the prefixes contained within the input file (from single file)
 def get_input_prefixes(input_file, compression_mode):
     if compression_mode != None:
         with gzip.open(input_file, mode="rt", encoding="utf-8") as f:
@@ -471,6 +496,28 @@ def get_input_prefixes(input_file, compression_mode):
             uri = line_mod[line_mod.find("<")+1:line_mod.find(">")]
             if [qname, uri] not in input_prefixes:
                 input_prefixes.append([qname, uri])
+
+    return input_prefixes
+
+
+# Get the prefixes contained within the input files (from mauti files)
+def get_input_prefixes_from_multi_files(input_files, compression_mode):
+    input_prefixes = []
+    for input_file in input_files:
+        if compression_mode != None:
+            with gzip.open(input_file, mode="rt", encoding="utf-8") as f:
+                data = f.read().splitlines()
+        else:
+            with open(input_file, mode="r", newline="\n", encoding="utf-8") as f:
+                data = f.read().splitlines()
+
+        for line in data:
+            if ("@prefix" in line or "@PREFIX" in line):
+                line_mod = line.replace("@prefix", "").replace("@PREFIX", "").replace(" ", "").replace("\t","")
+                qname = line_mod[:line_mod.find(":")+1]
+                uri = line_mod[line_mod.find("<")+1:line_mod.find(">")]
+                if [qname, uri] not in input_prefixes:
+                    input_prefixes.append([qname, uri])
 
     return input_prefixes
 
