@@ -32,8 +32,8 @@ Home page: https://github.com/dbcls/rdf-doctor
 options:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
-  -i RDF-FILE, --input RDF-FILE
-                        input RDF file(.ttl or .nt or gzip-compressed versions of them)
+  -i RDF-FILE [RDF-FILE ...], --input RDF-FILE [RDF-FILE ...]
+                        input RDF file(s)(.ttl or .nt or gzip-compressed versions of them). Use the same extension when specifying multiple.
   -r FORMAT, --report FORMAT
                         set the output format/serializer of report to one of: shex (defalut) or md or markdown(same as md)
   -o FILE, --output FILE
