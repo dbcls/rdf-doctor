@@ -35,7 +35,9 @@ def doctor():
 
         elif args.report == REPORT_FORMAT_MARKDOWN or args.report == REPORT_FORMAT_MD:
             # markdown/md
-            output_result = get_markdown_result(args, input_format, compression_mode)
+            for input_file in args.input:
+                output_result.extend(get_markdown_result(input_file, input_format, compression_mode, args.classes, args.prefix_dict, args.class_dict))
+
         else:
             # Else case does not occur.
             # Prevented by validate_command_line_args function.
@@ -246,12 +248,12 @@ def get_shex_result(args, input_format, compression_mode):
 
 
 # Processing when the report format is "md/markdown"
-def get_markdown_result(args, input_format, compression_mode):
+def get_markdown_result(input_file, input_format, compression_mode, classes, prefix_dict, class_dict):
 
     # Processing related to prefixes ------------------
     # Get list for result output about prefix reuse rate
     result_prefix_reuse_percentage = []
-    input_prefixes = get_input_prefixes(args.input[0], compression_mode)
+    input_prefixes = get_input_prefixes(input_file, compression_mode)
     result_prefix_reuse_percentage.append("## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n")
     result_prefix_reuse_percentage.append("Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
     prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
@@ -266,7 +268,7 @@ def get_markdown_result(args, input_format, compression_mode):
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
     result_prefix_errata = []
-    prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
+    prefix_comparison_result = get_prefix_comparison_result(input_prefixes, prefix_dict)
     # When there is data to output
     if len(prefix_comparison_result) != 0:
         result_prefix_errata.append("Found prefixes that looks incorrect.\n")
@@ -277,12 +279,12 @@ def get_markdown_result(args, input_format, compression_mode):
     # -------------------------------------------------
 
     # Processing related to classes -------------------
-    input_classes = get_input_classes(args.input[0], input_format, compression_mode, args.classes)
+    input_classes = get_input_classes(input_file, input_format, compression_mode, classes)
 
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
     result_class_errata = []
-    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list), args.class_dict)
+    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list), class_dict)
     # When there is data to output
     if len(class_comparison_result) != 0:
         result_class_errata.append("Found class names that looks incorrect.\n")
@@ -305,7 +307,7 @@ def get_markdown_result(args, input_format, compression_mode):
     # List for storing the final result
     md_final_result = []
 
-    md_final_result.append("# Report on " + os.path.basename(args.input[0]) + "\n\n")
+    md_final_result.append("# Report on " + os.path.basename(input_file) + "\n\n")
 
     # Merge result
     md_final_result.extend(result_prefix_reuse_percentage)
