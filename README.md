@@ -29,7 +29,7 @@ usage: rdf-doctor -i RDF-FILE [Options]
 
 Home page: https://github.com/dbcls/rdf-doctor
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
   -i RDF-FILE, --input RDF-FILE
@@ -40,6 +40,10 @@ optional arguments:
                         write to file instead of stdout
   -c URL [URL ...], --classes URL [URL ...]
                         set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...
+  -p FILE, --prefix-dict FILE
+                        path to a tab delimited file listing incorrect and correct URI pairs for the prefix (default: predefined file in rdf-doctor)
+  -l FILE, --class-dict FILE
+                        path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)
 ```
 
 ## See Also

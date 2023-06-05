@@ -71,7 +71,7 @@ def get_command_line_args(args):
     # Input RDF file (-i、--input [RDF-FILE]、required)
     parser.add_argument("-i","--input", type=str,
                         required=True,
-                        help="input RDF file(.ttl or .nt or gzipped versions of them)",
+                        help="input RDF file(.ttl or .nt or gzip-compressed versions of them)",
                         metavar="RDF-FILE")
 
     # Report format (-r、--report、default: shex)
