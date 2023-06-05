@@ -5,7 +5,8 @@ import gzip
 import rdflib
 import re
 import csv
-from doctor.consts import VERSION, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
+import codecs
+from doctor.consts import VERSION_FILE, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
                             TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, CORRECT_PREFIXES_FILE_PATH, \
                             CLASS_ERRATA_FILE_PATH, PREFIX_ERRATA_FILE_PATH, HELP_LINK_URL
 from shexer.shaper import Shaper
@@ -13,6 +14,7 @@ from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
 from unidecode import unidecode
 from collections import defaultdict
 from pathlib import Path
+
 
 # Main processing of rdf-doctor
 def doctor():
@@ -59,6 +61,21 @@ def doctor():
     return
 
 
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
+
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+
+
 # Parse command line arguments and get them as ArgumentParser
 def get_command_line_args(args):
     parser = argparse.ArgumentParser(description="Home page: https://github.com/dbcls/rdf-doctor",
@@ -68,7 +85,7 @@ def get_command_line_args(args):
     # Version info(-v, --version)
     parser.add_argument("-v","--version",
                         action="version",
-                        version="%(prog)s " + VERSION)
+                        version="%(prog)s " + get_version(VERSION_FILE))
 
     # Input RDF file (-i、--input [RDF-FILE]、required)
     parser.add_argument("-i","--input", type=str,

@@ -1,4 +1,4 @@
-VERSION = "0.2.2"
+VERSION_FILE = "__init__.py"
 
 # Report export format
 REPORT_FORMAT_SHEX = "shex"
