@@ -242,7 +242,13 @@ def validate_command_line_args(args):
 
 # Processing when the report format is "shex"
 def get_shex_result(args, input_format, compression_mode):
-    input_prefixes = get_input_prefixes_from_multi_files(args.input, compression_mode)
+
+    # Get Prefix when input file is turtle format
+    if input_format == TURTLE:
+        input_prefixes = get_input_prefixes_from_multi_files(args.input, compression_mode)
+    else:
+        input_prefixes = []
+
     shaper_result = get_shaper_result(args, input_format, compression_mode, input_prefixes)
 
     # Suggest QName based on URI of validation expression output by sheXer and correct-prefixes.tsv
@@ -268,9 +274,14 @@ def get_shex_result(args, input_format, compression_mode):
 def get_markdown_result(input_file, input_format, compression_mode, classes, prefix_dict, class_dict):
 
     # Processing related to prefixes ------------------
+    # Get Prefix when input file is turtle format
+    if input_format == TURTLE:
+        input_prefixes = get_input_prefixes(input_file, compression_mode)
+    else:
+        input_prefixes = []
+
     # Get list for result output about prefix reuse rate
     result_prefix_reuse_percentage = []
-    input_prefixes = get_input_prefixes(input_file, compression_mode)
     result_prefix_reuse_percentage.append("## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n")
     result_prefix_reuse_percentage.append("Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
     prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
