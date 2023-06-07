@@ -312,7 +312,7 @@ def get_markdown_result(input_file, input_format, compression_mode, classes, pre
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
     result_class_errata = []
-    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, defaultdict(list), class_dict)
+    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, class_dict)
     # When there is data to output
     if len(class_comparison_result) != 0:
         result_class_errata.append("Found class names that looks incorrect.\n")
@@ -465,10 +465,10 @@ def get_prefix_errata(prefix_errata_file):
 # Get a combined list of incorrect and correct classes obtained by referencing the class errata list.
 # Create a dictionary with a class corresponding to each key in the stored fingerprint format.
 # Return the two.
-def get_class_comparison_result(input_classes, fingerprint_class_dict, class_errata_file):
+def get_class_comparison_result(input_classes, class_errata_file):
     class_errata = get_class_errata(class_errata_file)
     class_comparison_result = []
-
+    fingerprint_class_dict = defaultdict(list)
     # Perform clustering by fingerprint for the acquired class name
     for input_class in input_classes:
         fingerprint_class_dict[fingerprint(input_class)].append(input_class)
