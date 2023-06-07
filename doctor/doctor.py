@@ -37,8 +37,7 @@ def doctor():
 
         elif args.report == REPORT_FORMAT_MARKDOWN or args.report == REPORT_FORMAT_MD:
             # markdown/md
-            for input_file in args.input:
-                output_result.extend(get_markdown_result(input_file, input_format, compression_mode, args.classes, args.prefix_dict, args.class_dict))
+            output_result = get_markdown_result(args, input_format, compression_mode)
 
         else:
             # Else case does not occur.
@@ -284,12 +283,12 @@ def get_shex_result(args, input_format, compression_mode):
 
 
 # Processing when the report format is "md/markdown"
-def get_markdown_result(input_file, input_format, compression_mode, classes, prefix_dict, class_dict):
+def get_markdown_result(args, input_format, compression_mode):
 
     # Processing related to prefixes ------------------
     # Get Prefix when input file is turtle format
     if input_format == TURTLE:
-        input_prefixes = get_input_prefixes(input_file, compression_mode)
+        input_prefixes, _ = get_input_prefixes_from_multi_files(args.input, compression_mode)
     else:
         input_prefixes = []
 
@@ -309,7 +308,7 @@ def get_markdown_result(input_file, input_format, compression_mode, classes, pre
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
     result_prefix_errata = []
-    prefix_comparison_result = get_prefix_comparison_result(input_prefixes, prefix_dict)
+    prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
     # When there is data to output
     if len(prefix_comparison_result) != 0:
         result_prefix_errata.append("Found prefixes that looks incorrect.\n")
@@ -320,12 +319,12 @@ def get_markdown_result(input_file, input_format, compression_mode, classes, pre
     # -------------------------------------------------
 
     # Processing related to classes -------------------
-    input_classes = get_input_classes(input_file, input_format, compression_mode, classes)
+    input_classes = get_input_classes_from_multi_files(args.input, input_format, compression_mode, args.classes)
 
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
     result_class_errata = []
-    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, class_dict)
+    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_dict)
     # When there is data to output
     if len(class_comparison_result) != 0:
         result_class_errata.append("Found class names that looks incorrect.\n")
@@ -348,7 +347,12 @@ def get_markdown_result(input_file, input_format, compression_mode, classes, pre
     # List for storing the final result
     md_final_result = []
 
-    md_final_result.append("# Report on " + os.path.basename(input_file) + "\n\n")
+    md_final_result.append("# Report on\n")
+    md_final_result.append("```\n")
+    for input_file in args.input:
+        md_final_result.append(os.path.basename(input_file) + "\n")
+
+    md_final_result.append("```\n\n")
 
     # Merge result
     md_final_result.extend(result_prefix_reuse_percentage)
@@ -453,6 +457,43 @@ def get_input_classes(input_file, input_format, compression_mode, target_classes
     qres = g.query(query)
     for row in qres:
         input_classes.append(f"{row.class_name}")
+
+    return input_classes
+
+
+def get_input_classes_from_multi_files(input_files, input_format, compression_mode, target_classes):
+
+    input_classes = []
+    for input_file in input_files:
+        g = rdflib.Graph()
+
+        if compression_mode != None:
+            with gzip.open(input_file, "rb") as f:
+                data = f.read()
+            g.parse(data=data, format=input_format)
+        else:
+            g.parse(input_file, format=input_format)
+
+        # Filter by classes(command line arguments)
+        class_filter = ",".join(target_classes)
+
+        query = """
+            SELECT DISTINCT ?class_name
+            WHERE {
+                [] a ?class_name .
+                FILTER(! isBlank(?class_name))
+        """
+        if TARGET_CLASS_ALL not in target_classes:
+            query += " FILTER (?class_name IN (" + class_filter + "))"
+
+        query += """
+            }
+        """
+
+        qres = g.query(query)
+        for row in qres:
+            if f"{row.class_name}" in input_classes:
+                input_classes.append(f"{row.class_name}")
 
     return input_classes
 
