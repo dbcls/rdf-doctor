@@ -245,11 +245,21 @@ def get_shex_result(args, input_format, compression_mode):
 
     # Get Prefix when input file is turtle format
     if input_format == TURTLE:
-        input_prefixes = get_input_prefixes_from_multi_files(args.input, compression_mode)
+        input_prefixes, duplicated_prefixes = get_input_prefixes_from_multi_files(args.input, compression_mode)
     else:
         input_prefixes = []
+        duplicated_prefixes = []
 
     shaper_result = get_shaper_result(args, input_format, compression_mode, input_prefixes)
+
+    # Prefixes with the same QName but different URIs at the same time
+    result_duplicated_prefixes = []
+    if len(duplicated_prefixes) != 0:
+        result_duplicated_prefixes.append("# Duplicate prefixes found.\n")
+        result_duplicated_prefixes.append("\n")
+        result_duplicated_prefixes.append("# Input QName\tURI\n")
+        result_duplicated_prefixes.extend(["# " + s for s in duplicated_prefixes])
+        result_duplicated_prefixes.append("\n\n")
 
     # Suggest QName based on URI of validation expression output by sheXer and correct-prefixes.tsv
     result_suggested_qname = []
@@ -264,6 +274,9 @@ def get_shex_result(args, input_format, compression_mode):
     # List for storing the final result
     shex_final_result = []
     shex_final_result.extend(shaper_result)
+    if len(result_duplicated_prefixes) != 0:
+        shex_final_result.extend(result_duplicated_prefixes)
+
     if len(result_suggested_qname) != 0:
         shex_final_result.extend(result_suggested_qname)
 
@@ -531,8 +544,11 @@ def get_input_prefixes(input_file, compression_mode):
 
 
 # Get the prefixes contained within the input files (from mauti files)
+# And get prefixes with the same QName but different URIs at the same time.
 def get_input_prefixes_from_multi_files(input_files, compression_mode):
     input_prefixes = []
+    duplicated_qnames = []
+    duplicated_prefixes_dict = defaultdict(list)
     for input_file in input_files:
         if compression_mode != None:
             with gzip.open(input_file, mode="rt", encoding="utf-8") as f:
@@ -548,8 +564,20 @@ def get_input_prefixes_from_multi_files(input_files, compression_mode):
                 uri = line_mod[line_mod.find("<")+1:line_mod.find(">")]
                 if [qname, uri] not in input_prefixes:
                     input_prefixes.append([qname, uri])
+                    for input_prefix in input_prefixes:
+                        if input_prefix[0] == qname and input_prefix[1] != uri and qname not in duplicated_qnames:
+                            duplicated_qnames.append(qname)
 
-    return input_prefixes
+    for input_prefix in input_prefixes:
+        if input_prefix[0] in duplicated_qnames:
+            duplicated_prefixes_dict[fingerprint(input_prefix[0])].append(input_prefix[1])
+
+    duplicated_prefixes_list = []
+    for key, values in duplicated_prefixes_dict.items():
+        for value in values:
+            duplicated_prefixes_list.append(key + ":\t" + value + "\n")
+
+    return input_prefixes, duplicated_prefixes_list
 
 
 # Get the correct prefix from a prepared prefix list
