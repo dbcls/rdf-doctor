@@ -6,28 +6,33 @@ from shexer.consts import NT, TURTLE, GZ
 import argparse
 from pathlib import Path
 
-class TestGetOutputMarkdown(unittest.TestCase):
+class TestGetMarkdownResult(unittest.TestCase):
 
     def test_nt(self):
-        output = get_markdown_result(NT_3,
+        output = get_markdown_result(argparse.Namespace(input=[NT_3], \
+                                                        report=REPORT_FORMAT_MD, \
+                                                        output=None, \
+                                                        classes=[TARGET_CLASS_ALL], \
+                                                        prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))),
                                     NT,
-                                    None,
-                                    [TARGET_CLASS_ALL],
-                                    str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)),
-                                    str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)))
+                                    None)
 
         with open(OUTPUT_NT_3_MD, "r", encoding="utf-8") as f:
             correct_output = f.read()
-
+        print("".join(output))
+        print(correct_output)
         self.assertEqual("".join(output), correct_output)
 
     def test_nt_gz(self):
-        output = get_markdown_result(NT_1_GZ,
+        output = get_markdown_result(argparse.Namespace(input=[NT_1_GZ], \
+                                                        report=REPORT_FORMAT_MD, \
+                                                        output=None, \
+                                                        classes=[TARGET_CLASS_ALL], \
+                                                        prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))),
                                     NT,
-                                    GZ,
-                                    [TARGET_CLASS_ALL],
-                                    str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)),
-                                    str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)))
+                                    GZ)
 
         with open(OUTPUT_NT_1_GZ_MD, "r", encoding="utf-8") as f:
             correct_output = f.read()
@@ -35,12 +40,14 @@ class TestGetOutputMarkdown(unittest.TestCase):
         self.assertEqual("".join(output), correct_output)
 
     def test_ttl(self):
-        output = get_markdown_result(TTL_3,
+        output = get_markdown_result(argparse.Namespace(input=[TTL_3], \
+                                                        report=REPORT_FORMAT_MD, \
+                                                        output=None, \
+                                                        classes=[TARGET_CLASS_ALL], \
+                                                        prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))),
                                     TURTLE,
-                                    None,
-                                    [TARGET_CLASS_ALL],
-                                    str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)),
-                                    str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)))
+                                    None)
 
         with open(OUTPUT_TTL_3_MD, "r", encoding="utf-8") as f:
             correct_output = f.read()
@@ -48,12 +55,14 @@ class TestGetOutputMarkdown(unittest.TestCase):
         self.assertEqual("".join(output), correct_output)
 
     def test_ttl_gz(self):
-        output = get_markdown_result(TTL_1_GZ,
+        output = get_markdown_result(argparse.Namespace(input=[TTL_1_GZ], \
+                                                        report=REPORT_FORMAT_MD, \
+                                                        output=None, \
+                                                        classes=[TARGET_CLASS_ALL], \
+                                                        prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))),
                                     TURTLE,
-                                    GZ,
-                                    [TARGET_CLASS_ALL],
-                                    str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)),
-                                    str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)))
+                                    GZ)
 
         with open(OUTPUT_TTL_1_GZ_MD, "r", encoding="utf-8") as f:
             correct_output = f.read()

@@ -244,7 +244,7 @@ def get_shex_result(args, input_format, compression_mode):
 
     # Get Prefix when input file is turtle format
     if input_format == TURTLE:
-        input_prefixes, duplicated_prefixes = get_input_prefixes_from_multi_files(args.input, compression_mode)
+        input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
     else:
         input_prefixes = []
         duplicated_prefixes = []
@@ -288,9 +288,10 @@ def get_markdown_result(args, input_format, compression_mode):
     # Processing related to prefixes ------------------
     # Get Prefix when input file is turtle format
     if input_format == TURTLE:
-        input_prefixes, _ = get_input_prefixes_from_multi_files(args.input, compression_mode)
+        input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
     else:
         input_prefixes = []
+        duplicated_prefixes = []
 
     # Get list for result output about prefix reuse rate
     result_prefix_reuse_percentage = []
@@ -316,10 +317,18 @@ def get_markdown_result(args, input_format, compression_mode):
         result_prefix_errata.append("Prefix\tInput URI\tSuggested URI\n")
         result_prefix_errata.extend(prefix_comparison_result)
         result_prefix_errata.append("```\n\n")
+
+    result_duplicated_prefixes = []
+    if len(duplicated_prefixes) != 0:
+        result_duplicated_prefixes.append("Duplicate prefixes found.\n")
+        result_duplicated_prefixes.append("```\n")
+        result_duplicated_prefixes.append("Input QName\tURI\n")
+        result_duplicated_prefixes.extend([s for s in duplicated_prefixes])
+        result_duplicated_prefixes.append("```\n\n")
     # -------------------------------------------------
 
     # Processing related to classes -------------------
-    input_classes = get_input_classes_from_multi_files(args.input, input_format, compression_mode, args.classes)
+    input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
 
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
@@ -361,6 +370,7 @@ def get_markdown_result(args, input_format, compression_mode):
     if prefix_result_exists:
         md_final_result.append("## Refine prefixes ([?](" + HELP_LINK_URL + "))\n")
         md_final_result.extend(result_prefix_errata)
+        md_final_result.extend(result_duplicated_prefixes)
 
     class_result_exists = len(result_class_errata) != 0 or len(result_class_fingerprint) != 0
     if class_result_exists:
@@ -426,42 +436,8 @@ def get_prefix_reuse_percentage(input_prefixes):
         return prefix_reuse_percentage
 
 
-# Get the classes contained within the input file
-def get_input_classes(input_file, input_format, compression_mode, target_classes):
-    g = rdflib.Graph()
-
-    if compression_mode != None:
-        with gzip.open(input_file, "rb") as f:
-            data = f.read()
-        g.parse(data=data, format=input_format)
-    else:
-        g.parse(input_file, format=input_format)
-
-    # Filter by classes(command line arguments)
-    class_filter = ",".join(target_classes)
-
-    query = """
-        SELECT DISTINCT ?class_name
-        WHERE {
-            [] a ?class_name .
-            FILTER(! isBlank(?class_name))
-    """
-    if TARGET_CLASS_ALL not in target_classes:
-        query += " FILTER (?class_name IN (" + class_filter + "))"
-
-    query += """
-        }
-    """
-
-    input_classes = []
-    qres = g.query(query)
-    for row in qres:
-        input_classes.append(f"{row.class_name}")
-
-    return input_classes
-
-
-def get_input_classes_from_multi_files(input_files, input_format, compression_mode, target_classes):
+# Get the classes contained within the input file(s)
+def get_input_classes(input_files, input_format, compression_mode, target_classes):
 
     input_classes = []
     for input_file in input_files:
@@ -492,7 +468,7 @@ def get_input_classes_from_multi_files(input_files, input_format, compression_mo
 
         qres = g.query(query)
         for row in qres:
-            if f"{row.class_name}" in input_classes:
+            if f"{row.class_name}" not in input_classes:
                 input_classes.append(f"{row.class_name}")
 
     return input_classes
@@ -563,30 +539,9 @@ def get_fingerprint_comparison_result(fingerprint_class_dict):
     return fingerprint_comparison_result
 
 
-# Get the prefixes contained within the input file (from single file)
-def get_input_prefixes(input_file, compression_mode):
-    if compression_mode != None:
-        with gzip.open(input_file, mode="rt", encoding="utf-8") as f:
-            data = f.read().splitlines()
-    else:
-        with open(input_file, mode="r", newline="\n", encoding="utf-8") as f:
-            data = f.read().splitlines()
-
-    input_prefixes = []
-    for line in data:
-        if ("@prefix" in line or "@PREFIX" in line):
-            line_mod = line.replace("@prefix", "").replace("@PREFIX", "").replace(" ", "").replace("\t","")
-            qname = line_mod[:line_mod.find(":")+1]
-            uri = line_mod[line_mod.find("<")+1:line_mod.find(">")]
-            if [qname, uri] not in input_prefixes:
-                input_prefixes.append([qname, uri])
-
-    return input_prefixes
-
-
-# Get the prefixes contained within the input files (from mauti files)
+# Get the prefixes contained within the input file(s)
 # And get prefixes with the same QName but different URIs at the same time.
-def get_input_prefixes_from_multi_files(input_files, compression_mode):
+def get_input_prefixes(input_files, compression_mode):
     input_prefixes = []
     duplicated_qnames = []
     duplicated_prefixes_dict = defaultdict(list)

@@ -17,7 +17,7 @@ class TestGetSuggestedQName(unittest.TestCase):
                         detect_minimal_iri=True)
 
         shaper_result = shaper.shex_graph(string_output=True)
-        input_prefixes = get_input_prefixes(input_file, None)
+        input_prefixes, _ = get_input_prefixes([input_file], None)
         correct_prefixes = get_correct_prefixes()
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, ["Undefined\tex:\thttp://example.org/\n"])
@@ -33,7 +33,7 @@ class TestGetSuggestedQName(unittest.TestCase):
                         detect_minimal_iri=True)
 
         shaper_result = shaper.shex_graph(string_output=True)
-        input_prefixes = get_input_prefixes(input_file, None)
+        input_prefixes, _ = get_input_prefixes([input_file], None)
         correct_prefixes = get_correct_prefixes()
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, ["Undefined\tobo:\thttp://purl.obolibrary.org/obo/\n", "Undefined\tuo:\thttp://purl.obolibrary.org/obo/\n"])
@@ -49,7 +49,7 @@ class TestGetSuggestedQName(unittest.TestCase):
                         detect_minimal_iri=True)
 
         shaper_result = shaper.shex_graph(string_output=True)
-        input_prefixes = get_input_prefixes(input_file, None)
+        input_prefixes, _ = get_input_prefixes([input_file], None)
         correct_prefixes = get_correct_prefixes()
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, [])
@@ -65,7 +65,7 @@ class TestGetSuggestedQName(unittest.TestCase):
                         detect_minimal_iri=True)
 
         shaper_result = shaper.shex_graph(string_output=True)
-        input_prefixes = get_input_prefixes(input_file, None)
+        input_prefixes, _ = get_input_prefixes([input_file], None)
         correct_prefixes = get_correct_prefixes()
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, ["pobo:\tobo:\thttp://purl.obolibrary.org/obo/\n", "pobo:\tuo:\thttp://purl.obolibrary.org/obo/\n"])
@@ -81,7 +81,7 @@ class TestGetSuggestedQName(unittest.TestCase):
                         detect_minimal_iri=True)
 
         shaper_result = shaper.shex_graph(string_output=True)
-        input_prefixes = get_input_prefixes(input_file, GZ)
+        input_prefixes, _ = get_input_prefixes([input_file], GZ)
         correct_prefixes = get_correct_prefixes()
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, ['Undefined\tex:\thttp://example.org/\n'])
@@ -97,7 +97,7 @@ class TestGetSuggestedQName(unittest.TestCase):
                         detect_minimal_iri=True)
 
         shaper_result = shaper.shex_graph(string_output=True)
-        input_prefixes = get_input_prefixes(input_file, GZ)
+        input_prefixes, _ = get_input_prefixes([input_file], GZ)
         correct_prefixes = get_correct_prefixes()
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, [])
