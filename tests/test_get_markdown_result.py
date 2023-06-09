@@ -20,8 +20,6 @@ class TestGetMarkdownResult(unittest.TestCase):
 
         with open(OUTPUT_NT_3_MD, "r", encoding="utf-8") as f:
             correct_output = f.read()
-        print("".join(output))
-        print(correct_output)
         self.assertEqual("".join(output), correct_output)
 
     def test_nt_gz(self):
