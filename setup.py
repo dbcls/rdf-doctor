@@ -32,6 +32,7 @@ setup(
     version=get_version("doctor/" + VERSION_FILE),
     description='Validate RDF data, report problems, and support creation of more accurate data',
     author='DBCLS',
+    license='MIT',
     url='https://github.com/dbcls/rdf-doctor',
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
