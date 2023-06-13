@@ -53,66 +53,115 @@ options:
 
 ## Example
 ```
-$ rdf-doctor -i example.nt
+$ rdf-doctor -i example_1.ttl
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX oboc: <http://purl.obolibrary.org/obo/CHEBI_>
+PREFIX chebi: <http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX pobo: <http://purl.obolibrary.org/obo/>
+PREFIX ex: <http://example.org1/>
+PREFIX ex: <http://example.org2/>
 PREFIX : <http://weso.es/shapes/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xml: <http://www.w3.org/XML/1998/namespace/>
 
-:Person  [<http://purl.obolibrary.org/obo/>~]  AND   # 5 instances
+:searchId.do?chebiId=CHEBI%3ADocument  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
 {
-   <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  [<http://xmlns.com/foaf/0.1/Person>]  ;          # 100.0 % (5 instances).
-   <http://xmlns.com/foaf/0.1/name>  <http://www.w3.org/2001/XMLSchema#string>  ;          # 100.0 % (5 instances).
-   <http://xmlns.com/foaf/0.1/age>  <http://www.w3.org/2001/XMLSchema#integer>  ?;
-            # 80.0 % (4 instances). obj: <http://www.w3.org/2001/XMLSchema#integer>. Cardinality: {1}
-   <http://xmlns.com/foaf/0.1/familyName>  <http://www.w3.org/2001/XMLSchema#string>  ?;
-            # 80.0 % (4 instances). obj: <http://www.w3.org/2001/XMLSchema#string>. Cardinality: {1}
-   <http://xmlns.com/foaf/0.1/knows>  IRI  ?
-            # 40.0 % (2 instances). obj: IRI. Cardinality: {1}
+   rdf:type  [chebi:Document]  ;                               # 100.0 % (1 instance).
+   chebi:depiction  xsd:string  ;                              # 100.0 % (1 instance).
+   chebi:title  xsd:string                                     # 100.0 % (1 instance).
 }
 
 
-:Document  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
+:searchId.do?chebiId=CHEBI%3APErson  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
 {
-   <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  [<http://xmlns.com/foaf/0.1/Document>]  ;          # 100.0 % (1 instance).
-   <http://xmlns.com/foaf/0.1/depiction>  <http://www.w3.org/2001/XMLSchema#string>  ;          # 100.0 % (1 instance).
-   <http://xmlns.com/foaf/0.1/title>  <http://www.w3.org/2001/XMLSchema#string>            # 100.0 % (1 instance).
+   chebi:name  xsd:string  ;                                   # 100.0 % (1 instance).
+   rdf:type  [chebi:PErson]  ;                                 # 100.0 % (1 instance).
+   chebi:familyName  xsd:string  ;                             # 100.0 % (1 instance).
+   chebi:age  xsd:integer                                      # 100.0 % (1 instance).
 }
 
 
-:Document  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
+:searchId.do?chebiId=CHEBI%3ADOCUMENT  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
 {
-   <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  [<http://xmlns.com/foaf/0.1#Document>]  ;          # 100.0 % (1 instance).
-   <http://xmlns.com/foaf/0.1/title>  <http://www.w3.org/2001/XMLSchema#string>            # 100.0 % (1 instance).
+   chebi:title  xsd:string  ;                                  # 100.0 % (1 instance).
+   rdf:type  [chebi:DOCUMENT]                                  # 100.0 % (1 instance).
 }
+
+
+:searchId.do?chebiId=CHEBI%3APerson  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
+{
+   chebi:age  xsd:integer  ;                                   # 100.0 % (1 instance).
+   chebi:name  xsd:string  ;                                   # 100.0 % (1 instance).
+   rdf:type  [chebi:Person]  ;                                 # 100.0 % (1 instance).
+   chebi:familyName  xsd:string                                # 100.0 % (1 instance).
+}
+
+
+:searchId.do?chebiId=CHEBI%3AParson  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
+{
+   chebi:familyName  xsd:string  ;                             # 100.0 % (1 instance).
+   rdf:type  [chebi:Parson]  ;                                 # 100.0 % (1 instance).
+   chebi:knows  @:searchId.do?chebiId=CHEBI%3APErson  ;          # 100.0 % (1 instance).
+   chebi:name  xsd:string                                      # 100.0 % (1 instance).
+}
+
+
+:searchId.do?chebiId=CHEBI%3APERSON  [<http://purl.obolibrary.org/obo/>~]  AND   # 1 instance
+{
+   chebi:age  xsd:integer  ;                                   # 100.0 % (1 instance).
+   chebi:name  xsd:string  ;                                   # 100.0 % (1 instance).
+   rdf:type  [chebi:PERSON]                                    # 100.0 % (1 instance).
+}
+
+
+# Duplicate prefixes found.
+
+# Input QName	URI
+# ex:	http://example.org1/
+# ex:	http://example.org2/
 
 
 # There may be a better QName.
 
-# Input QName   Suggested QName URI
-# Undefined     obo:    http://purl.obolibrary.org/obo/
-# Undefined     uo:     http://purl.obolibrary.org/obo/
+# Input QName	Suggested QName	URI
+# pobo:	obo:	http://purl.obolibrary.org/obo/
+# pobo:	uo:	http://purl.obolibrary.org/obo/
 ```
 
 ````
-$ rdf-doctor -i example.ttl -r md
-# Report on example.ttl
+$ rdf-doctor -i example_2.ttl -r md
+# Report on
+```
+example_2.ttl
+```
 
 ## Prefix reuse percentage ([?](https://github.com/dbcls/rdf-doctor#output-description))
 Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.
 ```
-75.0%
+57.14%
 ```
 
 ## Refine prefixes ([?](https://github.com/dbcls/rdf-doctor#output-description))
 Found prefixes that looks incorrect.
 ```
-Prefix  Input URI       Suggested URI
-chebi:  http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A http://purl.obolibrary.org/obo/CHEBI_
+Prefix	Input URI	Suggested URI
+chebi:	http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A	http://purl.obolibrary.org/obo/CHEBI_
+```
+
+Duplicate prefixes found.
+```
+Input QName	URI
+ex:	http://example.org1/
+ex:	http://example.org2/
 ```
 
 ## Refine classes ([?](https://github.com/dbcls/rdf-doctor#output-description))
 Found class names that looks incorrect.
 ```
-Input class name        Suggested class name
-http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APErson   http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APerson
+Input class name	Suggested class name
+http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APErson	http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APerson
 ```
 
 Found multiple strings that appear to represent the same class name.
@@ -130,5 +179,6 @@ http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADOCUMENT
 * **Prefix reuse percentage**: Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.
 
 * **Refine prefixes**: The URI entered as a prefix is checked against a list (errata) defined inside rdf-doctor, and if there is matching information, output as correction suggestions.
+Also, if a prefix with the same QName but a different URI is found, it is output as a correction suggestion.
 
 * **Refine classes**: The URI of the input class is checked against the list (errata) defined inside rdf-doctor, and if there is matching information, the correct URI is suggested. Also, if the URI of the input class is converted to a key string using the fingerprinting method and multiple different strings are found even though the key strings match, they may represent the same class. Output as correction suggestions.
