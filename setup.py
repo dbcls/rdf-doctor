@@ -33,11 +33,8 @@ setup(
     description='Validate RDF data, report problems, and support creation of more accurate data',
     author='DBCLS',
     url='https://github.com/dbcls/rdf-doctor',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     include_package_data=True,
-    package_data={
-        'reference': ['reference/*'],
-    },
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
     classifiers=[
