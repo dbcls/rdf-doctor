@@ -175,6 +175,18 @@ http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADOCUMENT
 ```
 ````
 
+
+## Example of dictionary file
+You can specify arbitrary dictionary files (errata) for prefixes and class URIs. It is a file in which pairs of incorrect URIs and correct URIs are tab-separated, one per line, as shown below.
+Specify -p , --prefix-dict for prefix, -l, --class-dict for class, followed by file.
+See: https://github.com/dbcls/rdf-doctor#command-line-interface
+```
+http://incorrect/uri1	http://correct/uri1
+http://incorrect/uri2	http://correct/uri2
+http://incorrect/uri3	http://correct/uri3
+```
+
+
 ## Output Description
 * **Prefix reuse percentage**: Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.
 
