@@ -14,7 +14,8 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     output=None, \
                                                     classes=[TARGET_CLASS_ALL], \
                                                     prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIX_ERRATA_FILE_PATH)), \
-                                                    class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(CLASS_ERRATA_FILE_PATH))))
+                                                    class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                    verbose=False))
 
     def test_ttl(self):
         result = get_command_line_args(["--input", TTL_1, TTL_2, TTL_3, \
@@ -28,7 +29,8 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     output="./output.shex", \
                                                     classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"], \
                                                     prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
-                                                    class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))))
+                                                    class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                    verbose=False))
 
 if __name__ == "__main__":
     unittest.main()

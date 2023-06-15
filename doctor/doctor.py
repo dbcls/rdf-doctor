@@ -6,6 +6,7 @@ import rdflib
 import re
 import csv
 import codecs
+import datetime
 from doctor.consts import VERSION_FILE, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
                             TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, CORRECT_PREFIXES_FILE_PATH, \
                             CLASS_ERRATA_FILE_PATH, PREFIX_ERRATA_FILE_PATH, HELP_LINK_URL
@@ -51,6 +52,9 @@ def doctor():
             with open(args.output, "w", encoding="utf-8") as f:
                 f.write("".join(output_result))
 
+        if args.verbose:
+            print(get_dt_now() + " -- Done!")
+
     except ValueError as e:
         print(e)
 
@@ -86,6 +90,11 @@ def get_command_line_args(args):
                         action="version",
                         version="%(prog)s " + get_version(VERSION_FILE))
 
+    # show progress while processing (-e、--verbose)
+    parser.add_argument("-e","--verbose",
+                        action="store_true",
+                        help="show progress while processing")
+
     # Input RDF file (-i、--input [RDF-FILE]、required)
     parser.add_argument("-i","--input", type=str,
                         required=True,
@@ -93,7 +102,7 @@ def get_command_line_args(args):
                         help="input RDF file(s)(.ttl or .nt or gzip-compressed versions of them). Use the same extension when specifying multiple.",
                         metavar="RDF-FILE")
 
-    # Report format (-r、--report、default: shex)
+    # Report format (-r、--report [FORMAT]、default: shex)
     parser.add_argument("-r","--report", type=str,
                         default=REPORT_FORMAT_SHEX,
                         help="set the output format/serializer of report to one of: shex (defalut) or md or markdown(same as md)",
@@ -104,7 +113,7 @@ def get_command_line_args(args):
                         help="write to file instead of stdout",
                         metavar="FILE")
 
-    # Target class(-c、--classes、default: all、Multiple can be specified.)
+    # Target class(-c、--classes [URL1, URL2,...]、default: all、Multiple can be specified.)
     parser.add_argument("-c","--classes", type=str,
                         default=[TARGET_CLASS_ALL],
                         nargs="+",
@@ -252,6 +261,9 @@ def get_shex_result(args, input_format, compression_mode):
     shaper_result = get_shaper_result(args, input_format, compression_mode, input_prefixes)
 
     # Prefixes with the same QName but different URIs at the same time
+    if args.verbose:
+        print(get_dt_now() + " -- Checking for duplicate prefixes...")
+
     result_duplicated_prefixes = []
     if len(duplicated_prefixes) != 0:
         result_duplicated_prefixes.append("# Duplicate prefixes found.\n")
@@ -261,6 +273,9 @@ def get_shex_result(args, input_format, compression_mode):
         result_duplicated_prefixes.append("\n\n")
 
     # Suggest QName based on URI of validation expression output by sheXer and correct-prefixes.tsv
+    if args.verbose:
+        print(get_dt_now() + " -- Creating suggestions for QName...")
+
     result_suggested_qname = []
     correct_prefixes = get_correct_prefixes()
     suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
@@ -288,12 +303,17 @@ def get_markdown_result(args, input_format, compression_mode):
     # Processing related to prefixes ------------------
     # Get Prefix when input file is turtle format
     if input_format == TURTLE:
+        if args.verbose:
+            print(get_dt_now() + " -- Getting prefix from input file...")
         input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
     else:
         input_prefixes = []
         duplicated_prefixes = []
 
-    # Get list for result output about prefix reuse rate
+    # Get list for result output about prefix reuse percentage
+    if args.verbose:
+        print(get_dt_now() + " -- Calculating prefix reuse percentage...")
+
     result_prefix_reuse_percentage = []
     result_prefix_reuse_percentage.append("## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n")
     result_prefix_reuse_percentage.append("Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
@@ -308,6 +328,9 @@ def get_markdown_result(args, input_format, compression_mode):
         result_prefix_reuse_percentage.append("```\n\n")
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
+    if args.verbose:
+        print(get_dt_now() + " -- Comparing with class dictionary (errata)...")
+
     result_prefix_errata = []
     prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
     # When there is data to output
@@ -332,6 +355,9 @@ def get_markdown_result(args, input_format, compression_mode):
 
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
+    if args.verbose:
+        print(get_dt_now() + " -- Comparing with prefix dictionary (errata)...")
+
     result_class_errata = []
     class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_dict)
     # When there is data to output
@@ -343,6 +369,9 @@ def get_markdown_result(args, input_format, compression_mode):
         result_class_errata.append("```\n\n")
 
     # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
+    if args.verbose:
+        print(get_dt_now() + " -- Comparing with fingerprint method results...")
+
     result_class_fingerprint = []
     fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
     # When there is data to output
@@ -391,28 +420,27 @@ def get_shaper_result(args, input_format, compression_mode, input_prefixes):
         target_classes = args.classes
         all_classes_mode = False
 
-    namespaces_dict = {}
-    for input_prefix in input_prefixes:
-        namespaces_dict[input_prefix[1]] = input_prefix[0].replace(":","")
-
-    if len(args.input) == 1:
-        graph_file_input = args.input[0]
-        graph_list_of_files_input = None
+    if input_format == NT:
+        namespaces_dict = default_namespaces()
     else:
-        graph_file_input = None
-        graph_list_of_files_input = args.input
-    # Init shexer's shaper class
-    shaper = Shaper(graph_file_input=graph_file_input,
-                    graph_list_of_files_input=graph_list_of_files_input,
+        namespaces_dict = {}
+        for input_prefix in input_prefixes:
+            namespaces_dict[input_prefix[1]] = input_prefix[0].replace(":","")
+
+    # Get instance of shexer's shaper class
+    shaper = Shaper(graph_list_of_files_input=args.input,
                     target_classes=target_classes,
                     all_classes_mode=all_classes_mode,
                     input_format=input_format,
                     namespaces_dict=namespaces_dict,
+                    disable_exact_cardinality=True,
                     compression_mode=compression_mode,
                     instances_report_mode=MIXED_INSTANCES,
                     detect_minimal_iri=True)
 
-    return shaper.shex_graph(string_output=True)
+    return shaper.shex_graph(string_output=True,
+                            verbose=args.verbose,
+                            acceptance_threshold=0.05)
 
 
 # Calculates the percentage of prefixes in the input file that exist in the prefix list file prepared in advance,
@@ -638,3 +666,20 @@ def fingerprint(string):
     words = string.split()
     words = sorted(list(set(words)))
     return " ".join(words)
+
+# A dictionary of namespaces to pass to sheXer
+# This function is used only when the input file is N-Triples.
+def default_namespaces():
+    return {
+            "http://www.w3.org/2002/07/owl#": "owl",
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#": "rdf",
+            "http://www.w3.org/2000/01/rdf-schema#": "rdfs",
+            "http://www.w3.org/2001/XMLSchema#": "xsd",
+            "http://www.w3.org/XML/1998/namespace": "xml",
+            }
+
+# Get current date and time
+# dd/MM/yyyy HH:mm:ss
+# This function will only be called if verbose parameter is True.
+def get_dt_now():
+    return datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')

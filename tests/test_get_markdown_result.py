@@ -14,7 +14,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                         output=None, \
                                                         classes=[TARGET_CLASS_ALL], \
                                                         prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
-                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))),
+                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                        verbose=False),
                                     NT,
                                     None)
 
@@ -28,7 +29,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                         output=None, \
                                                         classes=[TARGET_CLASS_ALL], \
                                                         prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
-                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))),
+                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                        verbose=False),
                                     NT,
                                     GZ)
 
@@ -43,7 +45,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                         output=None, \
                                                         classes=[TARGET_CLASS_ALL], \
                                                         prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
-                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))),
+                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                        verbose=False),
                                     TURTLE,
                                     None)
 
@@ -58,7 +61,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                         output=None, \
                                                         classes=[TARGET_CLASS_ALL], \
                                                         prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
-                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))),
+                                                        class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                        verbose=False),
                                     TURTLE,
                                     GZ)
 

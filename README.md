@@ -32,6 +32,7 @@ Home page: https://github.com/dbcls/rdf-doctor
 options:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
+  -e, --verbose         show progress while processing
   -i RDF-FILE [RDF-FILE ...], --input RDF-FILE [RDF-FILE ...]
                         input RDF file(s)(.ttl or .nt or gzip-compressed versions of them). Use the same extension when specifying multiple.
   -r FORMAT, --report FORMAT
