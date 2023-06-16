@@ -253,6 +253,9 @@ def get_shex_result(args, input_format, compression_mode):
 
     # Get Prefix when input file is turtle format
     if input_format == TURTLE:
+        if args.verbose:
+            print(get_dt_now() + " -- Getting prefixes from input file...")
+
         input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
     else:
         input_prefixes = []
@@ -305,6 +308,7 @@ def get_markdown_result(args, input_format, compression_mode):
     if input_format == TURTLE:
         if args.verbose:
             print(get_dt_now() + " -- Getting prefixes from input file...")
+
         input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
     else:
         input_prefixes = []
