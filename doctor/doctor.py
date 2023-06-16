@@ -304,7 +304,7 @@ def get_markdown_result(args, input_format, compression_mode):
     # Get Prefix when input file is turtle format
     if input_format == TURTLE:
         if args.verbose:
-            print(get_dt_now() + " -- Getting prefix from input file...")
+            print(get_dt_now() + " -- Getting prefixes from input file...")
         input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
     else:
         input_prefixes = []
@@ -349,6 +349,9 @@ def get_markdown_result(args, input_format, compression_mode):
         result_duplicated_prefixes.extend([s for s in duplicated_prefixes])
         result_duplicated_prefixes.append("```\n\n")
     # -------------------------------------------------
+
+    if args.verbose:
+        print(get_dt_now() + " -- Getting classes from input file...")
 
     # Processing related to classes -------------------
     input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
