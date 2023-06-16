@@ -329,7 +329,7 @@ def get_markdown_result(args, input_format, compression_mode):
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
     if args.verbose:
-        print(get_dt_now() + " -- Comparing with class dictionary (errata)...")
+        print(get_dt_now() + " -- Comparing with prefix dictionary (errata)...")
 
     result_prefix_errata = []
     prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
@@ -356,7 +356,7 @@ def get_markdown_result(args, input_format, compression_mode):
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
     if args.verbose:
-        print(get_dt_now() + " -- Comparing with prefix dictionary (errata)...")
+        print(get_dt_now() + " -- Comparing with class dictionary (errata)...")
 
     result_class_errata = []
     class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_dict)
