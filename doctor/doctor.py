@@ -683,6 +683,8 @@ def default_namespaces():
             "http://www.w3.org/2000/01/rdf-schema#": "rdfs",
             "http://www.w3.org/2001/XMLSchema#": "xsd",
             "http://www.w3.org/XML/1998/namespace": "xml",
+            "http://www.w3.org/2004/02/skos/core#": "skos",
+            "http://purl.obolibrary.org/obo/": "obo",
             }
 
 # Get current date and time
