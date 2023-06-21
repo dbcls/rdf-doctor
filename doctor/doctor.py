@@ -6,7 +6,10 @@ import rdflib
 import re
 import csv
 import codecs
+import time
 import datetime
+import threading
+import queue
 from doctor.consts import VERSION_FILE, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
                             TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, CORRECT_PREFIXES_FILE_PATH, \
                             CLASS_ERRATA_FILE_PATH, PREFIX_ERRATA_FILE_PATH, HELP_LINK_URL
@@ -28,40 +31,68 @@ def doctor():
 
     compression_mode = get_compression_mode(args.input[0])
     input_format = get_input_format(args.input[0], compression_mode)
-    output_result = []
+    result_queue = queue.Queue()
 
     try:
         # Processing branch by report format
         if args.report == REPORT_FORMAT_SHEX:
             # shex
-            output_result = get_shex_result(args, input_format, compression_mode)
+            thread_calc = threading.Thread(target=get_shex_result, args=(args, input_format, compression_mode, result_queue,))
 
         elif args.report == REPORT_FORMAT_MARKDOWN or args.report == REPORT_FORMAT_MD:
             # markdown/md
-            output_result = get_markdown_result(args, input_format, compression_mode)
+            thread_calc = threading.Thread(target=get_markdown_result, args=(args, input_format, compression_mode, result_queue,))
 
         else:
             # Else case does not occur.
             # Prevented by validate_command_line_args function.
             raise ValueError(args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '" and "' + REPORT_FORMAT_MD+ '"(same as "' + REPORT_FORMAT_MARKDOWN + '") are supported.')
 
+        thread_calc.setDaemon(True)
+        thread_calc.start()
+        if args.verbose:
+            # Thread for displaying dots during processing
+            thread_monitor = threading.Thread(target=monitor_thread, args=(result_queue,))
+            thread_monitor.setDaemon(True)
+            thread_monitor.start()
+
+        thread_calc.join()
+        if args.verbose:
+            thread_monitor.join()
+
         # Output result to specified destination (standard output or file)
         if args.output is None:
-            print("".join(output_result))
+            print_overwrite("".join(result_queue.get()))
         else:
             with open(args.output, "w", encoding="utf-8") as f:
-                f.write("".join(output_result))
+                f.write("".join(result_queue.get()))
 
         if args.verbose:
-            print(get_dt_now() + " -- Done!")
+            print_overwrite(get_dt_now() + " -- Done!")
 
     except ValueError as e:
         print(e)
+
+    except KeyboardInterrupt:
+        print ("Keyboard interrupt occurred.")
 
     except:
         print("An exception error occurred. Input data format may not be correct. Please review the data.")
 
     return
+
+
+# Function for displaying dots during processing
+def monitor_thread(result_queue):
+    i = 0
+    spin_char = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+    while result_queue.empty():
+        print(spin_char[i], end="\r")
+        if i == len(spin_char) - 1:
+            i = 0
+        else:
+            i += 1
+        time.sleep(0.2)
 
 
 def read(rel_path):
@@ -249,12 +280,12 @@ def validate_command_line_args(args):
 
 
 # Processing when the report format is "shex"
-def get_shex_result(args, input_format, compression_mode):
+def get_shex_result(args, input_format, compression_mode, result_queue):
 
     # Get Prefix when input file is turtle format
     if input_format == TURTLE:
         if args.verbose:
-            print(get_dt_now() + " -- Getting prefixes from input file...")
+            print_overwrite(get_dt_now() + " -- Getting prefixes from input file...")
 
         input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
     else:
@@ -265,7 +296,7 @@ def get_shex_result(args, input_format, compression_mode):
 
     # Prefixes with the same QName but different URIs at the same time
     if args.verbose:
-        print(get_dt_now() + " -- Checking for duplicate prefixes...")
+        print_overwrite(get_dt_now() + " -- Checking for duplicate prefixes...")
 
     result_duplicated_prefixes = []
     if len(duplicated_prefixes) != 0:
@@ -277,7 +308,7 @@ def get_shex_result(args, input_format, compression_mode):
 
     # Suggest QName based on URI of validation expression output by sheXer and correct-prefixes.tsv
     if args.verbose:
-        print(get_dt_now() + " -- Creating suggestions for QName...")
+        print_overwrite(get_dt_now() + " -- Creating suggestions for QName...")
 
     result_suggested_qname = []
     correct_prefixes = get_correct_prefixes()
@@ -297,17 +328,17 @@ def get_shex_result(args, input_format, compression_mode):
     if len(result_suggested_qname) != 0:
         shex_final_result.extend(result_suggested_qname)
 
-    return shex_final_result
+    result_queue.put(shex_final_result)
 
 
 # Processing when the report format is "md/markdown"
-def get_markdown_result(args, input_format, compression_mode):
+def get_markdown_result(args, input_format, compression_mode, result_queue):
 
     # Processing related to prefixes ------------------
     # Get Prefix when input file is turtle format
     if input_format == TURTLE:
         if args.verbose:
-            print(get_dt_now() + " -- Getting prefixes from input file...")
+            print_overwrite(get_dt_now() + " -- Getting prefixes from input file...")
 
         input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
     else:
@@ -316,7 +347,7 @@ def get_markdown_result(args, input_format, compression_mode):
 
     # Get list for result output about prefix reuse percentage
     if args.verbose:
-        print(get_dt_now() + " -- Calculating prefix reuse percentage...")
+        print_overwrite(get_dt_now() + " -- Calculating prefix reuse percentage...")
 
     result_prefix_reuse_percentage = []
     result_prefix_reuse_percentage.append("## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n")
@@ -333,7 +364,7 @@ def get_markdown_result(args, input_format, compression_mode):
 
     # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
     if args.verbose:
-        print(get_dt_now() + " -- Comparing with prefix dictionary (errata)...")
+        print_overwrite(get_dt_now() + " -- Comparing with prefix dictionary (errata)...")
 
     result_prefix_errata = []
     prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
@@ -355,7 +386,7 @@ def get_markdown_result(args, input_format, compression_mode):
     # -------------------------------------------------
 
     if args.verbose:
-        print(get_dt_now() + " -- Getting classes from input file...")
+        print_overwrite(get_dt_now() + " -- Getting classes from input file...")
 
     # Processing related to classes -------------------
     input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
@@ -363,7 +394,7 @@ def get_markdown_result(args, input_format, compression_mode):
     # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
     # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
     if args.verbose:
-        print(get_dt_now() + " -- Comparing with class dictionary (errata)...")
+        print_overwrite(get_dt_now() + " -- Comparing with class dictionary (errata)...")
 
     result_class_errata = []
     class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_dict)
@@ -377,7 +408,7 @@ def get_markdown_result(args, input_format, compression_mode):
 
     # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
     if args.verbose:
-        print(get_dt_now() + " -- Comparing with fingerprint method results...")
+        print_overwrite(get_dt_now() + " -- Comparing with fingerprint method results...")
 
     result_class_fingerprint = []
     fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
@@ -414,7 +445,7 @@ def get_markdown_result(args, input_format, compression_mode):
         md_final_result.extend(result_class_errata)
         md_final_result.extend(result_class_fingerprint)
 
-    return md_final_result
+    result_queue.put(md_final_result)
 
 
 # Call the shex_graph method of shexer's shaper class and output the result
@@ -692,3 +723,7 @@ def default_namespaces():
 # This function will only be called if verbose parameter is True.
 def get_dt_now():
     return datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+
+# Overwrites the current line of the console with the string passed as argument
+def print_overwrite(string):
+    print("\r" + string)
