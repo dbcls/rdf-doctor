@@ -471,7 +471,6 @@ def get_shaper_result(args, input_format, compression_mode, input_prefixes):
                     all_classes_mode=all_classes_mode,
                     input_format=input_format,
                     namespaces_dict=namespaces_dict,
-                    disable_exact_cardinality=True,
                     compression_mode=compression_mode,
                     instances_report_mode=MIXED_INSTANCES,
                     detect_minimal_iri=True)
