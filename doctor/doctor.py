@@ -30,7 +30,11 @@ def doctor():
         return
 
     compression_mode = get_compression_mode(args.input[0])
-    input_format = get_input_format(args.input[0], compression_mode)
+    if args.force_format:
+        input_format = args.force_format
+    else:
+        input_format = get_input_format(args.input[0], compression_mode)
+
     result_queue = queue.Queue()
 
     try:
@@ -137,7 +141,7 @@ def get_command_line_args(args):
     parser.add_argument("-r","--report", type=str,
                         default=REPORT_FORMAT_SHEX,
                         help="set the output format/serializer of report to one of: shex (defalut) or md or markdown(same as md)",
-                        metavar="FORMAT")
+                        metavar="REPORT-FORMAT")
 
     # Output report file (-o、--output [FILE]、default: Standard output)
     parser.add_argument("-o","--output", type=str,
@@ -162,6 +166,11 @@ def get_command_line_args(args):
                         default=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)),
                         help="path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)",
                         metavar="FILE")
+
+    # input format (-f、--format [INPUT_FORMAT]、default: Standard output)
+    parser.add_argument("-f","--force-format", type=str,
+                        help='This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle" or "nt" can be specified.',
+                        metavar="INPUT-FORMAT")
 
     return parser.parse_args(args)
 
@@ -211,6 +220,11 @@ def validate_command_line_args(args):
 
         if os.path.isfile(input_file) == False:
             error_msg = "Input file error: " + input_file + " does not exist."
+            return False, error_msg
+
+        # Check if the file has read permission
+        if os.access(input_file, os.R_OK) == False:
+            error_msg = "Input file error: you don't have permission to read the input file."
             return False, error_msg
 
         if compression_mode == "":
@@ -265,16 +279,30 @@ def validate_command_line_args(args):
             error_msg = 'Target class error: If "all" is specified, other classes cannot be specified.'
             return False, error_msg
 
+    # Input Format only allows "turtle" or "nt"
+    if args.force_format is not None:
+        if args.force_format != TURTLE and \
+            args.force_format != NT:
+            error_msg = 'Input format error: "' + args.force_format + '" is an unsupported input format. "' + TURTLE + '" and "' + NT + '" are supported.'
+            return False, error_msg
 
     if os.path.isfile(args.prefix_dict) == False:
-        error_msg = "Prefix dictionary file error: Prefix dictionary does not exist."
+        error_msg = "Prefix dictionary file error: Prefix dictionary does not exist or you don't have read permission."
         return False, error_msg
 
+    # Check if the file has read permission
+    if os.access(args.prefix_dict, os.R_OK) == False:
+        error_msg = "Prefix dictionary file error: you don't have permission to read the input file."
+        return False, error_msg
 
     if os.path.isfile(args.class_dict) == False:
-        error_msg = "Class dictionary file error: Class dictionary does not exist."
+        error_msg = "Class dictionary file error: Class dictionary does not exist or you don't have read permission."
         return False, error_msg
 
+    # Check if the file has read permission
+    if os.access(args.class_dict, os.R_OK) == False:
+        error_msg = "Class dictionary file error: you don't have permission to read the input file."
+        return False, error_msg
 
     return True, None
 

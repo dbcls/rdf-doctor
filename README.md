@@ -35,7 +35,7 @@ options:
   -e, --verbose         show progress while processing
   -i RDF-FILE [RDF-FILE ...], --input RDF-FILE [RDF-FILE ...]
                         input RDF file(s)(.ttl or .nt or gzip-compressed versions of them). Use the same extension when specifying multiple.
-  -r FORMAT, --report FORMAT
+  -r REPORT-FORMAT, --report REPORT-FORMAT
                         set the output format/serializer of report to one of: shex (defalut) or md or markdown(same as md)
   -o FILE, --output FILE
                         write to file instead of stdout
@@ -45,6 +45,8 @@ options:
                         path to a tab delimited file listing incorrect and correct URI pairs for the prefix (default: predefined file in rdf-doctor)
   -l FILE, --class-dict FILE
                         path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)
+  -f INPUT-FORMAT, --force-format INPUT-FORMAT
+                        This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle" or "nt" can be specified.
 ```
 
 ## See Also
