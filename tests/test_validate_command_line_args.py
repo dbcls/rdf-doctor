@@ -1,7 +1,7 @@
 import unittest
 from doctor.doctor import validate_command_line_args
 from doctor.consts import REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, TARGET_CLASS_ALL
-from tests.consts import BASE_DIR, NT_1, NT_1_GZ, TTL_1, TTL_1_GZ, PREFIX_ERRATA_FILE_PATH, CLASS_ERRATA_FILE_PATH
+from tests.consts import BASE_DIR, NT_1, NT_1_GZ, TTL_1, TTL_1_GZ, PREFIX_ERRATA_FILE_PATH, CLASS_ERRATA_FILE_PATH, CORRECT_PREFIXES_FILE_PATH
 from shexer.consts import NT, TURTLE
 import argparse
 from pathlib import Path
@@ -16,6 +16,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -28,6 +29,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -40,6 +42,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -52,6 +55,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -64,6 +68,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -76,6 +81,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -88,6 +94,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Input file error: " + BASE_DIR + "aaa.txt" + " does not exist.")
@@ -100,6 +107,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -112,6 +120,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -124,6 +133,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -136,6 +146,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, 'Report format error: "aaa" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '" and "' + REPORT_FORMAT_MD + '"(same as "' + REPORT_FORMAT_MARKDOWN + '") are supported.')
@@ -148,6 +159,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -160,6 +172,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Output file error: You don't have write permission on the output directory.")
@@ -172,6 +185,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Output file error: Output directory does not exist.")
@@ -184,6 +198,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=["<http://xmlns.com/foaf/0.1/Person>"], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -195,7 +210,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             output=None, \
                                                                             classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)),
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
@@ -208,6 +224,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL, "<http://xmlns.com/foaf/0.1/Person>"], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, 'Target class error: If "all" is specified, other classes cannot be specified.')
@@ -220,6 +237,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath("aaa.tsv")), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Prefix dictionary file error: Prefix dictionary does not exist or you don't have read permission.")
@@ -232,6 +250,7 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath("aaa.tsv")), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Class dictionary file error: Class dictionary does not exist or you don't have read permission.")
@@ -244,9 +263,23 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             classes=[TARGET_CLASS_ALL], \
                                                                             prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                                             class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                                             force_format="aaa"))
         self.assertFalse(result)
         self.assertEqual(error_msg, 'Input format error: "aaa" is an unsupported input format. "' + TURTLE + '" and "' + NT + '" are supported.')
+
+    # [prefix_list/NG] Nonexistent file
+    def test_prefix_list_nonexistent_file(self):
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
+                                                                            report=REPORT_FORMAT_SHEX, \
+                                                                            output=None, \
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.joinpath("aaa.tsv")), \
+                                                                            force_format=None))
+        self.assertFalse(result)
+        self.assertEqual(error_msg, "Prefix list file error: Prefix list does not exist or you don't have read permission.")
 
 if __name__ == "__main__":
     unittest.main()

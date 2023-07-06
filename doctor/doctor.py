@@ -167,6 +167,12 @@ def get_command_line_args(args):
                         help="path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)",
                         metavar="FILE")
 
+    # Prefix list file path(-x, --prefix-list [FILE]、default: reference/correct-prefixes.tsv)
+    parser.add_argument("-x","--prefix-list", type=str,
+                        default=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)),
+                        help="list of prefixes (default: predefined file in rdf-doctor)",
+                        metavar="FILE")
+
     # input format (-f、--format [INPUT_FORMAT]、default: Standard output)
     parser.add_argument("-f","--force-format", type=str,
                         help='This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle" or "nt" can be specified.',
@@ -304,6 +310,15 @@ def validate_command_line_args(args):
         error_msg = "Class dictionary file error: you don't have permission to read the input file."
         return False, error_msg
 
+    if os.path.isfile(args.prefix_list) == False:
+        error_msg = "Prefix list file error: Prefix list does not exist or you don't have read permission."
+        return False, error_msg
+
+    # Check if the file has read permission
+    if os.access(args.prefix_list, os.R_OK) == False:
+        error_msg = "Prefix list file error: you don't have permission to read the input file."
+        return False, error_msg
+
     return True, None
 
 
@@ -339,7 +354,7 @@ def get_shex_result(args, input_format, compression_mode, result_queue):
         print_overwrite(get_dt_now() + " -- Creating suggestions for QName...")
 
     result_suggested_qname = []
-    correct_prefixes = get_correct_prefixes()
+    correct_prefixes = get_correct_prefixes(args.prefix_list)
     suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
     if len(suggested_qname) != 0:
         result_suggested_qname.append("# There may be a better QName.\n\n")
@@ -380,7 +395,7 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
     result_prefix_reuse_percentage = []
     result_prefix_reuse_percentage.append("## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n")
     result_prefix_reuse_percentage.append("Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
-    prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes)
+    prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes, args.prefix_list)
     if prefix_reuse_percentage == None:
         result_prefix_reuse_percentage.append("```\n")
         result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
@@ -511,8 +526,8 @@ def get_shaper_result(args, input_format, compression_mode, input_prefixes):
 # Calculates the percentage of prefixes in the input file that exist in the prefix list file prepared in advance,
 # and returns it after rounding to the second decimal place.
 # If the prefix is not detected, do not calculate and return None.
-def get_prefix_reuse_percentage(input_prefixes):
-    correct_prefixes = get_correct_prefixes()
+def get_prefix_reuse_percentage(input_prefixes, prefix_list_file):
+    correct_prefixes = get_correct_prefixes(prefix_list_file)
 
     input_prefixes_count = len(input_prefixes)
     if input_prefixes_count == 0:
@@ -670,8 +685,8 @@ def get_input_prefixes(input_files, compression_mode):
 
 
 # Get the correct prefix from a prepared prefix list
-def get_correct_prefixes():
-    with open(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH), mode="r", newline="\n", encoding="utf-8") as f:
+def get_correct_prefixes(prefix_list_file):
+    with open(prefix_list_file, mode="r", newline="\n", encoding="utf-8") as f:
         tsv_reader = csv.reader(f, delimiter="\t")
         correct_prefixes = [row for row in tsv_reader]
 

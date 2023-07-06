@@ -1,8 +1,9 @@
 import unittest
 from doctor.doctor import get_input_prefixes, get_correct_prefixes, get_suggested_qname
-from tests.consts import NT_1, NT_1_GZ, NT_3, TTL_1, TTL_3, TTL_1_GZ
+from tests.consts import NT_1, NT_1_GZ, NT_3, TTL_1, TTL_3, TTL_1_GZ, CORRECT_PREFIXES_FILE_PATH
 from shexer.shaper import Shaper
 from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
+from pathlib import Path
 
 class TestGetSuggestedQName(unittest.TestCase):
 
@@ -18,7 +19,7 @@ class TestGetSuggestedQName(unittest.TestCase):
 
         shaper_result = shaper.shex_graph(string_output=True)
         input_prefixes, _ = get_input_prefixes([input_file], None)
-        correct_prefixes = get_correct_prefixes()
+        correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, ["Undefined\tex:\thttp://example.org/\n"])
 
@@ -34,7 +35,7 @@ class TestGetSuggestedQName(unittest.TestCase):
 
         shaper_result = shaper.shex_graph(string_output=True)
         input_prefixes, _ = get_input_prefixes([input_file], None)
-        correct_prefixes = get_correct_prefixes()
+        correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, ["Undefined\tobo:\thttp://purl.obolibrary.org/obo/\n", "Undefined\tuo:\thttp://purl.obolibrary.org/obo/\n"])
 
@@ -50,7 +51,7 @@ class TestGetSuggestedQName(unittest.TestCase):
 
         shaper_result = shaper.shex_graph(string_output=True)
         input_prefixes, _ = get_input_prefixes([input_file], None)
-        correct_prefixes = get_correct_prefixes()
+        correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, [])
 
@@ -66,7 +67,7 @@ class TestGetSuggestedQName(unittest.TestCase):
 
         shaper_result = shaper.shex_graph(string_output=True)
         input_prefixes, _ = get_input_prefixes([input_file], None)
-        correct_prefixes = get_correct_prefixes()
+        correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, ["pobo:\tobo:\thttp://purl.obolibrary.org/obo/\n", "pobo:\tuo:\thttp://purl.obolibrary.org/obo/\n"])
 
@@ -82,7 +83,7 @@ class TestGetSuggestedQName(unittest.TestCase):
 
         shaper_result = shaper.shex_graph(string_output=True)
         input_prefixes, _ = get_input_prefixes([input_file], GZ)
-        correct_prefixes = get_correct_prefixes()
+        correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, ['Undefined\tex:\thttp://example.org/\n'])
 
@@ -98,7 +99,7 @@ class TestGetSuggestedQName(unittest.TestCase):
 
         shaper_result = shaper.shex_graph(string_output=True)
         input_prefixes, _ = get_input_prefixes([input_file], GZ)
-        correct_prefixes = get_correct_prefixes()
+        correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
         self.assertEqual(suggested_qname, [])
 

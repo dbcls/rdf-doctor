@@ -3,7 +3,7 @@ import argparse
 import queue
 from doctor.doctor import get_markdown_result
 from doctor.consts import REPORT_FORMAT_MD, TARGET_CLASS_ALL
-from tests.consts import NT_1_GZ, NT_3, TTL_1_GZ, TTL_3, OUTPUT_NT_1_GZ_MD, OUTPUT_NT_3_MD, OUTPUT_TTL_1_GZ_MD, OUTPUT_TTL_3_MD, PREFIX_ERRATA_FILE_PATH, CLASS_ERRATA_FILE_PATH
+from tests.consts import NT_1_GZ, NT_3, TTL_1_GZ, TTL_3, OUTPUT_NT_1_GZ_MD, OUTPUT_NT_3_MD, OUTPUT_TTL_1_GZ_MD, OUTPUT_TTL_3_MD, PREFIX_ERRATA_FILE_PATH, CLASS_ERRATA_FILE_PATH, CORRECT_PREFIXES_FILE_PATH
 from shexer.consts import NT, TURTLE, GZ
 from pathlib import Path
 
@@ -18,6 +18,7 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                         classes=[TARGET_CLASS_ALL], \
                                                         prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                         class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                        prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                         verbose=False),
                                     NT,
                                     None,
@@ -35,6 +36,7 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                         classes=[TARGET_CLASS_ALL], \
                                                         prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                         class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                        prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                         verbose=False),
                                     NT,
                                     GZ,
@@ -53,6 +55,7 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                         classes=[TARGET_CLASS_ALL], \
                                                         prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                         class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                        prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                         verbose=False),
                                     TURTLE,
                                     None,
@@ -71,6 +74,7 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                         classes=[TARGET_CLASS_ALL], \
                                                         prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                         class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                        prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                         verbose=False),
                                     TURTLE,
                                     GZ,

@@ -1,6 +1,6 @@
 import unittest
 from doctor.doctor import get_command_line_args
-from doctor.consts import TARGET_CLASS_ALL, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD
+from doctor.consts import TARGET_CLASS_ALL, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, CORRECT_PREFIXES_FILE_PATH
 from tests.consts import NT_1, TTL_1, TTL_2, TTL_3, PREFIX_ERRATA_FILE_PATH, CLASS_ERRATA_FILE_PATH
 import argparse
 from pathlib import Path
@@ -15,6 +15,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     classes=[TARGET_CLASS_ALL], \
                                                     prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                     class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                    prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                     force_format=None, \
                                                     verbose=False))
 
@@ -25,13 +26,15 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                         "--classes", "<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>", \
                                         "--force-format", "turtle", \
                                         "--prefix-dict", str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
-                                        "--class-dict", str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH))])
+                                        "--class-dict", str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                        "--prefix-list", str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH))])
         self.assertEqual(result, argparse.Namespace(input=[TTL_1, TTL_2, TTL_3], \
                                                     report=REPORT_FORMAT_MD, \
                                                     output="./output.shex", \
                                                     classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"], \
                                                     prefix_dict=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                     class_dict=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                    prefix_list=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                     force_format="turtle", \
                                                     verbose=False))
 
@@ -44,6 +47,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     classes=[TARGET_CLASS_ALL], \
                                                     prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIX_ERRATA_FILE_PATH)), \
                                                     class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(CLASS_ERRATA_FILE_PATH)), \
+                                                    prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(CORRECT_PREFIXES_FILE_PATH)), \
                                                     force_format="nt", \
                                                     verbose=False))
 
