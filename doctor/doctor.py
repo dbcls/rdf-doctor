@@ -292,22 +292,32 @@ def validate_command_line_args(args):
             error_msg = 'Input format error: "' + args.force_format + '" is an unsupported input format. "' + TURTLE + '" and "' + NT + '" are supported.'
             return False, error_msg
 
+    # Prefix URIs dictionary file can be specified only in md/markdown mode
+    if args.prefix_dict != str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)) and args.report == REPORT_FORMAT_SHEX:
+        error_msg = 'Prefix URIs dictionary file error: Prefix URIs dictionary file can only be specified if "md"(same as "markdown") is specified in the -r, --report option.'
+        return False, error_msg
+
     if os.path.isfile(args.prefix_dict) == False:
-        error_msg = "Prefix dictionary file error: Prefix dictionary does not exist or you don't have read permission."
+        error_msg = "Prefix URIs dictionary file error: Prefix dictionary does not exist or you don't have read permission."
         return False, error_msg
 
     # Check if the file has read permission
     if os.access(args.prefix_dict, os.R_OK) == False:
-        error_msg = "Prefix dictionary file error: you don't have permission to read the input file."
+        error_msg = "Prefix URIs dictionary file error: you don't have permission to read the input file."
+        return False, error_msg
+
+    # Class URIs dictionary file can be specified only in md/markdown mode
+    if args.class_dict != str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)) and args.report == REPORT_FORMAT_SHEX:
+        error_msg = 'Class URIs dictionary file error: Class URIs dictionary file can only be specified if "md"(same as "markdown") is specified in the -r, --report option.'
         return False, error_msg
 
     if os.path.isfile(args.class_dict) == False:
-        error_msg = "Class dictionary file error: Class dictionary does not exist or you don't have read permission."
+        error_msg = "Class URIs dictionary file error: Class dictionary does not exist or you don't have read permission."
         return False, error_msg
 
     # Check if the file has read permission
     if os.access(args.class_dict, os.R_OK) == False:
-        error_msg = "Class dictionary file error: you don't have permission to read the input file."
+        error_msg = "Class URIs dictionary file error: you don't have permission to read the input file."
         return False, error_msg
 
     if os.path.isfile(args.prefix_list) == False:
