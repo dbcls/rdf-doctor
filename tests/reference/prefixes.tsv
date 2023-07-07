@@ -1,5 +1,6 @@
 chebi:	http://purl.obolibrary.org/obo/CHEBI_
 ex:	http://example.org/
+ex2:	http://example.org/
 foaf:	http://xmlns.com/foaf/0.1/
 obo:	http://purl.obolibrary.org/obo/
 rdf:	http://www.w3.org/1999/02/22-rdf-syntax-ns#

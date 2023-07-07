@@ -21,7 +21,8 @@ class TestGetSuggestedQName(unittest.TestCase):
         input_prefixes, _ = get_input_prefixes([input_file], None)
         correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
-        self.assertEqual(suggested_qname, ["Undefined\tex:\thttp://example.org/\n"])
+        self.assertEqual(suggested_qname, ["Undefined\tex:\thttp://example.org/\n", \
+                                            "Undefined\tex2:\thttp://example.org/\n"])
 
     def test_nt_2(self):
         input_file = NT_3
@@ -37,7 +38,8 @@ class TestGetSuggestedQName(unittest.TestCase):
         input_prefixes, _ = get_input_prefixes([input_file], None)
         correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
-        self.assertEqual(suggested_qname, ["Undefined\tobo:\thttp://purl.obolibrary.org/obo/\n", "Undefined\tuo:\thttp://purl.obolibrary.org/obo/\n"])
+        self.assertEqual(suggested_qname, ["Undefined\tobo:\thttp://purl.obolibrary.org/obo/\n", \
+                                            "Undefined\tuo:\thttp://purl.obolibrary.org/obo/\n"])
 
     def test_ttl_1(self):
         input_file = TTL_1
@@ -69,7 +71,9 @@ class TestGetSuggestedQName(unittest.TestCase):
         input_prefixes, _ = get_input_prefixes([input_file], None)
         correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
-        self.assertEqual(suggested_qname, ["pobo:\tobo:\thttp://purl.obolibrary.org/obo/\n", "pobo:\tuo:\thttp://purl.obolibrary.org/obo/\n"])
+        self.assertEqual(suggested_qname, ["pobo:\tobo:\thttp://purl.obolibrary.org/obo/\n", \
+                                            "pobo:\tuo:\thttp://purl.obolibrary.org/obo/\n", \
+                                            'oboc:\tchebi:\thttp://purl.obolibrary.org/obo/CHEBI_\n'])
 
     def test_nt_gz(self):
         input_file = NT_1_GZ
@@ -85,7 +89,8 @@ class TestGetSuggestedQName(unittest.TestCase):
         input_prefixes, _ = get_input_prefixes([input_file], GZ)
         correct_prefixes = get_correct_prefixes(str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)))
         suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
-        self.assertEqual(suggested_qname, ['Undefined\tex:\thttp://example.org/\n'])
+        self.assertEqual(suggested_qname, ['Undefined\tex:\thttp://example.org/\n', \
+                                            "Undefined\tex2:\thttp://example.org/\n"])
 
     def test_ttl_gz(self):
         input_file = TTL_1_GZ

@@ -697,6 +697,8 @@ def get_correct_prefixes(prefix_list_file):
 # and get the matching QName from the prefix list
 def get_suggested_qname(shaper_result, input_prefixes, correct_prefixes):
     suggest_qname = []
+
+    # Comparison of prefix list and minimal URI detected by shaXer
     for line in shaper_result.splitlines():
         if ("[<http" in line and ">~]" in line):
             exists_in_input_prefix = False
@@ -715,7 +717,7 @@ def get_suggested_qname(shaper_result, input_prefixes, correct_prefixes):
             is_input_correct_qname = False
             for correct_prefix in correct_prefixes:
                 append_str = input_qname + "\t" + correct_prefix[0]+"\t"+shaper_result_uri+"\n"
-                if (shaper_result_uri == correct_prefix[1] and append_str not in suggest_qname):
+                if shaper_result_uri == correct_prefix[1] and append_str not in suggest_qname:
                     if exists_in_input_prefix:
                         # If the prefixes defined in the input file include those with the same URI,
                         # add them to the list only if the QName is different
@@ -731,6 +733,26 @@ def get_suggested_qname(shaper_result, input_prefixes, correct_prefixes):
 
             if is_input_correct_qname == False:
                 suggest_qname.extend(tmp_suggest_qname)
+
+    # Comparing of prefix list and prefixes in input file
+    for input_prefix in input_prefixes:
+        tmp_suggest_qname = []
+        is_input_correct_qname = False
+        for correct_prefix in correct_prefixes:
+            append_str = input_prefix[0] + "\t" + correct_prefix[0]+"\t"+input_prefix[1]+"\n"
+            if input_prefix[1] == correct_prefix[1] and append_str not in suggest_qname:
+                # If the prefixes defined in the input file include those with the same URI,
+                # add them to the list only if the QName is different
+                if input_prefix[0] != correct_prefix[0]:
+                    tmp_suggest_qname.append(append_str)
+                else:
+                    # If the QName defined in the input file is also included in the prefix list,
+                    # do not suggest another QName with the same URI in the prefix list
+                    is_input_correct_qname = True
+                    break
+
+        if is_input_correct_qname == False:
+            suggest_qname.extend(tmp_suggest_qname)
 
     return suggest_qname
 
