@@ -11,8 +11,8 @@ import datetime
 import threading
 import queue
 from doctor.consts import VERSION_FILE, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
-                            TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, PREFIX_LIST_FILE_PATH, \
-                            CLASS_URI_ERRATA_FILE_PATH, PREFIX_URI_ERRATA_FILE_PATH, HELP_LINK_URL
+                            TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, PREFIXES_FILE_PATH, \
+                            REFINE_CLASS_URIS_FILE_PATH, REFINE_PREFIX_URIS_FILE_PATH, HELP_LINK_URL
 from shexer.shaper import Shaper
 from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
 from unidecode import unidecode
@@ -81,7 +81,7 @@ def doctor():
         print ("Keyboard interrupt occurred.")
 
     except:
-        print("An exception error occurred. Input data format may not be correct. Please review the data.")
+        print("An exception error has occurred. There may be a problem with your input data. Please review the data.")
 
     return
 
@@ -155,21 +155,21 @@ def get_command_line_args(args):
                         help="set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...",
                         metavar="URL")
 
-    # Prefix errata file path(-p, --prefix-dict [FILE]、default: reference/refine-prefix-uris.tsv)
+    # Prefix URI dictionary file path(-p, --prefix-dict [FILE]、default: reference/refine-prefix-uris.tsv)
     parser.add_argument("-p","--prefix-dict", type=str,
-                        default=str(Path(__file__).resolve().parent.joinpath(PREFIX_URI_ERRATA_FILE_PATH)),
-                        help='(only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing incorrect and correct URI pairs for the prefix (default: predefined file in rdf-doctor)',
+                        default=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)),
+                        help='(only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor)',
                         metavar="FILE")
 
-    # Class errata file path(-l, --class-dict [FILE]、default: reference/refine-class-uris.tsv)
+    # Class URI dictionary file path(-l, --class-dict [FILE]、default: reference/refine-class-uris.tsv)
     parser.add_argument("-l","--class-dict", type=str,
-                        default=str(Path(__file__).resolve().parent.joinpath(CLASS_URI_ERRATA_FILE_PATH)),
-                        help='(only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)',
+                        default=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)),
+                        help='(only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the class (default: predefined file in rdf-doctor)',
                         metavar="FILE")
 
     # Prefix list file path(-x, --prefix-list [FILE]、default: reference/prefixes.tsv)
     parser.add_argument("-x","--prefix-list", type=str,
-                        default=str(Path(__file__).resolve().parent.joinpath(PREFIX_LIST_FILE_PATH)),
+                        default=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)),
                         help="list of prefixes (default: predefined file in rdf-doctor)",
                         metavar="FILE")
 
@@ -354,8 +354,8 @@ def get_shex_result(args, input_format, compression_mode, result_queue):
         print_overwrite(get_dt_now() + " -- Creating suggestions for QName...")
 
     result_suggested_qname = []
-    correct_prefixes = get_correct_prefixes(args.prefix_list)
-    suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
+    widely_used_prefixes = get_widely_used_prefixes(args.prefix_list)
+    suggested_qname = get_suggested_qname(shaper_result, input_prefixes, widely_used_prefixes)
     if len(suggested_qname) != 0:
         result_suggested_qname.append("# There is a more widely used QName.\n\n")
         result_suggested_qname.append("# Input-QName\tWidely-used-QName\tDetected URI\n")
@@ -405,19 +405,19 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
         result_prefix_reuse_percentage.append(str(prefix_reuse_percentage) + "%\n")
         result_prefix_reuse_percentage.append("```\n\n")
 
-    # Refer to the errata of prefixes and obtain a list for result output that combines incorrect prefixes and correct prefixes
+    # Refer to the dictionary of prefix URIs and obtain a list that combines candidate pairs of URI rewrite source and rewrite destination
     if args.verbose:
-        print_overwrite(get_dt_now() + " -- Comparing with prefix dictionary (errata)...")
+        print_overwrite(get_dt_now() + " -- Comparing with prefix URIs dictionary...")
 
-    result_prefix_errata = []
+    result_refine_prefix_uris = []
     prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
     # When there is data to output
     if len(prefix_comparison_result) != 0:
-        result_prefix_errata.append("Found prefixes that looks incorrect.\n")
-        result_prefix_errata.append("```\n")
-        result_prefix_errata.append("Input-QName\tInput-prefix-URI\tSuggested-prefix-URI\n")
-        result_prefix_errata.extend(prefix_comparison_result)
-        result_prefix_errata.append("```\n\n")
+        result_refine_prefix_uris.append("Found a more widely used one for the prefix URI inputed.\n")
+        result_refine_prefix_uris.append("```\n")
+        result_refine_prefix_uris.append("Input-QName\tInput-prefix-URI\tSuggested-prefix-URI\n")
+        result_refine_prefix_uris.extend(prefix_comparison_result)
+        result_refine_prefix_uris.append("```\n\n")
 
     result_duplicated_prefixes = []
     if len(duplicated_prefixes) != 0:
@@ -434,20 +434,20 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
     # Processing related to classes -------------------
     input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
 
-    # Refers to the errata list of the class, acquires the list for result output that combines the incorrect class and the correct class,
-    # and returns the class corresponding to each key in fingerprint format stored in dictionary format.
+    # Refers to the class URIs dictionary, acquires the list for result output that candidate pairs of URI rewrite source and rewrite destinations,
+    # and generate the class corresponding to each key in fingerprint format stored in dictionary format.
     if args.verbose:
-        print_overwrite(get_dt_now() + " -- Comparing with class dictionary (errata)...")
+        print_overwrite(get_dt_now() + " -- Comparing with class URIs dictionary...")
 
-    result_class_errata = []
+    result_refine_class_uris = []
     class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_dict)
     # When there is data to output
     if len(class_comparison_result) != 0:
-        result_class_errata.append("Found class names that looks incorrect.\n")
-        result_class_errata.append("```\n")
-        result_class_errata.append("Input-class-URI\tSuggested-class-URI\n")
-        result_class_errata.extend(class_comparison_result)
-        result_class_errata.append("```\n\n")
+        result_refine_class_uris.append("Found a more widely used one for the class URI inputed.\n")
+        result_refine_class_uris.append("```\n")
+        result_refine_class_uris.append("Input-class-URI\tSuggested-class-URI\n")
+        result_refine_class_uris.extend(class_comparison_result)
+        result_refine_class_uris.append("```\n\n")
 
     # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
     if args.verbose:
@@ -457,7 +457,7 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
     fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
     # When there is data to output
     if len(fingerprint_comparison_result) != 0:
-        result_class_fingerprint.append("Found multiple strings that appear to represent the same class name.\n")
+        result_class_fingerprint.append("Found multiple strings that appear to represent the same class.\n")
         result_class_fingerprint.append("```")
         result_class_fingerprint.extend(fingerprint_comparison_result)
         result_class_fingerprint.append("\n```\n\n")
@@ -476,16 +476,16 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
     # Merge result
     md_final_result.extend(result_prefix_reuse_percentage)
 
-    prefix_result_exists = len(result_prefix_errata) != 0
+    prefix_result_exists = len(result_refine_prefix_uris) != 0
     if prefix_result_exists:
         md_final_result.append("## Refine prefix URIs ([?](" + HELP_LINK_URL + "))\n")
-        md_final_result.extend(result_prefix_errata)
+        md_final_result.extend(result_refine_prefix_uris)
         md_final_result.extend(result_duplicated_prefixes)
 
-    class_result_exists = len(result_class_errata) != 0 or len(result_class_fingerprint) != 0
+    class_result_exists = len(result_refine_class_uris) != 0 or len(result_class_fingerprint) != 0
     if class_result_exists:
         md_final_result.append("## Refine class URIs ([?](" + HELP_LINK_URL + "))\n")
-        md_final_result.extend(result_class_errata)
+        md_final_result.extend(result_refine_class_uris)
         md_final_result.extend(result_class_fingerprint)
 
     result_queue.put(md_final_result)
@@ -527,20 +527,20 @@ def get_shaper_result(args, input_format, compression_mode, input_prefixes):
 # and returns it after rounding to the second decimal place.
 # If the prefix is not detected, do not calculate and return None.
 def get_prefix_reuse_percentage(input_prefixes, prefix_list_file):
-    correct_prefixes = get_correct_prefixes(prefix_list_file)
+    widely_used_prefixes = get_widely_used_prefixes(prefix_list_file)
 
     input_prefixes_count = len(input_prefixes)
     if input_prefixes_count == 0:
         return None
     else:
-        correct_count = 0
+        reuse_count = 0
         for prefix in input_prefixes:
-            for correct_prefix in correct_prefixes:
-                if prefix[1] == correct_prefix[1]:
-                    correct_count+=1
+            for widely_used_prefix in widely_used_prefixes:
+                if prefix[1] == widely_used_prefix[1]:
+                    reuse_count+=1
                     break
 
-        prefix_reuse_percentage = round(correct_count / input_prefixes_count * 100, 2)
+        prefix_reuse_percentage = round(reuse_count / input_prefixes_count * 100, 2)
         return prefix_reuse_percentage
 
 
@@ -582,35 +582,35 @@ def get_input_classes(input_files, input_format, compression_mode, target_classe
     return input_classes
 
 
-# Return class errata in a two-dimensional array
-def get_class_errata(class_errata_file):
-    with open(class_errata_file, mode="r", newline="\n", encoding="utf-8") as f:
+# Return contents of class URIs dictionary in a two-dimensional array
+def get_refine_class_uris(refine_class_uris_file):
+    with open(refine_class_uris_file, mode="r", newline="\n", encoding="utf-8") as f:
         tsv_reader = csv.reader(f, delimiter="\t")
-        class_errata = [row for row in tsv_reader]
+        refine_class_uris = [row for row in tsv_reader]
 
-    return class_errata
+    return refine_class_uris
 
 
-# Return prefix errata in a two-dimensional array
-def get_prefix_errata(prefix_errata_file):
-    with open(prefix_errata_file, mode="r", newline="\n", encoding="utf-8") as f:
+# Return contents of prefix URIs dictionary file in a two-dimensional array
+def get_refine_prefix_uris(refine_prefix_uris_file):
+    with open(refine_prefix_uris_file, mode="r", newline="\n", encoding="utf-8") as f:
         tsv_reader = csv.reader(f, delimiter="\t")
-        prefix_errata = [row for row in tsv_reader]
+        refine_prefix_uris = [row for row in tsv_reader]
 
-    return prefix_errata
+    return refine_prefix_uris
 
 
-# Get a combined list of incorrect and correct classes obtained by referencing the class errata list.
+# Get a list of candidate pairs of URI rewrite source and rewrite destination by referencing the class URLs dictionary.
 # Create a dictionary with a class corresponding to each key in the stored fingerprint format.
 # Return the two.
-def get_class_comparison_result(input_classes, class_errata_file):
-    class_errata = get_class_errata(class_errata_file)
+def get_class_comparison_result(input_classes, refine_class_uris_file):
+    refine_class_uris = get_refine_class_uris(refine_class_uris_file)
     class_comparison_result = []
     fingerprint_class_dict = defaultdict(list)
     # Perform clustering by fingerprint for the acquired class name
     for input_class in input_classes:
         fingerprint_class_dict[fingerprint(input_class)].append(input_class)
-        for eratta in class_errata:
+        for eratta in refine_class_uris:
             if input_class == eratta[0]:
                 class_comparison_result.append(input_class+"\t"+eratta[1]+"\n")
                 break
@@ -618,14 +618,14 @@ def get_class_comparison_result(input_classes, class_errata_file):
     return class_comparison_result, fingerprint_class_dict
 
 
-# Refer to the errata of prefixes and obtain a list that combines incorrect prefixes and correct prefixes
-def get_prefix_comparison_result(input_prefixes, prefix_errata_file):
-    prefix_errata = get_prefix_errata(prefix_errata_file)
+# Refer to the dictionary of prefix URIs and obtain a list that combines candidate pairs of URI rewrite source and rewrite destination
+def get_prefix_comparison_result(input_prefixes, refine_prefix_uris_file):
+    refine_prefix_uris = get_refine_prefix_uris(refine_prefix_uris_file)
     prefix_comparison_result = []
 
     # Perform clustering by fingerprint for the acquired class name
     for input_prefix in input_prefixes:
-        for eratta in prefix_errata:
+        for eratta in refine_prefix_uris:
             if input_prefix[1] == eratta[0] and eratta[1] != "":
                 prefix_comparison_result.append(str(input_prefix[0]+"\t"+input_prefix[1]+"\t"+eratta[1]+"\n"))
                 break
@@ -684,18 +684,18 @@ def get_input_prefixes(input_files, compression_mode):
     return input_prefixes, duplicated_prefixes_list
 
 
-# Get the correct prefix from a prepared prefix list
-def get_correct_prefixes(prefix_list_file):
+# Get the widely used prefix from a prepared prefix list
+def get_widely_used_prefixes(prefix_list_file):
     with open(prefix_list_file, mode="r", newline="\n", encoding="utf-8") as f:
         tsv_reader = csv.reader(f, delimiter="\t")
-        correct_prefixes = [row for row in tsv_reader]
+        widely_used_prefixes = [row for row in tsv_reader]
 
-    return correct_prefixes
+    return widely_used_prefixes
 
 
 # Compare the URI of the validation expression in the shexer output with the URI of the prepared prefix list
 # and get the matching QName from the prefix list
-def get_suggested_qname(shaper_result, input_prefixes, correct_prefixes):
+def get_suggested_qname(shaper_result, input_prefixes, widely_used_prefixes):
     suggest_qname = []
 
     # Comparison of prefix list and minimal URI detected by shaXer
@@ -714,44 +714,44 @@ def get_suggested_qname(shaper_result, input_prefixes, correct_prefixes):
                     break
 
             tmp_suggest_qname = []
-            is_input_correct_qname = False
-            for correct_prefix in correct_prefixes:
-                append_str = input_qname + "\t" + correct_prefix[0]+"\t"+shaper_result_uri+"\n"
-                if shaper_result_uri == correct_prefix[1] and append_str not in suggest_qname:
+            is_included_list = False
+            for widely_used_prefix in widely_used_prefixes:
+                append_str = input_qname + "\t" + widely_used_prefix[0]+"\t"+shaper_result_uri+"\n"
+                if shaper_result_uri == widely_used_prefix[1] and append_str not in suggest_qname:
                     if exists_in_input_prefix:
                         # If the prefixes defined in the input file include those with the same URI,
                         # add them to the list only if the QName is different
-                        if correct_prefix[0] != input_qname:
+                        if widely_used_prefix[0] != input_qname:
                             tmp_suggest_qname.append(append_str)
                         else:
                             # If the QName defined in the input file is also included in the prefix list,
                             # do not suggest another QName with the same URI in the prefix list
-                            is_input_correct_qname = True
+                            is_included_list = True
                             break
                     else:
                         suggest_qname.append(append_str)
 
-            if is_input_correct_qname == False:
+            if is_included_list == False:
                 suggest_qname.extend(tmp_suggest_qname)
 
     # Comparing of prefix list and prefixes in input file
     for input_prefix in input_prefixes:
         tmp_suggest_qname = []
-        is_input_correct_qname = False
-        for correct_prefix in correct_prefixes:
-            append_str = input_prefix[0] + "\t" + correct_prefix[0]+"\t"+input_prefix[1]+"\n"
-            if input_prefix[1] == correct_prefix[1] and append_str not in suggest_qname:
+        is_included_list = False
+        for widely_used_prefix in widely_used_prefixes:
+            append_str = input_prefix[0] + "\t" + widely_used_prefix[0]+"\t"+input_prefix[1]+"\n"
+            if input_prefix[1] == widely_used_prefix[1] and append_str not in suggest_qname:
                 # If the prefixes defined in the input file include those with the same URI,
                 # add them to the list only if the QName is different
-                if input_prefix[0] != correct_prefix[0]:
+                if input_prefix[0] != widely_used_prefix[0]:
                     tmp_suggest_qname.append(append_str)
                 else:
                     # If the QName defined in the input file is also included in the prefix list,
                     # do not suggest another QName with the same URI in the prefix list
-                    is_input_correct_qname = True
+                    is_included_list = True
                     break
 
-        if is_input_correct_qname == False:
+        if is_included_list == False:
             suggest_qname.extend(tmp_suggest_qname)
 
     return suggest_qname

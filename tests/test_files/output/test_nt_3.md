@@ -10,13 +10,13 @@ Not calculated because there is no prefix defined.
 ```
 
 ## Refine class URIs ([?](https://github.com/dbcls/rdf-doctor#output-description))
-Found class names that looks incorrect.
+Found a more widely used one for the class URI inputed.
 ```
 Input-class-URI	Suggested-class-URI
 http://xmlns.com/foaf/0.1#Document	http://xmlns.com/foaf/0.1/Document
 ```
 
-Found multiple strings that appear to represent the same class name.
+Found multiple strings that appear to represent the same class.
 ```
 http://xmlns.com/foaf/0.1/Document
 http://xmlns.com/foaf/0.1#Document

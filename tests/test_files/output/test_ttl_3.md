@@ -10,14 +10,14 @@ Percentage of prefixes used in the input file that are included in the predefine
 ```
 
 ## Refine prefix URIs ([?](https://github.com/dbcls/rdf-doctor#output-description))
-Found prefixes that looks incorrect.
+Found a more widely used one for the prefix URI inputed.
 ```
 Input-QName	Input-prefix-URI	Suggested-prefix-URI
 chebi:	http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A	http://purl.obolibrary.org/obo/CHEBI_
 ```
 
 ## Refine class URIs ([?](https://github.com/dbcls/rdf-doctor#output-description))
-Found multiple strings that appear to represent the same class name.
+Found multiple strings that appear to represent the same class.
 ```
 http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APerson
 http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APErson

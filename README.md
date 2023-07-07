@@ -42,9 +42,13 @@ options:
   -c URL [URL ...], --classes URL [URL ...]
                         set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...
   -p FILE, --prefix-dict FILE
-                        path to a tab delimited file listing incorrect and correct URI pairs for the prefix (default: predefined file in rdf-doctor)
+                        (only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for
+                        the prefix (default: predefined file in rdf-doctor)
   -l FILE, --class-dict FILE
-                        path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)
+                        (only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for
+                        the class (default: predefined file in rdf-doctor)
+  -x FILE, --prefix-list FILE
+                        list of prefixes (default: predefined file in rdf-doctor)
   -f INPUT-FORMAT, --force-format INPUT-FORMAT
                         This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle" or "nt" can be specified.
 ```
@@ -121,14 +125,14 @@ PREFIX xml: <http://www.w3.org/XML/1998/namespace/>
 
 # Duplicate prefixes found.
 
-# Input QName	URI
+# Input-QName	Input-prefix-URI
 # ex:	http://example.org1/
 # ex:	http://example.org2/
 
 
-# There may be a better QName.
+# There is a more widely used QName.
 
-# Input QName	Suggested QName	URI
+# Input-QName	Widely-used-QName	Detected URI
 # pobo:	obo:	http://purl.obolibrary.org/obo/
 # pobo:	uo:	http://purl.obolibrary.org/obo/
 ```
@@ -146,28 +150,28 @@ Percentage of prefixes used in the input file that are included in the predefine
 57.14%
 ```
 
-## Refine prefixes ([?](https://github.com/dbcls/rdf-doctor#output-description))
-Found prefixes that looks incorrect.
+## Refine prefix URIs ([?](https://github.com/dbcls/rdf-doctor#output-description))
+Found a more widely used one for the prefix URI inputed.
 ```
-Prefix	Input URI	Suggested URI
+Input-QName	Input-prefix-URI	Suggested-prefix-URI
 chebi:	http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A	http://purl.obolibrary.org/obo/CHEBI_
 ```
 
 Duplicate prefixes found.
 ```
-Input QName	URI
+Input-QName	Input-prefix-URI
 ex:	http://example.org1/
 ex:	http://example.org2/
 ```
 
-## Refine classes ([?](https://github.com/dbcls/rdf-doctor#output-description))
-Found class names that looks incorrect.
+## Refine class URIs ([?](https://github.com/dbcls/rdf-doctor#output-description))
+Found a more widely used one for the class URI inputed.
 ```
-Input class name	Suggested class name
+Input-class-URI	Suggested-class-URI
 http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APErson	http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APerson
 ```
 
-Found multiple strings that appear to represent the same class name.
+Found multiple strings that appear to represent the same class.
 ```
 http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APerson
 http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APErson
@@ -180,20 +184,19 @@ http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADOCUMENT
 
 
 ## Example of dictionary file
-You can specify arbitrary dictionary files (errata) for prefixes and class URIs. It is a file in which pairs of incorrect URIs and correct URIs are tab-separated, one per line, as shown below.
+You can specify arbitrary dictionary files for prefixes and class URIs. It is a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination, one per line, as shown below. This dictionary file is used only if -r or --report option is specified as md (same as markdown).
 Specify -p , --prefix-dict for prefix, -l, --class-dict for class, followed by file.
 See: https://github.com/dbcls/rdf-doctor#command-line-interface
 ```
-http://incorrect/uri1	http://correct/uri1
-http://incorrect/uri2	http://correct/uri2
-http://incorrect/uri3	http://correct/uri3
+http://candidate/for/rewrite/source/uri1	http://candidate/for/rewriting/destination/uri1
+http://candidate/for/rewrite/source/uri2	http://candidate/for/rewriting/destination/uri2
+http://candidate/for/rewrite/source/uri3	http://candidate/for/rewriting/destination/uri3
 ```
 
 
 ## Output Description
 * **Prefix reuse percentage**: Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.
 
-* **Refine prefixes**: The URI entered as a prefix is checked against a list (errata) defined inside rdf-doctor, and if there is matching information, output as correction suggestions.
-Also, if a prefix with the same QName but a different URI is found, it is output as a correction suggestion.
+* **Refine prefix URIs**: The URI entered as a prefix is checked against a list defined inside rdf-doctor (or specified by -p option), and if there is matching information, output as correction suggestions. Also, if a prefix with the same QName but a different URI is found, it is output as a correction suggestion.
 
-* **Refine classes**: The URI of the input class is checked against the list (errata) defined inside rdf-doctor, and if there is matching information, the correct URI is suggested. Also, if the URI of the input class is converted to a key string using the fingerprinting method and multiple different strings are found even though the key strings match, they may represent the same class. Output as correction suggestions.
+* **Refine class URIs**: The URI of the input class is checked against the list defined inside rdf-doctor (or specified by -l option), and if there is matching information, a candidate rewrite URI is suggested. Also, if the URI of the input class is converted to a key string using the fingerprinting method and multiple different strings are found even though the key strings match, they may represent the same class. Output as correction suggestions.
