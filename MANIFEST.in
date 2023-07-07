@@ -1,3 +1,3 @@
 include doctor/reference/prefixes.tsv
-include doctor/reference/refine-classes.tsv
-include doctor/reference/refine-prefixes.tsv
+include doctor/reference/refine-class-uris.tsv
+include doctor/reference/refine-prefix-uris.tsv

@@ -14,11 +14,11 @@ EXTENSION_TTL = ".ttl"
 EXTENSION_GZ = ".gz"
 
 # Correct prefix list file path
-CORRECT_PREFIXES_FILE_PATH = "reference/prefixes.tsv"
+PREFIX_LIST_FILE_PATH = "reference/prefixes.tsv"
 
 # Errata
-CLASS_ERRATA_FILE_PATH = "reference/refine-classes.tsv"
-PREFIX_ERRATA_FILE_PATH = "reference/refine-prefixes.tsv"
+CLASS_URI_ERRATA_FILE_PATH = "reference/refine-class-uris.tsv"
+PREFIX_URI_ERRATA_FILE_PATH = "reference/refine-prefix-uris.tsv"
 
 # Help link URL
 HELP_LINK_URL = "https://github.com/dbcls/rdf-doctor#output-description"

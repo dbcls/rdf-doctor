@@ -11,8 +11,8 @@ import datetime
 import threading
 import queue
 from doctor.consts import VERSION_FILE, REPORT_FORMAT_SHEX, REPORT_FORMAT_MD, REPORT_FORMAT_MARKDOWN, \
-                            TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, CORRECT_PREFIXES_FILE_PATH, \
-                            CLASS_ERRATA_FILE_PATH, PREFIX_ERRATA_FILE_PATH, HELP_LINK_URL
+                            TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_GZ, PREFIX_LIST_FILE_PATH, \
+                            CLASS_URI_ERRATA_FILE_PATH, PREFIX_URI_ERRATA_FILE_PATH, HELP_LINK_URL
 from shexer.shaper import Shaper
 from shexer.consts import NT, TURTLE, GZ, MIXED_INSTANCES
 from unidecode import unidecode
@@ -155,21 +155,21 @@ def get_command_line_args(args):
                         help="set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...",
                         metavar="URL")
 
-    # Prefix errata file path(-p, --prefix-dict [FILE]、default: reference/refine-prefixes.tsv)
+    # Prefix errata file path(-p, --prefix-dict [FILE]、default: reference/refine-prefix-uris.tsv)
     parser.add_argument("-p","--prefix-dict", type=str,
-                        default=str(Path(__file__).resolve().parent.joinpath(PREFIX_ERRATA_FILE_PATH)),
-                        help="path to a tab delimited file listing incorrect and correct URI pairs for the prefix (default: predefined file in rdf-doctor)",
+                        default=str(Path(__file__).resolve().parent.joinpath(PREFIX_URI_ERRATA_FILE_PATH)),
+                        help='(only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing incorrect and correct URI pairs for the prefix (default: predefined file in rdf-doctor)',
                         metavar="FILE")
 
-    # Class errata file path(-l, --class-dict [FILE]、default: reference/refine-classes.tsv)
+    # Class errata file path(-l, --class-dict [FILE]、default: reference/refine-class-uris.tsv)
     parser.add_argument("-l","--class-dict", type=str,
-                        default=str(Path(__file__).resolve().parent.joinpath(CLASS_ERRATA_FILE_PATH)),
-                        help="path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)",
+                        default=str(Path(__file__).resolve().parent.joinpath(CLASS_URI_ERRATA_FILE_PATH)),
+                        help='(only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)',
                         metavar="FILE")
 
     # Prefix list file path(-x, --prefix-list [FILE]、default: reference/prefixes.tsv)
     parser.add_argument("-x","--prefix-list", type=str,
-                        default=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)),
+                        default=str(Path(__file__).resolve().parent.joinpath(PREFIX_LIST_FILE_PATH)),
                         help="list of prefixes (default: predefined file in rdf-doctor)",
                         metavar="FILE")
 
