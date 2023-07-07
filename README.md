@@ -132,7 +132,7 @@ PREFIX xml: <http://www.w3.org/XML/1998/namespace/>
 
 # There is a more widely used QName.
 
-# Input-QName	Widely-used-QName	Detected URI
+# Input-QName	Widely-used-QName	URI
 # pobo:	obo:	http://purl.obolibrary.org/obo/
 # pobo:	uo:	http://purl.obolibrary.org/obo/
 ```
