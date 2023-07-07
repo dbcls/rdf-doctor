@@ -167,7 +167,7 @@ def get_command_line_args(args):
                         help="path to a tab delimited file listing incorrect and correct URI pairs for the class (default: predefined file in rdf-doctor)",
                         metavar="FILE")
 
-    # Prefix list file path(-x, --prefix-list [FILE]、default: reference/correct-prefixes.tsv)
+    # Prefix list file path(-x, --prefix-list [FILE]、default: reference/prefixes.tsv)
     parser.add_argument("-x","--prefix-list", type=str,
                         default=str(Path(__file__).resolve().parent.joinpath(CORRECT_PREFIXES_FILE_PATH)),
                         help="list of prefixes (default: predefined file in rdf-doctor)",
@@ -345,11 +345,11 @@ def get_shex_result(args, input_format, compression_mode, result_queue):
     if len(duplicated_prefixes) != 0:
         result_duplicated_prefixes.append("# Duplicate prefixes found.\n")
         result_duplicated_prefixes.append("\n")
-        result_duplicated_prefixes.append("# Input QName\tURI\n")
+        result_duplicated_prefixes.append("# Input-QName\tInput-prefix-URI\n")
         result_duplicated_prefixes.extend(["# " + s for s in duplicated_prefixes])
         result_duplicated_prefixes.append("\n\n")
 
-    # Suggest QName based on URI of validation expression output by sheXer and correct-prefixes.tsv
+    # Suggest QName based on URI of validation expression output by sheXer and prefixes.tsv
     if args.verbose:
         print_overwrite(get_dt_now() + " -- Creating suggestions for QName...")
 
@@ -357,8 +357,8 @@ def get_shex_result(args, input_format, compression_mode, result_queue):
     correct_prefixes = get_correct_prefixes(args.prefix_list)
     suggested_qname = get_suggested_qname(shaper_result, input_prefixes, correct_prefixes)
     if len(suggested_qname) != 0:
-        result_suggested_qname.append("# There may be a better QName.\n\n")
-        result_suggested_qname.append("# Input QName\tSuggested QName\tURI\n")
+        result_suggested_qname.append("# There is a more widely used QName.\n\n")
+        result_suggested_qname.append("# Input-QName\tWidely-used-QName\tDetected URI\n")
         result_suggested_qname.extend(["# " + s for s in suggested_qname])
         result_suggested_qname.append("\n")
 
@@ -415,7 +415,7 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
     if len(prefix_comparison_result) != 0:
         result_prefix_errata.append("Found prefixes that looks incorrect.\n")
         result_prefix_errata.append("```\n")
-        result_prefix_errata.append("Prefix\tInput URI\tSuggested URI\n")
+        result_prefix_errata.append("Input-QName\tInput-prefix-URI\tSuggested-prefix-URI\n")
         result_prefix_errata.extend(prefix_comparison_result)
         result_prefix_errata.append("```\n\n")
 
@@ -423,7 +423,7 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
     if len(duplicated_prefixes) != 0:
         result_duplicated_prefixes.append("Duplicate prefixes found.\n")
         result_duplicated_prefixes.append("```\n")
-        result_duplicated_prefixes.append("Input QName\tURI\n")
+        result_duplicated_prefixes.append("Input-QName\tInput-prefix-URI\n")
         result_duplicated_prefixes.extend([s for s in duplicated_prefixes])
         result_duplicated_prefixes.append("```\n\n")
     # -------------------------------------------------
@@ -445,7 +445,7 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
     if len(class_comparison_result) != 0:
         result_class_errata.append("Found class names that looks incorrect.\n")
         result_class_errata.append("```\n")
-        result_class_errata.append("Input class name\tSuggested class name\n")
+        result_class_errata.append("Input-class-URI\tSuggested-class-URI\n")
         result_class_errata.extend(class_comparison_result)
         result_class_errata.append("```\n\n")
 
@@ -478,13 +478,13 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
 
     prefix_result_exists = len(result_prefix_errata) != 0
     if prefix_result_exists:
-        md_final_result.append("## Refine prefixes ([?](" + HELP_LINK_URL + "))\n")
+        md_final_result.append("## Refine prefix URIs ([?](" + HELP_LINK_URL + "))\n")
         md_final_result.extend(result_prefix_errata)
         md_final_result.extend(result_duplicated_prefixes)
 
     class_result_exists = len(result_class_errata) != 0 or len(result_class_fingerprint) != 0
     if class_result_exists:
-        md_final_result.append("## Refine classes ([?](" + HELP_LINK_URL + "))\n")
+        md_final_result.append("## Refine class URIs ([?](" + HELP_LINK_URL + "))\n")
         md_final_result.extend(result_class_errata)
         md_final_result.extend(result_class_fingerprint)
 

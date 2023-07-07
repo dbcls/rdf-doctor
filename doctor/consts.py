@@ -14,7 +14,7 @@ EXTENSION_TTL = ".ttl"
 EXTENSION_GZ = ".gz"
 
 # Correct prefix list file path
-CORRECT_PREFIXES_FILE_PATH = "reference/correct-prefixes.tsv"
+CORRECT_PREFIXES_FILE_PATH = "reference/prefixes.tsv"
 
 # Errata
 CLASS_ERRATA_FILE_PATH = "reference/refine-classes.tsv"
