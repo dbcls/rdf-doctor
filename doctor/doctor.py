@@ -368,7 +368,7 @@ def get_shex_result(args, input_format, compression_mode, result_queue):
     suggested_qname = get_suggested_qname(shaper_result, input_prefixes, widely_used_prefixes)
     if len(suggested_qname) != 0:
         result_suggested_qname.append("# There is a more widely used QName.\n\n")
-        result_suggested_qname.append("# Input-QName\tWidely-used-QName\tDetected URI\n")
+        result_suggested_qname.append("# Input-QName\tWidely-used-QName\tURI\n")
         result_suggested_qname.extend(["# " + s for s in suggested_qname])
         result_suggested_qname.append("\n")
 
