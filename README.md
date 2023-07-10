@@ -42,13 +42,11 @@ options:
   -c URL [URL ...], --classes URL [URL ...]
                         set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...
   -p FILE, --prefix-dict FILE
-                        (only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for
-                        the prefix (default: predefined file in rdf-doctor)
+                        (only when "-r md"(same as "-r markdown") is specified) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv)
   -l FILE, --class-dict FILE
-                        (only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for
-                        the class (default: predefined file in rdf-doctor)
+                        (only when "-r md"(same as "-r markdown") is specified) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the class (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-class-uris.tsv)
   -x FILE, --prefix-list FILE
-                        list of prefixes (default: predefined file in rdf-doctor)
+                        list of prefixes (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/prefixes.tsv)
   -f INPUT-FORMAT, --force-format INPUT-FORMAT
                         This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle" or "nt" can be specified.
 ```

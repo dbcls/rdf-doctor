@@ -158,19 +158,19 @@ def get_command_line_args(args):
     # Prefix URI dictionary file path(-p, --prefix-dict [FILE]、default: reference/refine-prefix-uris.tsv)
     parser.add_argument("-p","--prefix-dict", type=str,
                         default=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)),
-                        help='(only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor)',
+                        help='(only when "-r md"(same as "-r markdown") is specified) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv)',
                         metavar="FILE")
 
     # Class URI dictionary file path(-l, --class-dict [FILE]、default: reference/refine-class-uris.tsv)
     parser.add_argument("-l","--class-dict", type=str,
                         default=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)),
-                        help='(only when md(same as "markdown") is specified with -r, --report option) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the class (default: predefined file in rdf-doctor)',
+                        help='(only when "-r md"(same as "-r markdown") is specified) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the class (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-class-uris.tsv)',
                         metavar="FILE")
 
     # Prefix list file path(-x, --prefix-list [FILE]、default: reference/prefixes.tsv)
     parser.add_argument("-x","--prefix-list", type=str,
                         default=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)),
-                        help="list of prefixes (default: predefined file in rdf-doctor)",
+                        help="list of prefixes (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/prefixes.tsv)",
                         metavar="FILE")
 
     # input format (-f、--format [INPUT_FORMAT]、default: Standard output)
