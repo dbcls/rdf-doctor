@@ -191,7 +191,7 @@ See: https://github.com/dbcls/rdf-doctor#command-line-interface
 
 
 ## Example of prefix list
-You can specify arbitrary  files for prefix list. It is a tab delimited file listing QName and URI, one per line, as like [this](https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv).
+You can specify arbitrary  files for prefix list. It is a tab delimited file listing QName and URI, one per line, as like [this](https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/prefixes.tsv).
 This prefix list is used to calculate prefix reuse percentages(in "-r md") and to present widely used QName(in "-r shex").
 Specify -x, --prefix-list, followed by file.
 See: https://github.com/dbcls/rdf-doctor#command-line-interface
