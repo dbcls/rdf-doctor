@@ -195,7 +195,7 @@ http://candidate/for/rewrite/source/uri3	http://candidate/for/rewriting/destinat
 
 
 ## Output Description
-* **Prefix reuse percentage**: Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.
+* **Prefix reuse percentage**: Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor (or specified by -x option).
 
 * **Refine prefix URIs**: The URI entered as a prefix is checked against a list defined inside rdf-doctor (or specified by -p option), and if there is matching information, output as correction suggestions. Also, if a prefix with the same QName but a different URI is found, it is output as a correction suggestion.
 
