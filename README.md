@@ -132,7 +132,7 @@ PREFIX xml: <http://www.w3.org/XML/1998/namespace/>
 
 # Input-QName	Widely-used-QName	URI
 # pobo:	obo:	http://purl.obolibrary.org/obo/
-# pobo:	uo:	http://purl.obolibrary.org/obo/
+# oboc:	chebi:	http://purl.obolibrary.org/obo/CHEBI_
 ```
 
 ````
