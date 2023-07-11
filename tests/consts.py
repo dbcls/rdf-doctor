@@ -19,10 +19,15 @@ NT_1_GZ = BASE_DIR + "test_nt_1.nt.gz"
 NT_2_GZ = BASE_DIR + "test_nt_2.nt.gz"
 NT_3_GZ = BASE_DIR + "test_nt_3.nt.gz"
 
-OUTPUT_NT_1_GZ_MD = OUTPUT_DIR + "test_nt_1_gz.md"
 OUTPUT_NT_3_MD = OUTPUT_DIR + "test_nt_3.md"
-OUTPUT_TTL_1_GZ_MD = OUTPUT_DIR + "test_ttl_1_gz.md"
+OUTPUT_NT_1_2_3_MD = OUTPUT_DIR + "test_nt_1_2_3.md"
+OUTPUT_NT_1_GZ_MD = OUTPUT_DIR + "test_nt_1_gz.md"
+OUTPUT_NT_1_2_3_GZ_MD = OUTPUT_DIR + "test_nt_1_2_3_gz.md"
+
 OUTPUT_TTL_3_MD = OUTPUT_DIR + "test_ttl_3.md"
+OUTPUT_TTL_1_GZ_MD = OUTPUT_DIR + "test_ttl_1_gz.md"
+OUTPUT_TTL_1_2_3_MD = OUTPUT_DIR + "test_ttl_1_2_3.md"
+OUTPUT_TTL_1_2_3_GZ_MD = OUTPUT_DIR + "test_ttl_1_2_3_gz.md"
 
 PREFIXES_FILE_PATH = "reference/prefixes.tsv"
 REFINE_CLASS_URIS_FILE_PATH = "reference/refine-class-uris.tsv"
