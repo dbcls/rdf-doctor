@@ -62,11 +62,11 @@ $ rdf-doctor -i example_1.ttl
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX xmls: <http://www.w3.org/2001/XMLSchema#>
-PREFIX ex: <http://example.org1/>
 PREFIX ex: <http://example.org/>
+PREFIX ex: <https://example.org/>
 PREFIX : <http://weso.es/shapes/>
 
-:Person  [<http://example.org/>~]  AND   # 4 instances
+:Person  [<https://example.org/>~]  AND   # 4 instances
 {
    rdf:type  [foaf:Person]  ;                                  # 100.0 % (4 instances).
    foaf:name  xmls:string  ;                                   # 100.0 % (4 instances).
@@ -79,7 +79,7 @@ PREFIX : <http://weso.es/shapes/>
 }
 
 
-:Document  [<http://example.org/>~]  AND   # 2 instances
+:Document  [<https://example.org/>~]  AND   # 2 instances
 {
    rdf:type  [foaf:Document]  ;                                # 100.0 % (2 instances).
    foaf:title  xmls:string  ;                                  # 100.0 % (2 instances).
@@ -91,8 +91,8 @@ PREFIX : <http://weso.es/shapes/>
 # Duplicate prefixes found.
 
 # Input-QName   Input-prefix-URI
-# ex:   http://example.org1/
 # ex:   http://example.org/
+# ex:   https://example.org/
 
 
 # There is a more widely used QName.
