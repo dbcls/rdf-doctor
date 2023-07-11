@@ -182,20 +182,22 @@ http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADOCUMENT
 
 
 ## Example of dictionary file
-You can specify arbitrary dictionary files for prefixes and class URIs. It is a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination, one per line, as like [this](https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv).
+You can specify arbitrary dictionary files for prefixes and class URIs. It is a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination one per line like [this](https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv).
 This dictionary file is used only if -r or --report option is specified as md (same as markdown).
 Specify -p, --prefix-dict for prefix, -l, --class-dict for class, followed by file.
 See: https://github.com/dbcls/rdf-doctor#command-line-interface
 
 
 ## Example of prefix list
-You can specify arbitrary  files for prefix list. It is a tab delimited file listing QName and URI, one per line, as like [this](https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/prefixes.tsv).
+You can specify arbitrary files for prefix list. It is a tab delimited file listing QName and URI like [this](https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/prefixes.tsv).
 This prefix list is used to calculate prefix reuse percentages(in "-r md") and to present widely used QName(in "-r shex").
 Specify -x, --prefix-list, followed by file.
 See: https://github.com/dbcls/rdf-doctor#command-line-interface
 
 
 ## Output Description
+This is a description of the output when "-r md" (same as "-r markdown") is specified in the options.
+
 * **Prefix reuse percentage**: Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor (or specified by -x option).
 
 * **Refine prefix URIs**: The URI entered as a prefix is checked against a list defined inside rdf-doctor (or specified by -p option), and if there is matching information, output as correction suggestions. Also, if a prefix with the same QName but a different URI is found, it is output as a correction suggestion.
