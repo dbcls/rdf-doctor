@@ -363,14 +363,14 @@ def get_shex_result(args, input_format, compression_mode, result_queue):
     if args.verbose:
         print_overwrite(get_dt_now() + " -- Creating suggestions for QName...")
 
-    result_suggested_qname = []
+    result_widely_used_qname = []
     widely_used_prefixes = get_widely_used_prefixes(args.prefix_list)
-    suggested_qname = get_suggested_qname(shaper_result, input_prefixes, widely_used_prefixes)
-    if len(suggested_qname) != 0:
-        result_suggested_qname.append("# There is a more widely used QName.\n\n")
-        result_suggested_qname.append("# Input-QName\tWidely-used-QName\tURI\n")
-        result_suggested_qname.extend(["# " + s for s in suggested_qname])
-        result_suggested_qname.append("\n")
+    widely_used_qname = get_widely_used_qname(shaper_result, input_prefixes, widely_used_prefixes)
+    if len(widely_used_qname) != 0:
+        result_widely_used_qname.append("# There is a more widely used QName.\n\n")
+        result_widely_used_qname.append("# Input-QName\tWidely-used-QName\tURI\n")
+        result_widely_used_qname.extend(["# " + s for s in widely_used_qname])
+        result_widely_used_qname.append("\n")
 
     # List for storing the final result
     shex_final_result = []
@@ -378,8 +378,8 @@ def get_shex_result(args, input_format, compression_mode, result_queue):
     if len(result_duplicated_prefixes) != 0:
         shex_final_result.extend(result_duplicated_prefixes)
 
-    if len(result_suggested_qname) != 0:
-        shex_final_result.extend(result_suggested_qname)
+    if len(result_widely_used_qname) != 0:
+        shex_final_result.extend(result_widely_used_qname)
 
     result_queue.put(shex_final_result)
 
@@ -705,8 +705,8 @@ def get_widely_used_prefixes(prefix_list_file):
 
 # Compare the URI of the validation expression in the shexer output with the URI of the prepared prefix list
 # and get the matching QName from the prefix list
-def get_suggested_qname(shaper_result, input_prefixes, widely_used_prefixes):
-    suggest_qname = []
+def get_widely_used_qname(shaper_result, input_prefixes, widely_used_prefixes):
+    widely_used_qname = []
 
     # Comparison of prefix list and minimal URI detected by shaXer
     for line in shaper_result.splitlines():
@@ -723,38 +723,38 @@ def get_suggested_qname(shaper_result, input_prefixes, widely_used_prefixes):
                     input_qname = input_prefix[0]
                     break
 
-            tmp_suggest_qname = []
+            tmp_widely_used_qname = []
             is_included_list = False
             for widely_used_prefix in widely_used_prefixes:
                 append_str = input_qname + "\t" + widely_used_prefix[0]+"\t"+shaper_result_uri+"\n"
-                if shaper_result_uri == widely_used_prefix[1] and append_str not in suggest_qname:
+                if shaper_result_uri == widely_used_prefix[1] and append_str not in widely_used_qname:
                     if exists_in_input_prefix:
                         # If the prefixes defined in the input file include those with the same URI,
                         # add them to the list only if the QName is different
                         if widely_used_prefix[0] != input_qname:
-                            tmp_suggest_qname.append(append_str)
+                            tmp_widely_used_qname.append(append_str)
                         else:
                             # If the QName defined in the input file is also included in the prefix list,
                             # do not suggest another QName with the same URI in the prefix list
                             is_included_list = True
                             break
                     else:
-                        suggest_qname.append(append_str)
+                        widely_used_qname.append(append_str)
 
             if is_included_list == False:
-                suggest_qname.extend(tmp_suggest_qname)
+                widely_used_qname.extend(tmp_widely_used_qname)
 
     # Comparing of prefix list and prefixes in input file
     for input_prefix in input_prefixes:
-        tmp_suggest_qname = []
+        tmp_widely_used_qname = []
         is_included_list = False
         for widely_used_prefix in widely_used_prefixes:
             append_str = input_prefix[0] + "\t" + widely_used_prefix[0]+"\t"+input_prefix[1]+"\n"
-            if input_prefix[1] == widely_used_prefix[1] and append_str not in suggest_qname:
+            if input_prefix[1] == widely_used_prefix[1] and append_str not in widely_used_qname:
                 # If the prefixes defined in the input file include those with the same URI,
                 # add them to the list only if the QName is different
                 if input_prefix[0] != widely_used_prefix[0]:
-                    tmp_suggest_qname.append(append_str)
+                    tmp_widely_used_qname.append(append_str)
                 else:
                     # If the QName defined in the input file is also included in the prefix list,
                     # do not suggest another QName with the same URI in the prefix list
@@ -762,9 +762,9 @@ def get_suggested_qname(shaper_result, input_prefixes, widely_used_prefixes):
                     break
 
         if is_included_list == False:
-            suggest_qname.extend(tmp_suggest_qname)
+            widely_used_qname.extend(tmp_widely_used_qname)
 
-    return suggest_qname
+    return widely_used_qname
 
 
 # Generates a key from the received string, excluding case differences, symbols, control characters, etc.
