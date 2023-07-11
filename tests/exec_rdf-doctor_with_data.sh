@@ -2,12 +2,13 @@
 
 # This script runs rdf-doctor with the data files in the specified directory as input.
 # For example
-# exec_rdf-doctor_with_data.sh test_files/knapsack
+# bash exec_rdf-doctor_with_data.sh test_files output
 
-if [ $# -ne 1 ]; then
+if [ $# -ne 2 ]; then
   echo "$# arguments were specified." 1>&2
-  echo "Requires one argument to run." 1>&2
-  echo "Please specify the folder name in the test_files directory in the first argument." 1>&2
+  echo "Requires two argument to run." 1>&2
+  echo "The first argument specifies the directory containing the input files." 1>&2
+  echo "The second argument specifies the directory to output the results." 1>&2
   exit 1
 fi
 
@@ -15,8 +16,8 @@ CURRENT_DIR=`dirname $0`
 INPUT_FILE_DIR=$1
 DATE=`date '+%Y%m%d_%H%M%S'`
 DATASET_NAME=`basename ${INPUT_FILE_DIR}`
-OUTPUT_DIR=${CURRENT_DIR}/test_output/${DATASET_NAME}
-LOG_DIR=${CURRENT_DIR}/test_output/${DATASET_NAME}/log
+OUTPUT_DIR=$2
+LOG_DIR=${OUTPUT_DIR}/log
 LOG_OUT=${LOG_DIR}/${DATASET_NAME}_stdout_${DATE}.log
 LOG_ERR=${LOG_DIR}/${DATASET_NAME}_stderr_${DATE}.log
 
@@ -36,7 +37,7 @@ fi
 exec 1> >(tee -a $LOG_OUT)
 exec 2>>$LOG_ERR
 
-FILES=`find ${INPUT_FILE_DIR}`
+FILES=`find ${INPUT_FILE_DIR} -name '*.ttl' -or -name '*.nt' -or -name '*.ttl.gz' -or -name '*.nt.gz'`
 
 for F in ${FILES}; do
   if [ -f ${F} ] ; then
