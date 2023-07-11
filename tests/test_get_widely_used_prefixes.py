@@ -3,9 +3,9 @@ from doctor.doctor import get_widely_used_prefixes
 from tests.consts import PREFIXES_FILE_PATH
 from pathlib import Path
 
-class TestGetPrefixes(unittest.TestCase):
+class TestGetWidelyUsedPrefixes(unittest.TestCase):
 
-    def test_get_prefixes(self):
+    def test_get_widely_used_prefixes(self):
         widely_used_prefixes = get_widely_used_prefixes(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
         self.assertEqual(widely_used_prefixes, [['chebi:', 'http://purl.obolibrary.org/obo/CHEBI_'], \
                                             ['ex:', 'http://example.org/'], \
