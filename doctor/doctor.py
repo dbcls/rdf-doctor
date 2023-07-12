@@ -620,9 +620,9 @@ def get_class_comparison_result(input_classes, refine_class_uris_file):
     # Perform clustering by fingerprint for the acquired class name
     for input_class in input_classes:
         fingerprint_class_dict[fingerprint(input_class)].append(input_class)
-        for eratta in refine_class_uris:
-            if input_class == eratta[0]:
-                class_comparison_result.append(input_class+"\t"+eratta[1]+"\n")
+        for refine_class_uri in refine_class_uris:
+            if input_class == refine_class_uri[0]:
+                class_comparison_result.append(input_class+"\t"+refine_class_uri[1]+"\n")
                 break
 
     return class_comparison_result, fingerprint_class_dict
@@ -635,9 +635,9 @@ def get_prefix_comparison_result(input_prefixes, refine_prefix_uris_file):
 
     # Perform clustering by fingerprint for the acquired class name
     for input_prefix in input_prefixes:
-        for eratta in refine_prefix_uris:
-            if input_prefix[1] == eratta[0] and eratta[1] != "":
-                prefix_comparison_result.append(str(input_prefix[0]+"\t"+input_prefix[1]+"\t"+eratta[1]+"\n"))
+        for refine_prefix_uri in refine_prefix_uris:
+            if input_prefix[1] == refine_prefix_uri[0] and refine_prefix_uri[1] != "":
+                prefix_comparison_result.append(str(input_prefix[0]+"\t"+input_prefix[1]+"\t"+refine_prefix_uri[1]+"\n"))
                 break
 
     return prefix_comparison_result
