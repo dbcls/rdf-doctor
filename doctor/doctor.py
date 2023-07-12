@@ -233,6 +233,18 @@ def validate_command_line_args(args):
             error_msg = "Input file error: you don't have permission to read the input file."
             return False, error_msg
 
+        # Allow only ".nt" or ".ttl" (and .gz) extensions
+        extension = os.path.splitext(input_file)[1]
+        if extension == EXTENSION_GZ:
+            org_extension = os.path.splitext(os.path.splitext(input_file)[0])[1]
+            # gz
+            if org_extension != EXTENSION_NT and org_extension != EXTENSION_TTL:
+                error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
+                return False, error_msg
+        elif extension != EXTENSION_NT and extension != EXTENSION_TTL:
+            error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
+            return False, error_msg
+
         if compression_mode == "":
             compression_mode = get_compression_mode(input_file)
         else:
@@ -246,18 +258,6 @@ def validate_command_line_args(args):
             if input_format != get_input_format(input_file, compression_mode):
                 error_msg = "Input file error: If you enter multiple files, please use the same extension."
                 return False, error_msg
-
-        # Allow only ".nt" or ".ttl" (and .gz) extensions
-        extension = os.path.splitext(input_file)[1]
-        if extension == EXTENSION_GZ:
-            org_extension = os.path.splitext(os.path.splitext(input_file)[0])[1]
-            # gz
-            if org_extension != EXTENSION_NT and org_extension != EXTENSION_TTL:
-                error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
-                return False, error_msg
-        elif extension != EXTENSION_NT and extension != EXTENSION_TTL:
-            error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.'
-            return False, error_msg
 
     if args.output is not None:
         # Existence check of file output destination directory

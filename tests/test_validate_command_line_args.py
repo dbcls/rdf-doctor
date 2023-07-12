@@ -99,6 +99,20 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
         self.assertFalse(result)
         self.assertEqual(error_msg, "Input file error: " + BASE_DIR + "aaa.txt" + " does not exist.")
 
+    # [input/ERROR] Unsupported extension
+    def test_input_unsupported_extension(self):
+        result, error_msg = validate_command_line_args(argparse.Namespace(input=[str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH))], \
+                                                                            report=REPORT_FORMAT_SHEX, \
+                                                                            output=None, \
+                                                                            classes=[TARGET_CLASS_ALL], \
+                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
+                                                                            force_format=None))
+        self.assertFalse(result)
+        self.assertEqual(error_msg, 'Input file error: ".tsv" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.')
+
+
     # [report/OK] shex
     def test_report_shex(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=[TTL_1], \
