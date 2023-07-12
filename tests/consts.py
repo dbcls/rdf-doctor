@@ -10,6 +10,7 @@ TTL_3 = BASE_DIR + "test_ttl_3.ttl"
 TTL_1_GZ = BASE_DIR + "test_ttl_1.ttl.gz"
 TTL_2_GZ = BASE_DIR + "test_ttl_2.ttl.gz"
 TTL_3_GZ = BASE_DIR + "test_ttl_3.ttl.gz"
+TTL_ERROR = BASE_DIR + "test_ttl_error.ttl"
 
 # N-Triples test files
 NT_1 = BASE_DIR + "test_nt_1.nt"
@@ -30,5 +31,8 @@ OUTPUT_TTL_1_2_3_MD = OUTPUT_DIR + "test_ttl_1_2_3.md"
 OUTPUT_TTL_1_2_3_GZ_MD = OUTPUT_DIR + "test_ttl_1_2_3_gz.md"
 
 PREFIXES_FILE_PATH = "reference/prefixes.tsv"
+PREFIXES_ERROR_FILE_PATH = "reference/prefixes-error.tsv"
 REFINE_CLASS_URIS_FILE_PATH = "reference/refine-class-uris.tsv"
+REFINE_CLASS_URIS_ERROR_FILE_PATH = "reference/refine-class-uris-error.tsv"
 REFINE_PREFIX_URIS_FILE_PATH = "reference/refine-prefix-uris.tsv"
+REFINE_PREFIX_URIS_ERROR_FILE_PATH = "reference/refine-prefix-uris-error.tsv"

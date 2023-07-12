@@ -50,7 +50,7 @@ def doctor():
         else:
             # Else case does not occur.
             # Prevented by validate_command_line_args function.
-            raise ValueError(args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '" and "' + REPORT_FORMAT_MD+ '"(same as "' + REPORT_FORMAT_MARKDOWN + '") are supported.')
+            raise ValueError('"' + args.report + '" is an unsupported report format. "' + REPORT_FORMAT_SHEX + '" and "' + REPORT_FORMAT_MD+ '"(same as "' + REPORT_FORMAT_MARKDOWN + '") are supported.')
 
         thread_calc.setDaemon(True)
         thread_calc.start()
@@ -64,24 +64,39 @@ def doctor():
         if args.verbose:
             thread_monitor.join()
 
-        # Output result to specified destination (standard output or file)
-        if args.output is None:
-            print_overwrite("".join(result_queue.get()))
-        else:
-            with open(args.output, "w", encoding="utf-8") as f:
-                f.write("".join(result_queue.get()))
+        result_output = result_queue.get()
+        if type(result_output) is list:
+            # Normal case
+            if args.output is None:
+                # Standard output
+                print_overwrite("".join(result_output))
+            else:
+                # Output to file
+                with open(args.output, "w", encoding="utf-8") as f:
+                    f.write("".join(result_output))
 
-        if args.verbose:
-            print_overwrite(get_dt_now() + " -- Done!")
+            if args.verbose:
+                print_overwrite(get_dt_now() + " -- Done!")
+
+        elif type(result_output) is IndexError or type(result_output) is Exception:
+            # Error case
+            raise result_output
+
+        else:
+            # Else case does not occur.
+            raise Exception("An exception error has occurred. Not the expected processing result.")
 
     except ValueError as e:
+        print(e)
+
+    except IndexError as e:
         print(e)
 
     except KeyboardInterrupt:
         print ("Keyboard interrupt occurred.")
 
-    except:
-        print("An exception error has occurred. There may be a problem with your input data. Please review the data.")
+    except Exception as e:
+        print(e)
 
     return
 
@@ -200,6 +215,10 @@ def get_input_format(input_file, compression_mode):
         elif org_extension == EXTENSION_TTL:
             # Turtle
             return TURTLE
+        else:
+            # Else case does not occur.
+            # Prevented by validate_command_line_args function.
+            raise ValueError('"' + org_extension + '.gz" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.')
     else:
         extension = os.path.splitext(input_file)[1]
         if extension == EXTENSION_NT:
@@ -211,7 +230,7 @@ def get_input_format(input_file, compression_mode):
         else:
             # Else case does not occur.
             # Prevented by validate_command_line_args function.
-            raise ValueError(extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.')
+            raise ValueError('"' + extension + '" is an unsupported extension. ".ttl", ".ttl.gz", ".nt" and ".nt.gz" are supported.')
 
 
 # Validate args(input, output, report, classes)
@@ -335,170 +354,184 @@ def validate_command_line_args(args):
 # Processing when the report format is "shex"
 def get_shex_result(args, input_format, compression_mode, result_queue):
 
-    # Get Prefix when input file is turtle format
-    if input_format == TURTLE:
+    try:
+        # Get Prefix when input file is turtle format
+        if input_format == TURTLE:
+            if args.verbose:
+                print_overwrite(get_dt_now() + " -- Getting prefixes from input file...")
+
+            input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
+        else:
+            input_prefixes = []
+            duplicated_prefixes = []
+
+        shaper_result = get_shaper_result(args, input_format, compression_mode, input_prefixes)
+
+        # Prefixes with the same QName but different URIs at the same time
         if args.verbose:
-            print_overwrite(get_dt_now() + " -- Getting prefixes from input file...")
+            print_overwrite(get_dt_now() + " -- Checking for duplicate prefixes...")
 
-        input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
-    else:
-        input_prefixes = []
-        duplicated_prefixes = []
+        result_duplicated_prefixes = []
+        if len(duplicated_prefixes) != 0:
+            result_duplicated_prefixes.append("# Duplicate prefixes found.\n")
+            result_duplicated_prefixes.append("\n")
+            result_duplicated_prefixes.append("# Input-QName\tInput-prefix-URI\n")
+            result_duplicated_prefixes.extend(["# " + s for s in duplicated_prefixes])
+            result_duplicated_prefixes.append("\n\n")
 
-    shaper_result = get_shaper_result(args, input_format, compression_mode, input_prefixes)
+        # Suggest QName based on URI of validation expression output by sheXer and prefixes.tsv
+        if args.verbose:
+            print_overwrite(get_dt_now() + " -- Creating suggestions for QName...")
 
-    # Prefixes with the same QName but different URIs at the same time
-    if args.verbose:
-        print_overwrite(get_dt_now() + " -- Checking for duplicate prefixes...")
+        result_widely_used_qname = []
+        widely_used_prefixes = get_widely_used_prefixes(args.prefix_list)
+        widely_used_qname = get_widely_used_qname(shaper_result, input_prefixes, widely_used_prefixes)
+        if len(widely_used_qname) != 0:
+            result_widely_used_qname.append("# There is a more widely used QName.\n\n")
+            result_widely_used_qname.append("# Input-QName\tWidely-used-QName\tURI\n")
+            result_widely_used_qname.extend(["# " + s for s in widely_used_qname])
+            result_widely_used_qname.append("\n")
 
-    result_duplicated_prefixes = []
-    if len(duplicated_prefixes) != 0:
-        result_duplicated_prefixes.append("# Duplicate prefixes found.\n")
-        result_duplicated_prefixes.append("\n")
-        result_duplicated_prefixes.append("# Input-QName\tInput-prefix-URI\n")
-        result_duplicated_prefixes.extend(["# " + s for s in duplicated_prefixes])
-        result_duplicated_prefixes.append("\n\n")
+        # List for storing the final result
+        shex_final_result = []
+        shex_final_result.extend(shaper_result)
+        if len(result_duplicated_prefixes) != 0:
+            shex_final_result.extend(result_duplicated_prefixes)
 
-    # Suggest QName based on URI of validation expression output by sheXer and prefixes.tsv
-    if args.verbose:
-        print_overwrite(get_dt_now() + " -- Creating suggestions for QName...")
+        if len(result_widely_used_qname) != 0:
+            shex_final_result.extend(result_widely_used_qname)
 
-    result_widely_used_qname = []
-    widely_used_prefixes = get_widely_used_prefixes(args.prefix_list)
-    widely_used_qname = get_widely_used_qname(shaper_result, input_prefixes, widely_used_prefixes)
-    if len(widely_used_qname) != 0:
-        result_widely_used_qname.append("# There is a more widely used QName.\n\n")
-        result_widely_used_qname.append("# Input-QName\tWidely-used-QName\tURI\n")
-        result_widely_used_qname.extend(["# " + s for s in widely_used_qname])
-        result_widely_used_qname.append("\n")
+        result_queue.put(shex_final_result)
 
-    # List for storing the final result
-    shex_final_result = []
-    shex_final_result.extend(shaper_result)
-    if len(result_duplicated_prefixes) != 0:
-        shex_final_result.extend(result_duplicated_prefixes)
+    except IndexError:
+        result_queue.put(IndexError('An index error has occurred. If you are using the "-x", "-p" or "-l" option, there may be a problem with the number of columns in the specified tsv file. 2 columns is normal.'))
 
-    if len(result_widely_used_qname) != 0:
-        shex_final_result.extend(result_widely_used_qname)
-
-    result_queue.put(shex_final_result)
+    except Exception:
+        result_queue.put(Exception('An exception error has occurred. There may be a problem with the input data. Check the contents of the file specified by the "-i" option. If there is no problem with the data and you are using the "-x", "-p", or "-l" options, there may be a problem with the contents of the file specified by these options. Please check.'))
 
 
 # Processing when the report format is "md/markdown"
 def get_markdown_result(args, input_format, compression_mode, result_queue):
 
-    # Processing related to prefixes ------------------
-    # Get Prefix when input file is turtle format
-    if input_format == TURTLE:
+    try:
+        # Processing related to prefixes ------------------
+        # Get Prefix when input file is turtle format
+        if input_format == TURTLE:
+            if args.verbose:
+                print_overwrite(get_dt_now() + " -- Getting prefixes from input file...")
+
+            input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
+        else:
+            input_prefixes = []
+            duplicated_prefixes = []
+
+        # Get list for result output about prefix reuse percentage
         if args.verbose:
-            print_overwrite(get_dt_now() + " -- Getting prefixes from input file...")
+            print_overwrite(get_dt_now() + " -- Calculating prefix reuse percentage...")
 
-        input_prefixes, duplicated_prefixes = get_input_prefixes(args.input, compression_mode)
-    else:
-        input_prefixes = []
-        duplicated_prefixes = []
+        result_prefix_reuse_percentage = []
+        result_prefix_reuse_percentage.append("## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n")
+        result_prefix_reuse_percentage.append("Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
+        prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes, args.prefix_list)
+        if prefix_reuse_percentage == None:
+            result_prefix_reuse_percentage.append("```\n")
+            result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
+            result_prefix_reuse_percentage.append("```\n\n")
+        else:
+            result_prefix_reuse_percentage.append("```\n")
+            result_prefix_reuse_percentage.append(str(prefix_reuse_percentage) + "%\n")
+            result_prefix_reuse_percentage.append("```\n\n")
 
-    # Get list for result output about prefix reuse percentage
-    if args.verbose:
-        print_overwrite(get_dt_now() + " -- Calculating prefix reuse percentage...")
+        # Refer to the dictionary of prefix URIs and obtain a list that combines candidate pairs of URI rewrite source and rewrite destination
+        if args.verbose:
+            print_overwrite(get_dt_now() + " -- Comparing with prefix URIs dictionary...")
 
-    result_prefix_reuse_percentage = []
-    result_prefix_reuse_percentage.append("## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n")
-    result_prefix_reuse_percentage.append("Percentage of prefixes used in the input file that are included in the predefined prefix list inside rdf-doctor.\n")
-    prefix_reuse_percentage = get_prefix_reuse_percentage(input_prefixes, args.prefix_list)
-    if prefix_reuse_percentage == None:
-        result_prefix_reuse_percentage.append("```\n")
-        result_prefix_reuse_percentage.append("Not calculated because there is no prefix defined.\n")
-        result_prefix_reuse_percentage.append("```\n\n")
-    else:
-        result_prefix_reuse_percentage.append("```\n")
-        result_prefix_reuse_percentage.append(str(prefix_reuse_percentage) + "%\n")
-        result_prefix_reuse_percentage.append("```\n\n")
+        result_refine_prefix_uris = []
+        prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
+        # When there is data to output
+        if len(prefix_comparison_result) != 0:
+            result_refine_prefix_uris.append("Found a more widely used one for the prefix URI inputed.\n")
+            result_refine_prefix_uris.append("```\n")
+            result_refine_prefix_uris.append("Input-QName\tInput-prefix-URI\tSuggested-prefix-URI\n")
+            result_refine_prefix_uris.extend(prefix_comparison_result)
+            result_refine_prefix_uris.append("```\n\n")
 
-    # Refer to the dictionary of prefix URIs and obtain a list that combines candidate pairs of URI rewrite source and rewrite destination
-    if args.verbose:
-        print_overwrite(get_dt_now() + " -- Comparing with prefix URIs dictionary...")
+        result_duplicated_prefixes = []
+        if len(duplicated_prefixes) != 0:
+            result_duplicated_prefixes.append("Duplicate prefixes found.\n")
+            result_duplicated_prefixes.append("```\n")
+            result_duplicated_prefixes.append("Input-QName\tInput-prefix-URI\n")
+            result_duplicated_prefixes.extend([s for s in duplicated_prefixes])
+            result_duplicated_prefixes.append("```\n\n")
+        # -------------------------------------------------
 
-    result_refine_prefix_uris = []
-    prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
-    # When there is data to output
-    if len(prefix_comparison_result) != 0:
-        result_refine_prefix_uris.append("Found a more widely used one for the prefix URI inputed.\n")
-        result_refine_prefix_uris.append("```\n")
-        result_refine_prefix_uris.append("Input-QName\tInput-prefix-URI\tSuggested-prefix-URI\n")
-        result_refine_prefix_uris.extend(prefix_comparison_result)
-        result_refine_prefix_uris.append("```\n\n")
+        if args.verbose:
+            print_overwrite(get_dt_now() + " -- Getting classes from input file...")
 
-    result_duplicated_prefixes = []
-    if len(duplicated_prefixes) != 0:
-        result_duplicated_prefixes.append("Duplicate prefixes found.\n")
-        result_duplicated_prefixes.append("```\n")
-        result_duplicated_prefixes.append("Input-QName\tInput-prefix-URI\n")
-        result_duplicated_prefixes.extend([s for s in duplicated_prefixes])
-        result_duplicated_prefixes.append("```\n\n")
-    # -------------------------------------------------
+        # Processing related to classes -------------------
+        input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
 
-    if args.verbose:
-        print_overwrite(get_dt_now() + " -- Getting classes from input file...")
+        # Refers to the class URIs dictionary, acquires the list for result output that candidate pairs of URI rewrite source and rewrite destinations,
+        # and generate the class corresponding to each key in fingerprint format stored in dictionary format.
+        if args.verbose:
+            print_overwrite(get_dt_now() + " -- Comparing with class URIs dictionary...")
 
-    # Processing related to classes -------------------
-    input_classes = get_input_classes(args.input, input_format, compression_mode, args.classes)
+        result_refine_class_uris = []
+        class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_dict)
+        # When there is data to output
+        if len(class_comparison_result) != 0:
+            result_refine_class_uris.append("Found a more widely used one for the class URI inputed.\n")
+            result_refine_class_uris.append("```\n")
+            result_refine_class_uris.append("Input-class-URI\tSuggested-class-URI\n")
+            result_refine_class_uris.extend(class_comparison_result)
+            result_refine_class_uris.append("```\n\n")
 
-    # Refers to the class URIs dictionary, acquires the list for result output that candidate pairs of URI rewrite source and rewrite destinations,
-    # and generate the class corresponding to each key in fingerprint format stored in dictionary format.
-    if args.verbose:
-        print_overwrite(get_dt_now() + " -- Comparing with class URIs dictionary...")
+        # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
+        if args.verbose:
+            print_overwrite(get_dt_now() + " -- Comparing with fingerprint method results...")
 
-    result_refine_class_uris = []
-    class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_dict)
-    # When there is data to output
-    if len(class_comparison_result) != 0:
-        result_refine_class_uris.append("Found a more widely used one for the class URI inputed.\n")
-        result_refine_class_uris.append("```\n")
-        result_refine_class_uris.append("Input-class-URI\tSuggested-class-URI\n")
-        result_refine_class_uris.extend(class_comparison_result)
-        result_refine_class_uris.append("```\n\n")
+        result_class_fingerprint = []
+        fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
+        # When there is data to output
+        if len(fingerprint_comparison_result) != 0:
+            result_class_fingerprint.append("Found multiple strings that appear to represent the same class.\n")
+            result_class_fingerprint.append("```")
+            result_class_fingerprint.extend(fingerprint_comparison_result)
+            result_class_fingerprint.append("\n```\n\n")
+        # -------------------------------------------------
 
-    # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
-    if args.verbose:
-        print_overwrite(get_dt_now() + " -- Comparing with fingerprint method results...")
+        # List for storing the final result
+        md_final_result = []
 
-    result_class_fingerprint = []
-    fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
-    # When there is data to output
-    if len(fingerprint_comparison_result) != 0:
-        result_class_fingerprint.append("Found multiple strings that appear to represent the same class.\n")
-        result_class_fingerprint.append("```")
-        result_class_fingerprint.extend(fingerprint_comparison_result)
-        result_class_fingerprint.append("\n```\n\n")
-    # -------------------------------------------------
+        md_final_result.append("# Report on\n")
+        md_final_result.append("```\n")
+        for input_file in args.input:
+            md_final_result.append(os.path.basename(input_file) + "\n")
 
-    # List for storing the final result
-    md_final_result = []
+        md_final_result.append("```\n\n")
 
-    md_final_result.append("# Report on\n")
-    md_final_result.append("```\n")
-    for input_file in args.input:
-        md_final_result.append(os.path.basename(input_file) + "\n")
+        # Merge result
+        md_final_result.extend(result_prefix_reuse_percentage)
 
-    md_final_result.append("```\n\n")
+        prefix_result_exists = len(result_refine_prefix_uris) != 0
+        if prefix_result_exists:
+            md_final_result.append("## Refine prefix URIs ([?](" + HELP_LINK_URL + "))\n")
+            md_final_result.extend(result_refine_prefix_uris)
+            md_final_result.extend(result_duplicated_prefixes)
 
-    # Merge result
-    md_final_result.extend(result_prefix_reuse_percentage)
+        class_result_exists = len(result_refine_class_uris) != 0 or len(result_class_fingerprint) != 0
+        if class_result_exists:
+            md_final_result.append("## Refine class URIs ([?](" + HELP_LINK_URL + "))\n")
+            md_final_result.extend(result_refine_class_uris)
+            md_final_result.extend(result_class_fingerprint)
 
-    prefix_result_exists = len(result_refine_prefix_uris) != 0
-    if prefix_result_exists:
-        md_final_result.append("## Refine prefix URIs ([?](" + HELP_LINK_URL + "))\n")
-        md_final_result.extend(result_refine_prefix_uris)
-        md_final_result.extend(result_duplicated_prefixes)
+        result_queue.put(md_final_result)
 
-    class_result_exists = len(result_refine_class_uris) != 0 or len(result_class_fingerprint) != 0
-    if class_result_exists:
-        md_final_result.append("## Refine class URIs ([?](" + HELP_LINK_URL + "))\n")
-        md_final_result.extend(result_refine_class_uris)
-        md_final_result.extend(result_class_fingerprint)
+    except IndexError:
+        result_queue.put(IndexError('An index error has occurred. If you are using the "-x", "-p" or "-l" option, there may be a problem with the number of columns in the specified tsv file. 2 columns is normal.'))
 
-    result_queue.put(md_final_result)
+    except Exception:
+        result_queue.put(Exception('An exception error has occurred. There may be a problem with the input data. Check the contents of the file specified by the "-i" option. If there is no problem with the data and you are using the "-x", "-p", or "-l" options, there may be a problem with the contents of the file specified by these options. Please check.'))
 
 
 # Call the shex_graph method of shexer's shaper class and output the result
