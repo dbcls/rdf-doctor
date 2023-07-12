@@ -925,7 +925,7 @@ rs:	http://purl.obolibrary.org/obo/RS_
 rxno:	http://purl.obolibrary.org/obo/RXNO_
 sao:	http://purl.obolibrary.org/obo/SAO_
 sbo:	http://purl.obolibrary.org/obo/SBO_
-178956970.291667	http://purl.obolibrary.org/obo/SEP_
+sep:	http://purl.obolibrary.org/obo/SEP_
 sibo:	http://purl.obolibrary.org/obo/SIBO_
 sopharm:	http://purl.obolibrary.org/obo/SOPHARM_
 spd:	http://purl.obolibrary.org/obo/SPD_
