@@ -2,7 +2,6 @@ import unittest
 from doctor.doctor import get_fingerprint_comparison_result, get_input_classes, get_class_comparison_result
 from tests.consts import NT_1, NT_2, TTL_1, TTL_2, TTL_3, REFINE_CLASS_URIS_FILE_PATH
 from shexer.consts import NT, TURTLE
-from collections import defaultdict
 from pathlib import Path
 
 class TestGetFingerprintComparisonResult(unittest.TestCase):
