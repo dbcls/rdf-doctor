@@ -170,14 +170,14 @@ def get_command_line_args(args):
                         help="set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...",
                         metavar="URL")
 
-    # Prefix URI dictionary file path(-p, --prefix-dict [FILE]、default: reference/refine-prefix-uris.tsv)
-    parser.add_argument("-p","--prefix-dict", type=str,
+    # Prefix URI dictionary file path(-p, --prefix-uri-dict [FILE]、default: reference/refine-prefix-uris.tsv)
+    parser.add_argument("-p","--prefix-uri-dict", type=str,
                         default=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)),
                         help='(only when "-r md"(same as "-r markdown") is specified) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv)',
                         metavar="FILE")
 
-    # Class URI dictionary file path(-l, --class-dict [FILE]、default: reference/refine-class-uris.tsv)
-    parser.add_argument("-l","--class-dict", type=str,
+    # Class URI dictionary file path(-l, --class-uri-dict [FILE]、default: reference/refine-class-uris.tsv)
+    parser.add_argument("-l","--class-uri-dict", type=str,
                         default=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)),
                         help='(only when "-r md"(same as "-r markdown") is specified) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the class (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-class-uris.tsv)',
                         metavar="FILE")
@@ -312,30 +312,30 @@ def validate_command_line_args(args):
             return False, error_msg
 
     # Prefix URIs dictionary file can be specified only in md/markdown mode
-    if args.prefix_dict != str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)) and args.report == REPORT_FORMAT_SHEX:
+    if args.prefix_uri_dict != str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)) and args.report == REPORT_FORMAT_SHEX:
         error_msg = 'Prefix URIs dictionary file error: Prefix URIs dictionary file can only be specified if "md"(same as "markdown") is specified in the -r, --report option.'
         return False, error_msg
 
-    if os.path.isfile(args.prefix_dict) == False:
+    if os.path.isfile(args.prefix_uri_dict) == False:
         error_msg = "Prefix URIs dictionary file error: Prefix dictionary does not exist or you don't have read permission."
         return False, error_msg
 
     # Check if the file has read permission
-    if os.access(args.prefix_dict, os.R_OK) == False:
+    if os.access(args.prefix_uri_dict, os.R_OK) == False:
         error_msg = "Prefix URIs dictionary file error: you don't have permission to read the input file."
         return False, error_msg
 
     # Class URIs dictionary file can be specified only in md/markdown mode
-    if args.class_dict != str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)) and args.report == REPORT_FORMAT_SHEX:
+    if args.class_uri_dict != str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)) and args.report == REPORT_FORMAT_SHEX:
         error_msg = 'Class URIs dictionary file error: Class URIs dictionary file can only be specified if "md"(same as "markdown") is specified in the -r, --report option.'
         return False, error_msg
 
-    if os.path.isfile(args.class_dict) == False:
+    if os.path.isfile(args.class_uri_dict) == False:
         error_msg = "Class URIs dictionary file error: Class dictionary does not exist or you don't have read permission."
         return False, error_msg
 
     # Check if the file has read permission
-    if os.access(args.class_dict, os.R_OK) == False:
+    if os.access(args.class_uri_dict, os.R_OK) == False:
         error_msg = "Class URIs dictionary file error: you don't have permission to read the input file."
         return False, error_msg
 
@@ -447,7 +447,7 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
             print_overwrite(get_dt_now() + " -- Comparing with prefix URIs dictionary...")
 
         result_refine_prefix_uris = []
-        prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_dict)
+        prefix_comparison_result = get_prefix_comparison_result(input_prefixes, args.prefix_uri_dict)
         # When there is data to output
         if len(prefix_comparison_result) != 0:
             result_refine_prefix_uris.append("Found a more widely used one for the prefix URI inputed.\n")
@@ -477,7 +477,7 @@ def get_markdown_result(args, input_format, compression_mode, result_queue):
             print_overwrite(get_dt_now() + " -- Comparing with class URIs dictionary...")
 
         result_refine_class_uris = []
-        class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_dict)
+        class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_uri_dict)
         # When there is data to output
         if len(class_comparison_result) != 0:
             result_refine_class_uris.append("Found a more widely used one for the class URI inputed.\n")

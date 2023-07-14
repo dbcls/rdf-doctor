@@ -16,8 +16,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     NT,
@@ -34,8 +34,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     NT,
@@ -52,8 +52,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     NT,
@@ -70,8 +70,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     NT,
@@ -88,8 +88,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     TURTLE,
@@ -106,8 +106,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     TURTLE,
@@ -124,8 +124,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     TURTLE,
@@ -142,8 +142,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     TURTLE,
@@ -160,8 +160,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_ERROR_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_ERROR_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     TURTLE,
@@ -176,8 +176,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_ERROR_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_ERROR_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                 verbose=False),
                                     TURTLE,
@@ -192,8 +192,8 @@ class TestGetMarkdownResult(unittest.TestCase):
                                                 report=REPORT_FORMAT_MD, \
                                                 output=None, \
                                                 classes=[TARGET_CLASS_ALL], \
-                                                prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                 prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_ERROR_FILE_PATH)), \
                                                 verbose=False),
                                     TURTLE,

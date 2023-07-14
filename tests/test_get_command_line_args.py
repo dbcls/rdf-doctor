@@ -13,8 +13,8 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     report=REPORT_FORMAT_SHEX, \
                                                     output=None, \
                                                     classes=[TARGET_CLASS_ALL], \
-                                                    prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                    class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                    prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                    class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                     prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                     force_format=None, \
                                                     verbose=False))
@@ -25,15 +25,15 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                         "--output", "./output.shex", \
                                         "--classes", "<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>", \
                                         "--force-format", "turtle", \
-                                        "--prefix-dict", str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                        "--class-dict", str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                        "--prefix-uri-dict", str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                        "--class-uri-dict", str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                         "--prefix-list", str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH))])
         self.assertEqual(result, argparse.Namespace(input=[TTL_1, TTL_2, TTL_3], \
                                                     report=REPORT_FORMAT_MD, \
                                                     output="./output.shex", \
                                                     classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"], \
-                                                    prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                    class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                    prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                    class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                     prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                     force_format="turtle", \
                                                     verbose=False))
@@ -45,8 +45,8 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     report=REPORT_FORMAT_SHEX, \
                                                     output=None, \
                                                     classes=[TARGET_CLASS_ALL], \
-                                                    prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                    class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                    prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                    class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                     prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                     force_format="nt", \
                                                     verbose=False))

@@ -41,9 +41,9 @@ options:
                         write to file instead of stdout
   -c URL [URL ...], --classes URL [URL ...]
                         set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...
-  -p FILE, --prefix-dict FILE
+  -p FILE, --prefix-uri-dict FILE
                         (only when "-r md"(same as "-r markdown") is specified) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv)
-  -l FILE, --class-dict FILE
+  -l FILE, --class-uri-dict FILE
                         (only when "-r md"(same as "-r markdown") is specified) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the class (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-class-uris.tsv)
   -x FILE, --prefix-list FILE
                         list of prefixes (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/prefixes.tsv)
@@ -150,7 +150,7 @@ http://xmlns.com/foaf/0.1#DOcument
 ## Example of dictionary file
 You can specify arbitrary dictionary files for prefixes and class URIs. It is a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination one per line like [this](https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv).
 This dictionary file is used only if -r or --report option is specified as md (same as markdown).
-Specify -p, --prefix-dict for prefix, -l, --class-dict for class, followed by file.
+Specify -p, --prefix-uri-dict for prefix, -l, --class-uri-dict for class, followed by file.
 See: https://github.com/dbcls/rdf-doctor#command-line-interface
 
 

@@ -14,8 +14,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -27,8 +27,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -40,8 +40,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -53,8 +53,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -66,8 +66,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -79,8 +79,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -92,8 +92,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -105,8 +105,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -118,8 +118,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -131,8 +131,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -144,8 +144,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
@@ -157,8 +157,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
@@ -170,8 +170,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
@@ -184,8 +184,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -197,8 +197,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -210,8 +210,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_MARKDOWN, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -223,8 +223,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report="aaa", \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
@@ -236,8 +236,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output="./output.shex", \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -249,8 +249,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output="/output.shex", \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
@@ -262,8 +262,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output="./aaa/output.shex", \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
@@ -275,8 +275,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=["<http://xmlns.com/foaf/0.1/Person>"], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -288,8 +288,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -301,112 +301,112 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL, "<http://xmlns.com/foaf/0.1/Person>"], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, 'Target class error: If "all" is specified, other classes cannot be specified.')
 
-    # [prefix_dict/OK] default file
-    def test_prefix_dict_default_file(self):
+    # [prefix_uri_dict/OK] default file
+    def test_prefix_uri_dict_default_file(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
-    # [prefix_dict/OK] specified file
-    def test_prefix_dict_specified_file(self):
+    # [prefix_uri_dict/OK] specified file
+    def test_prefix_uri_dict_specified_file(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
-    # [prefix_dict/NG] Nonexistent file
-    def test_prefix_dict_nonexistent_file(self):
+    # [prefix_uri_dict/NG] Nonexistent file
+    def test_prefix_uri_dict_nonexistent_file(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath("aaa.tsv")), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath("aaa.tsv")), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Prefix URIs dictionary file error: Prefix dictionary does not exist or you don't have read permission.")
 
-    # [prefix_dict/NG] shex mode and specified_file
-    def test_prefix_dict_shex_specified_file(self):
+    # [prefix_uri_dict/NG] shex mode and specified_file
+    def test_prefix_uri_dict_shex_specified_file(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, 'Prefix URIs dictionary file error: Prefix URIs dictionary file can only be specified if "md"(same as "markdown") is specified in the -r, --report option.')
 
-    # [class_dict/OK] default file
-    def test_class_dict_default_file(self):
+    # [class_uri_dict/OK] default file
+    def test_class_uri_dict_default_file(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
-    # [class_dict/OK] specified file
-    def test_class_dict_specified_file(self):
+    # [class_uri_dict/OK] specified file
+    def test_class_uri_dict_specified_file(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
         self.assertEqual(error_msg, None)
 
-    # [class_dict/NG] Nonexistent file
-    def test_class_dict_nonexistent_file(self):
+    # [class_uri_dict/NG] Nonexistent file
+    def test_class_uri_dict_nonexistent_file(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath("aaa.tsv")), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.joinpath("aaa.tsv")), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
         self.assertEqual(error_msg, "Class URIs dictionary file error: Class dictionary does not exist or you don't have read permission.")
 
-    # [class_dict/NG] shex mode and specified_file
-    def test_class_dict_shex_specified_file(self):
+    # [class_uri_dict/NG] shex mode and specified_file
+    def test_class_uri_dict_shex_specified_file(self):
         result, error_msg = validate_command_line_args(argparse.Namespace(input=[NT_1], \
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertFalse(result)
@@ -419,8 +419,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format="aaa"))
         self.assertFalse(result)
@@ -432,8 +432,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -445,8 +445,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_MD, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format=None))
         self.assertTrue(result)
@@ -458,8 +458,8 @@ class TestValidateCommnadLineArgs(unittest.TestCase):
                                                                             report=REPORT_FORMAT_SHEX, \
                                                                             output=None, \
                                                                             classes=[TARGET_CLASS_ALL], \
-                                                                            prefix_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
-                                                                            class_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                                            prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                                            class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.joinpath("aaa.tsv")), \
                                                                             force_format=None))
         self.assertFalse(result)
