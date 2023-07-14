@@ -167,7 +167,7 @@ def get_command_line_args(args):
     parser.add_argument("-c","--classes", type=str,
                         default=[TARGET_CLASS_ALL],
                         nargs="+",
-                        help="set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...",
+                        help="set the target classes to be inspected to one of: all (defalut) or URL1 URL2...",
                         metavar="URL")
 
     # Prefix URI dictionary file path(-p, --prefix-uri-dict [FILE]、default: reference/refine-prefix-uris.tsv)
@@ -602,7 +602,7 @@ def get_input_classes(input_files, input_format, compression_mode, target_classe
             g.parse(input_file, format=input_format)
 
         # Filter by classes(command line arguments)
-        class_filter = ",".join(target_classes)
+        class_filter = "<" + ">, <".join(target_classes) + ">"
 
         query = """
             SELECT DISTINCT ?class_name

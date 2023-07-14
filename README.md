@@ -40,7 +40,7 @@ options:
   -o FILE, --output FILE
                         write to file instead of stdout
   -c URL [URL ...], --classes URL [URL ...]
-                        set the target classes to be inspected to one of: all (defalut) or URL1, URL2,...
+                        set the target classes to be inspected to one of: all (defalut) or URL1 URL2...
   -p FILE, --prefix-uri-dict FILE
                         (only when "-r md"(same as "-r markdown") is specified) path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv)
   -l FILE, --class-uri-dict FILE
