@@ -10,7 +10,8 @@ TTL_3 = BASE_DIR + "test_ttl_3.ttl"
 TTL_1_GZ = BASE_DIR + "test_ttl_1.ttl.gz"
 TTL_2_GZ = BASE_DIR + "test_ttl_2.ttl.gz"
 TTL_3_GZ = BASE_DIR + "test_ttl_3.ttl.gz"
-TTL_ERROR = BASE_DIR + "test_ttl_error.ttl"
+TTL_1_ZIP = BASE_DIR + "test_ttl_1.ttl.zip"
+TTL_ERROR = "/test_ttl_error.ttl"
 
 # N-Triples test files
 NT_1 = BASE_DIR + "test_nt_1.nt"
@@ -19,6 +20,19 @@ NT_3 = BASE_DIR + "test_nt_3.nt"
 NT_1_GZ = BASE_DIR + "test_nt_1.nt.gz"
 NT_2_GZ = BASE_DIR + "test_nt_2.nt.gz"
 NT_3_GZ = BASE_DIR + "test_nt_3.nt.gz"
+NT_1_ZIP = BASE_DIR + "test_nt_1.nt.zip"
+
+# RDF/XML test files
+OWL_1 = BASE_DIR + "test_owl_1.owl"
+RDF_1 = BASE_DIR + "test_rdf_1.rdf"
+XML_1 = BASE_DIR + "test_xml_1.xml"
+OWL_1_GZ = BASE_DIR + "test_owl_1.owl.gz"
+RDF_1_GZ = BASE_DIR + "test_rdf_1.rdf.gz"
+XML_1_GZ = BASE_DIR + "test_xml_1.xml.gz"
+OWL_1_ZIP = BASE_DIR + "test_owl_1.owl.zip"
+RDF_1_ZIP = BASE_DIR + "test_rdf_1.rdf.zip"
+XML_1_ZIP = BASE_DIR + "test_xml_1.xml.zip"
+
 
 OUTPUT_NT_3_MD = OUTPUT_DIR + "test_nt_3.md"
 OUTPUT_NT_1_2_3_MD = OUTPUT_DIR + "test_nt_1_2_3.md"

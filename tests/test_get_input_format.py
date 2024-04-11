@@ -4,7 +4,7 @@ from tests.consts import NT_1, NT_1_GZ, TTL_1, TTL_1_GZ
 from shexer.consts import NT, TURTLE, GZ
 
 class TestGetInputFormat(unittest.TestCase):
-
+    # TODO: Add RDF/XML case
     def test_nt(self):
         input_format = get_input_format(NT_1, None)
         self.assertEqual(input_format, NT)

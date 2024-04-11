@@ -1,0 +1,39 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix oboc: <http://www.ebi.ac.uk/oboc/searchId.do?obocId=CHEBI%3A> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex2: <http://example.org#> .
+@prefix ex2: <https://example.org#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1#> .
+
+oboc:Jimmy a foaf:Person ;
+	oboc:age "23"^^xsd:integer ;
+	oboc:name "Jimmy" ;
+	oboc:familyName "Jones" .
+
+oboc:Sarah a foaf:PErson ;
+	oboc:age 22 ;
+	oboc:name "Sarah" ;
+	oboc:familyName "Salem" .
+
+oboc:Bella a foaf:PERSON ;
+	oboc:age "56"^^xsd:integer ;
+	oboc:name "Isabella" .
+
+oboc:David a foaf:Parson ;
+	oboc:name "David" ;
+	oboc:familyName "Doulofeau" ;
+	oboc:knows foaf:Sarah .
+
+oboc:HumanLike foaf:name "Person" ;
+	oboc:familyName "Maybe" ;
+	oboc:age 99 ;
+	oboc:knows foaf:David .
+
+
+oboc:x1 rdf:type foaf:Document ;
+	oboc:depiction "A thing that is nice" ;
+	oboc:title "A nice thing" .
+
+
+oboc:x2 rdf:type foaf:DOCUMENT ;
+	oboc:title "Another thing" .

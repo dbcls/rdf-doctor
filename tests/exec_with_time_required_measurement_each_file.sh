@@ -75,15 +75,8 @@ function print_run_time() {
 function exec_doctor() {
   print_file_info
 
-  echo -n 'shex: '
   START_TIME=`date +%s`
-  rdf-doctor -i ${INPUT_FILE_PATH} -r shex -o ${OUTPUT_DIR}/${INPUT_FILE_NAME}.shex
-  END_TIME=`date +%s`
-  print_run_time
-
-  echo -n 'md  : '
-  START_TIME=`date +%s`
-  rdf-doctor -i ${INPUT_FILE_PATH} -r md -o ${OUTPUT_DIR}/${INPUT_FILE_NAME}.md
+  rdf-doctor -i ${INPUT_FILE_PATH} -re -o ${OUTPUT_DIR}
   END_TIME=`date +%s`
   print_run_time
 }

@@ -5,7 +5,8 @@ from tests.consts import TTL_1, TTL_2, TTL_3, TTL_1_GZ, TTL_2_GZ, TTL_3_GZ, NT_1
 from shexer.consts import NT, TURTLE, GZ
 
 class TestGetClassesList(unittest.TestCase):
-
+    # TODO: Add RDF/XML case
+    # TODO: Add ZIP case
     def test_nt_all(self):
         input_classes = get_input_classes([NT_1], NT, None, [TARGET_CLASS_ALL])
         self.assertEqual(input_classes, ["http://xmlns.com/foaf/0.1/Person", "http://xmlns.com/foaf/0.1/Document"])

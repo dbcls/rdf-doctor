@@ -3,7 +3,7 @@ from doctor.doctor import fingerprint
 
 class TestFingerPrint(unittest.TestCase):
 
-    def test_finger_print(self):
+    def test_fingerprint(self):
         result1 = fingerprint("http://xmlns.com/foaf/0.1/Document")
         result2 = fingerprint("http://XMLNS.com/FOAF/0.1/DOCUMENT")
         result3 = fingerprint("http://xmlns.com/foaf/0.1#Document")

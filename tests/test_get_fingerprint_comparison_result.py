@@ -17,12 +17,12 @@ class TestGetFingerprintComparisonResult(unittest.TestCase):
         input_classes = get_input_classes([NT_2], NT, None, ["all"])
         _, fingerprint_class_dict = get_class_comparison_result(input_classes, str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
         fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
-        self.assertEqual(fingerprint_comparison_result, ['\nhttp://xmlns.com/foaf/0.1/Person', \
-                                                        '\nhttp://xmlns.com/foaf/0.1/PErson', \
-                                                        '\nhttp://xmlns.com/foaf/0.1#Person', \
-                                                        '\n', \
-                                                        '\nhttp://xmlns.com/foaf/0.1/Document', \
-                                                        '\nhttp://xmlns.com/foaf/0.1#Document'])
+        self.assertEqual(fingerprint_comparison_result, ['http://xmlns.com/foaf/0.1/Person', \
+                                                        '\n# http://xmlns.com/foaf/0.1/PErson', \
+                                                        '\n# http://xmlns.com/foaf/0.1#Person', \
+                                                        '\n# ', \
+                                                        '\n# http://xmlns.com/foaf/0.1/Document', \
+                                                        '\n# http://xmlns.com/foaf/0.1#Document'])
 
     def test_ttl_no_result(self):
         input_classes = get_input_classes([TTL_2], TURTLE, None, ["all"])
@@ -34,18 +34,18 @@ class TestGetFingerprintComparisonResult(unittest.TestCase):
         input_classes = get_input_classes([TTL_1, TTL_2, TTL_3], TURTLE, None, ["all"])
         _, fingerprint_class_dict = get_class_comparison_result(input_classes, str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
         fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
-        self.assertEqual(fingerprint_comparison_result, ['\nhttp://xmlns.com/foaf/0.1/Person', \
-                                                        '\nhttp://xmlns.com/foaf/0.1#Person', \
-                                                        '\n', \
-                                                        '\nhttp://xmlns.com/foaf/0.1/Document', \
-                                                        '\nhttp://xmlns.com/foaf/0.1#Document', \
-                                                        '\n', \
-                                                        '\nhttp://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APerson', \
-                                                        '\nhttp://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APErson', \
-                                                        '\nhttp://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APERSON', \
-                                                        '\n', \
-                                                        '\nhttp://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADocument', \
-                                                        '\nhttp://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADOCUMENT'])
+        self.assertEqual(fingerprint_comparison_result, ['http://xmlns.com/foaf/0.1/Person', \
+                                                        '\n# http://xmlns.com/foaf/0.1#Person', \
+                                                        '\n# ', \
+                                                        '\n# http://xmlns.com/foaf/0.1/Document', \
+                                                        '\n# http://xmlns.com/foaf/0.1#Document', \
+                                                        '\n# ', \
+                                                        '\n# http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APerson', \
+                                                        '\n# http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APErson', \
+                                                        '\n# http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3APERSON', \
+                                                        '\n# ', \
+                                                        '\n# http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADocument', \
+                                                        '\n# http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3ADOCUMENT'])
 
 
 if __name__ == "__main__":
