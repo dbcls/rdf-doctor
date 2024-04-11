@@ -13,6 +13,7 @@ import datetime
 from concurrent.futures import ThreadPoolExecutor
 import multiprocessing
 import queue
+import shutil
 from unidecode import unidecode
 from collections import defaultdict
 from pathlib import Path
@@ -22,7 +23,7 @@ from doctor.consts import VERSION_FILE, TARGET_CLASS_ALL, EXTENSION_NT, EXTENSIO
                             EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL, EXTENSION_GZ, EXTENSION_ZIP, EXTENSION_TAR_GZ, \
                             PREFIXES_FILE_PATH, REFINE_CLASS_URIS_FILE_PATH, REFINE_PREFIX_URIS_FILE_PATH, HELP_LINK_URL, \
                             FILE_TYPE_TTL, FILE_TYPE_NT, FILE_TYPE_RDF_XML, FILE_TYPE_TTL_GZ, FILE_TYPE_NT_GZ, FILE_TYPE_RDF_XML_GZ, \
-                            FILE_TYPE_TTL_ZIP, FILE_TYPE_NT_ZIP, FILE_TYPE_RDF_XML_ZIP, FILE_TYPE_ALL, FILE_TYPE_DICT
+                            FILE_TYPE_TTL_ZIP, FILE_TYPE_NT_ZIP, FILE_TYPE_RDF_XML_ZIP, FILE_TYPE_ALL, FILE_TYPE_DICT, TMP_DISK_USAGE_LIMIT_DEFAULT
 
 from shexer.shaper import Shaper
 from shexer.consts import NT, TURTLE, RDF_XML, GZ, ZIP, MIXED_INSTANCES
@@ -40,7 +41,7 @@ def doctor():
         return
 
     # Generate temporary directory for compressed file decompression
-    with tempfile.TemporaryDirectory() as temp_dir:
+    with tempfile.TemporaryDirectory(dir=args.tmp_dir) as temp_dir:
 
         input_file_2d_list = []
         # If the option is specified to separate results for each input file
@@ -51,13 +52,13 @@ def doctor():
 
             # Get an array containing each file to be processed
             # Acquire as a two-dimensional array for compatibility with subsequent processing
-            input_file_2d_list, exists_file_types, error_msg = get_input_files_each(args.input, temp_dir)
+            input_file_2d_list, exists_file_types, error_msg = get_input_files_each(args.input, temp_dir, args.tmp_dir_disk_usage_limit)
             if error_msg is not None:
                 print(error_msg)
                 return
         else:
             # Retrieve input files in dictionary format by type
-            input_file_2d_list, exists_file_types, error_msg = get_input_files_by_type(args.input, temp_dir)
+            input_file_2d_list, exists_file_types, error_msg = get_input_files_by_type(args.input, temp_dir, args.tmp_dir_disk_usage_limit)
             if error_msg is not None:
                 print(error_msg)
                 return
@@ -135,7 +136,7 @@ def doctor():
                     if args.verbose:
                         print_overwrite(get_dt_now() + " -- Done!")
 
-                elif type(result_output) in [ValueError, IndexError, Exception]:
+                elif type(result_output) in [ValueError, IndexError, MemoryError, Exception]:
                     # Error case
                     raise result_output
 
@@ -147,6 +148,9 @@ def doctor():
             print(e)
 
         except IndexError as e:
+            print(e)
+
+        except MemoryError as e:
             print(e)
 
         except KeyboardInterrupt:
@@ -242,6 +246,18 @@ def get_command_line_args(args):
                         action="store_true",
                         help="separate results by file when multiple files are specified")
 
+    # Temporary directory (--tmp-dir [DIRECTORY]、default: Platform-dependent default temporary directory)
+    parser.add_argument("--tmp-dir", type=str,
+                        default=None,
+                        help='Temporary directory where the unzipped contents are placed when processing tar.gz or zip (default: Platform-dependent default temporary directory)',
+                        metavar="DIRECTORY")
+
+    # Temporary directory usage upper limit(--tmp-dir-disk-usage-limit [percentage]、default: 95)
+    parser.add_argument("--tmp-dir-disk-usage-limit", type=int,
+                        default=TMP_DISK_USAGE_LIMIT_DEFAULT,
+                        help='Percentage of disk usage that contains the temporary directory where unzipped contents are placed when processing tar.gz or zip. Interrupt processing when the specified usage percentage is exceeded (1-100 default: 95)',
+                        metavar="PERCENTAGE")
+
     # Prefix URI dictionary file path(--prefix-uri-dict [FILE]、default: reference/refine-prefix-uris.tsv)
     parser.add_argument("--prefix-uri-dict", type=str,
                         default=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)),
@@ -282,7 +298,7 @@ def get_command_line_args(args):
 #     nt_zip: [["test22.nt.zip", "test23.nt.zip", "test24.nt.zip"], zip, "nt"],
 #     rdf_xml_zip: [["test25.rdf.zip", "test26.xml.zip", "test27.owl.zip"], zip, "xml"]
 # }
-def get_input_files_by_type(input_files, temp_dir):
+def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
 
     input_file_list_ttl = []            # Turtle(.ttl)
     input_file_list_nt = []             # N-Triples(.nt)
@@ -360,6 +376,11 @@ def get_input_files_by_type(input_files, temp_dir):
                     extension = get_extension_before_compression(input_file) + "." + compression_mode
 
                     if extension == EXTENSION_TAR_GZ:
+                        # Check disk usage percentage
+                        if get_disk_usage_percentage(temp_dir) >= tmp_dir_disk_usage_limit:
+                            error_msg = 'The process was canceled because the disk usage exceeded ' + str(tmp_dir_disk_usage_limit) + '%.'
+                            return None, None, error_msg
+
                         extract_path = Path(temp_dir) / Path(input_file + "_" + str(uuid.uuid4())).name
                         # For .tar.gz, expand and process the contents
                         with tarfile.open(input_file, 'r:gz') as tar:
@@ -417,6 +438,11 @@ def get_input_files_by_type(input_files, temp_dir):
                 else:
                     extension = get_extension_before_compression(input_file) + "." + compression_mode
                     if extension == EXTENSION_ZIP:
+                        # Check disk usage percentage
+                        if get_disk_usage_percentage(temp_dir) >= tmp_dir_disk_usage_limit:
+                            error_msg = 'The process was canceled because the disk usage exceeded ' + str(tmp_dir_disk_usage_limit) + '%.'
+                            return None, None, error_msg
+
                         extract_path = Path(temp_dir) / Path(input_file + "_" + str(uuid.uuid4())).name
                         # For .zip, expand and process the contents
                         with ZipFile(input_file,'r') as zip:
@@ -533,7 +559,7 @@ def get_input_files_by_type(input_files, temp_dir):
 #     ["test11.owl", None, "xml"],
 #     ["test12.rdf.zip", "zip", "xml"]
 # ]
-def get_input_files_each(input_files, temp_dir):
+def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
 
     input_file_2d_list = []
     exists_file_types = []
@@ -583,6 +609,11 @@ def get_input_files_each(input_files, temp_dir):
                     extension = get_extension_before_compression(input_file) + "." + compression_mode
 
                 if extension == EXTENSION_TAR_GZ:
+                    # Check disk usage percentage
+                    if get_disk_usage_percentage(temp_dir) >= tmp_dir_disk_usage_limit:
+                        error_msg = 'The process was canceled because the disk usage exceeded ' + str(tmp_dir_disk_usage_limit) + '%.'
+                        return None, None, error_msg
+
                     extract_path = Path(temp_dir) / Path(input_file + "_" + str(uuid.uuid4())).name
                     # For .tar.gz, expand and process the contents
                     with tarfile.open(input_file, 'r:gz') as tar:
@@ -606,6 +637,11 @@ def get_input_files_each(input_files, temp_dir):
                                 pass
 
                 elif extension == EXTENSION_ZIP:
+                    # Check disk usage percentage
+                    if get_disk_usage_percentage(temp_dir) >= tmp_dir_disk_usage_limit:
+                        error_msg = 'The process was canceled because the disk usage exceeded ' + str(tmp_dir_disk_usage_limit) + '%.'
+                        return None, None, error_msg
+
                     extract_path = Path(temp_dir) / Path(input_file + "_" + str(uuid.uuid4())).name
                     # For .zip, expand and process the contents
                     with ZipFile(input_file,'r') as zip:
@@ -746,7 +782,7 @@ def validate_command_line_args_other(args):
             error_msg = "Output directory error: A directory must be specified as the output destination. Files cannot be specified."
             return error_msg
 
-        output_dir = Path(args.output).parent
+        output_dir = Path(args.output)
         if output_dir:
             if Path(output_dir).exists() == False:
                 error_msg = "Output directory error: Output directory does not exist."
@@ -809,6 +845,29 @@ def validate_command_line_args_other(args):
                     error_msg = 'Type error: "' + type + '" is an unsupported input file format. "' + FILE_TYPE_TTL + '", "' + FILE_TYPE_NT + '", "' + FILE_TYPE_RDF_XML + '", "' + FILE_TYPE_TTL_GZ + '", "' + FILE_TYPE_NT_GZ + '", "' + FILE_TYPE_RDF_XML_GZ + '", "' + FILE_TYPE_TTL_ZIP + '", "' + FILE_TYPE_NT_ZIP + '" and "' + FILE_TYPE_RDF_XML_ZIP + '" are supported.'
                     return error_msg
 
+    # Check temporary directory
+    if args.tmp_dir is not None:
+        # Existence check of file temporary directory destination directory
+        if Path(args.tmp_dir).is_file():
+            error_msg = "Temporary directory error: A directory must be specified as the temporary directory destination. Files cannot be specified."
+            return error_msg
+
+        tmp_dir = Path(args.tmp_dir)
+        if tmp_dir:
+            if Path(tmp_dir).exists() == False:
+                error_msg = "Temporary directory error: Temporary directory does not exist."
+                return error_msg
+
+            # Check if the file temporary directory destination has write permission
+            if os.access(tmp_dir, os.W_OK) == False:
+                error_msg = "Temporary directory error: You don't have write permission on the temporary directory."
+                return error_msg
+
+    # Check temporary directory usage limit
+    if args.tmp_dir_disk_usage_limit < 1 or args.tmp_dir_disk_usage_limit > 100:
+        error_msg = "Temporary directory disk usage limit error: Please specify the upper limit of Disk containing temporary directory usage percentage as a number between 1 and 100."
+        return error_msg
+
     return None
 
 
@@ -822,7 +881,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
         if input_format == NT:
             input_prefixes = []
             duplicated_prefixes = []
-            namespaces_dict = default_namespaces()
+            namespaces_dict = get_default_namespaces_dict()
         else:
             if args.verbose:
                 print_overwrite(get_dt_now() + " -- Getting prefixes from input file...")
@@ -973,10 +1032,13 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
         result_queue.put([shex_final_result, input_file_list, input_format, compression_mode])
 
     except ValueError as e:
-        result_queue.put(ValueError('An index error has occurred.\n\nValueError message: ' + str(e)))
+        result_queue.put(ValueError('A value error has occurred.\n\nValueError message: ' + str(e)))
 
     except IndexError as e:
         result_queue.put(IndexError('An index error has occurred.\n\nIndexError message: ' + str(e)))
+
+    except MemoryError as e:
+        result_queue.put(MemoryError('A memory error has occurred.\n\nMemoryError message: ' + str(e)))
 
     except Exception as e:
         result_queue.put(Exception('An exception error has occurred.\n\nException message: ' + str(e)))
@@ -1116,21 +1178,6 @@ def get_class_comparison_result(input_classes, refine_class_uris_file):
                 break
 
     return class_comparison_result, fingerprint_class_dict
-
-
-# Refer to the dictionary of prefix URIs and obtain a list that combines candidate pairs of URI rewrite source and rewrite destination
-def get_prefix_comparison_result(input_prefixes, refine_prefix_uris_file):
-    refine_prefix_uris = get_refine_prefix_uris(refine_prefix_uris_file)
-    prefix_comparison_result = []
-
-    # Perform clustering by fingerprint for the acquired class name
-    for input_prefix in input_prefixes:
-        for refine_prefix_uri in refine_prefix_uris:
-            if input_prefix[1] == refine_prefix_uri[0] and refine_prefix_uri[1] != "":
-                prefix_comparison_result.append(str(input_prefix[0]+"\t"+input_prefix[1]+"\t"+refine_prefix_uri[1]+"\n"))
-                break
-
-    return prefix_comparison_result
 
 
 # Get the output result when there are multiple different strings with the same key for the class
@@ -1330,7 +1377,7 @@ def fingerprint(string):
 
 # A dictionary of namespaces to pass to sheXer
 # This function is used only when the input file is N-Triples.
-def default_namespaces():
+def get_default_namespaces_dict():
     return {
             "http://www.w3.org/2002/07/owl#": "owl",
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#": "rdf",
@@ -1371,7 +1418,6 @@ def get_target_file_types(exists_file_types):
 
         while True:
             user_input = input("\n1: Process all\n2: Specify file type\n(1/2):")
-            print(user_input)
             if user_input == "1":
                 is_process_all = True
                 break
@@ -1535,3 +1581,8 @@ def get_suggest_string_for_widely_used_namespace_and_uri(input_namespace, input_
         return suggest_string
     else:
         return ""
+
+# Returns the usage percentage of the specified disk
+def get_disk_usage_percentage(path):
+    disk_usage = shutil.disk_usage(path)
+    return disk_usage.used / disk_usage.total * 100

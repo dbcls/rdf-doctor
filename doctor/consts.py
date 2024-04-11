@@ -53,3 +53,6 @@ REFINE_PREFIX_URIS_FILE_PATH = "reference/refine-prefix-uris.tsv"
 
 # Help link URL
 HELP_LINK_URL = "https://github.com/dbcls/rdf-doctor#output-description"
+
+# Default value for disk usage limit, including temporary directories
+TMP_DISK_USAGE_LIMIT_DEFAULT = 95

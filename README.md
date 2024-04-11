@@ -42,6 +42,9 @@ options:
   -c URL [URL ...], --classes URL [URL ...]
                         set the target classes to be inspected to one of: all (defalut) or URL1 URL2...
   -e, --each            separate results by file when multiple files are specified
+  --tmp-dir DIRECTORY   Temporary directory where the unzipped contents are placed when processing tar.gz or zipped directory
+  --tmp-dir-disk-usage-limit PERCENTAGE
+                        Percentage of disk usage that contains the temporary directory where unzipped contents are placed when processing tar.gz or zipped directory. Interrupt processing when the specified usage percentage is exceeded (1-100 default: 95)
   --prefix-uri-dict FILE
                         path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-
                         doctor/blob/main/doctor/reference/refine-prefix-uris.tsv)
