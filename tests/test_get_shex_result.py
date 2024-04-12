@@ -9,7 +9,7 @@ from pathlib import Path
 
 # Since the order of the output of sheXer changes each time, only check that the result is list in the normal case.
 class TestGetShexResult(unittest.TestCase):
-    # TODO: Add value error case
+
     def test_nt(self):
         result_queue = queue.Queue()
         get_shex_result(argparse.Namespace(input=[NT_1], \

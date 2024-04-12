@@ -1,0 +1,39 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix oboc: <http://purl.obolibrary.org/obo/CHEBI_> .
+@prefix chebi: <http://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI%3A> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix pobo: <http://purl.obolibrary.org/obo/> .
+
+oboc:Jimmy a chebi:Person ;
+	chebi:age "23"^^xsd:integer ;
+	chebi:name "Jimmy" ;
+	chebi:familyName "Jones" .
+
+oboc:Sarah a chebi:PErson ;
+	chebi:age 22 ;
+	chebi:name "Sarah" ;
+	chebi:familyName "Salem" .
+
+oboc:Bella a chebi:PERSON ;
+	chebi:age "56"^^xsd:integer ;
+	chebi:name "Isabella" .
+
+oboc:David a chebi:Parson ;
+	chebi:name "David" ;
+	chebi:familyName "Doulofeau" ;
+	chebi:knows oboc:Sarah .
+
+oboc:HumanLike chebi:name "Person" ;
+	chebi:familyName "Maybe" ;
+	chebi:age 99 ;
+	chebi:knows oboc:David .
+
+
+oboc:x1 rdf:type chebi:Document ;
+	chebi:depiction "A thing that is nice" ;
+	chebi:title "A nice thing" .
+
+
+oboc:x2 rdf:type chebi:DOCUMENT ;
+	chebi:title "Another thing" .
+

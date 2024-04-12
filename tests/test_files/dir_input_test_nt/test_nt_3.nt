@@ -1,0 +1,25 @@
+<http://purl.obolibrary.org/obo/CHEBI_Jimmy> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://purl.obolibrary.org/obo/CHEBI_Jimmy> <http://xmlns.com/foaf/0.1/age> "23"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://purl.obolibrary.org/obo/CHEBI_Jimmy> <http://xmlns.com/foaf/0.1/name> "Jimmy" .
+<http://purl.obolibrary.org/obo/CHEBI_Jimmy> <http://xmlns.com/foaf/0.1/familyName> "Jones" .
+<http://purl.obolibrary.org/obo/CHEBI_Sarah> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://purl.obolibrary.org/obo/CHEBI_Sarah> <http://xmlns.com/foaf/0.1/age> "22"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://purl.obolibrary.org/obo/CHEBI_Sarah> <http://xmlns.com/foaf/0.1/name> "Sarah" .
+<http://purl.obolibrary.org/obo/CHEBI_Sarah> <http://xmlns.com/foaf/0.1/familyName> "Salem" .
+<http://purl.obolibrary.org/obo/CHEBI_Bella> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://purl.obolibrary.org/obo/CHEBI_Bella> <http://xmlns.com/foaf/0.1/age> "56"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://purl.obolibrary.org/obo/CHEBI_Bella> <http://xmlns.com/foaf/0.1/name> "Isabella" .
+<http://purl.obolibrary.org/obo/CHEBI_David> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://purl.obolibrary.org/obo/CHEBI_David> <http://xmlns.com/foaf/0.1/name> "David" .
+<http://purl.obolibrary.org/obo/CHEBI_David> <http://xmlns.com/foaf/0.1/familyName> "Doulofeau" .
+<http://purl.obolibrary.org/obo/CHEBI_David> <http://xmlns.com/foaf/0.1/knows> <http://purl.obolibrary.org/obo/CHEBI_/Sarah> .
+<http://purl.obolibrary.org/obo/CHEBI_HumanLike> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://purl.obolibrary.org/obo/CHEBI_HumanLike> <http://xmlns.com/foaf/0.1/name> "Person" .
+<http://purl.obolibrary.org/obo/CHEBI_HumanLike> <http://xmlns.com/foaf/0.1/familyName> "Maybe" .
+<http://purl.obolibrary.org/obo/CHEBI_HumanLike> <http://xmlns.com/foaf/0.1/age> "99"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://purl.obolibrary.org/obo/CHEBI_HumanLike> <http://xmlns.com/foaf/0.1/knows> <http://purl.obolibrary.org/obo/CHEBI_/David> .
+<http://purl.obolibrary.org/obo/CHEBI_x1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+<http://purl.obolibrary.org/obo/CHEBI_x1> <http://xmlns.com/foaf/0.1/depiction> "A thing that s nice" .
+<http://purl.obolibrary.org/obo/CHEBI_x1> <http://xmlns.com/foaf/0.1/title> "A nice thing" .
+<http://purl.obolibrary.org/obo/CHEBI_x2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1#Document> .
+<http://purl.obolibrary.org/obo/CHEBI_x2> <http://xmlns.com/foaf/0.1/title> "Another thing" .

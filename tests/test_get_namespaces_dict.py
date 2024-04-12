@@ -41,7 +41,6 @@ class TestGetNamespacesDict(unittest.TestCase):
         input_prefixes, _, duplicated_prefixes_dict = get_input_prefixes_turtle([TTL_1_ZIP], ZIP)
         widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
         namespaces_dict = get_namespaces_dict(input_prefixes, duplicated_prefixes_dict, widely_used_prefixes_dict)
-        print(namespaces_dict)
         self.assertEqual(namespaces_dict, {'http://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf', \
                                             'http://www.w3.org/2000/01/rdf-schema#': 'rdfs', \
                                             'http://example.org/': 'ex', \
@@ -52,34 +51,22 @@ class TestGetNamespacesDict(unittest.TestCase):
         input_prefixes, _, duplicated_prefixes_dict = get_input_prefixes_rdf_xml([OWL_1], None)
         widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
         namespaces_dict = get_namespaces_dict(input_prefixes, duplicated_prefixes_dict, widely_used_prefixes_dict)
-        self.assertEqual(namespaces_dict, {'http://www.w3.org/2001/XMLSchema#': 'xsd', \
-                                            'http://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf', \
-                                            'http://www.w3.org/2000/01/rdf-schema#': 'rdfs', \
-                                            'http://www.w3.org/2002/07/owl#': 'owl', \
-                                            'file://www.ibm.com/WSRR/Transport#': 'ns_transport', \
-                                            'http://www.ibm.com/xmlns/prod/serviceregistry/6/1/model#': 'wsrr'})
+        self.assertEqual(namespaces_dict, {'http://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf', \
+                                            'http://xmlns.com/foaf/0.1/': 'foaf'})
 
     def test_owl_gz(self):
         input_prefixes, _, duplicated_prefixes_dict = get_input_prefixes_rdf_xml([OWL_1_GZ], GZ)
         widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
         namespaces_dict = get_namespaces_dict(input_prefixes, duplicated_prefixes_dict, widely_used_prefixes_dict)
-        self.assertEqual(namespaces_dict, {'http://www.w3.org/2001/XMLSchema#': 'xsd', \
-                                            'http://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf', \
-                                            'http://www.w3.org/2000/01/rdf-schema#': 'rdfs', \
-                                            'http://www.w3.org/2002/07/owl#': 'owl', \
-                                            'file://www.ibm.com/WSRR/Transport#': 'ns_transport', \
-                                            'http://www.ibm.com/xmlns/prod/serviceregistry/6/1/model#': 'wsrr'})
+        self.assertEqual(namespaces_dict, {'http://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf', \
+                                            'http://xmlns.com/foaf/0.1/': 'foaf'})
 
     def test_owl_zip(self):
         input_prefixes, _, duplicated_prefixes_dict = get_input_prefixes_rdf_xml([OWL_1_ZIP], ZIP)
         widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
         namespaces_dict = get_namespaces_dict(input_prefixes, duplicated_prefixes_dict, widely_used_prefixes_dict)
-        self.assertEqual(namespaces_dict, {'http://www.w3.org/2001/XMLSchema#': 'xsd', \
-                                            'http://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf', \
-                                            'http://www.w3.org/2000/01/rdf-schema#': 'rdfs', \
-                                            'http://www.w3.org/2002/07/owl#': 'owl', \
-                                            'file://www.ibm.com/WSRR/Transport#': 'ns_transport', \
-                                            'http://www.ibm.com/xmlns/prod/serviceregistry/6/1/model#': 'wsrr'})
+        self.assertEqual(namespaces_dict, {'http://www.w3.org/1999/02/22-rdf-syntax-ns#': 'rdf', \
+                                            'http://xmlns.com/foaf/0.1/': 'foaf'})
 
     def test_rdf(self):
         input_prefixes, _, duplicated_prefixes_dict = get_input_prefixes_rdf_xml([RDF_1], None)
