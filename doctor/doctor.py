@@ -1107,7 +1107,8 @@ def get_input_classes(input_files, input_format, compression_mode, target_classe
             g.parse(data=data, format=input_format)
         elif compression_mode == ZIP:
             with ZipFile(input_file, "r") as f:
-                data = f.read(Path(input_file).name.replace(".zip", "")).decode().splitlines()
+                data = f.read(Path(input_file).name.replace(".zip", "")).decode()
+            g.parse(data=data, format=input_format)
         else:
             g.parse(input_file, format=input_format)
 
@@ -1295,7 +1296,9 @@ def get_input_prefixes_rdf_xml(input_files, compression_mode):
                         else:
                             uri = line_mod[line_mod.find("=")+1:]
 
-                        input_prefixes.append([namespace, uri])
+                        if [namespace, uri] not in input_prefixes:
+                            input_prefixes.append([namespace, uri])
+
                         for input_prefix in input_prefixes:
                             if input_prefix[0] == namespace and input_prefix[1] != uri and namespace not in duplicated_namespaces:
                                 duplicated_namespaces.append(namespace)
