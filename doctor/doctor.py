@@ -44,21 +44,22 @@ def doctor():
     with tempfile.TemporaryDirectory(dir=args.tmp_dir) as temp_dir:
 
         input_file_2d_list = []
-        # If the option is specified to separate results for each input file
-        if args.each:
-            if args.output is None:
-                print("The --each option should be used with the --output option.")
+        # If the option to merge results by input file type is specified
+        if args.merge:
+            # Retrieve input files in dictionary format by type
+            input_file_2d_list, exists_file_types, error_msg = get_input_files_by_type(args.input, temp_dir, args.tmp_dir_disk_usage_limit)
+            if error_msg is not None:
+                print(error_msg)
                 return
+
+        else:
+            # if args.output is None:
+            #     print("The --each option should be used with the --output option.")
+            #     return
 
             # Get an array containing each file to be processed
             # Acquire as a two-dimensional array for compatibility with subsequent processing
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each(args.input, temp_dir, args.tmp_dir_disk_usage_limit)
-            if error_msg is not None:
-                print(error_msg)
-                return
-        else:
-            # Retrieve input files in dictionary format by type
-            input_file_2d_list, exists_file_types, error_msg = get_input_files_by_type(args.input, temp_dir, args.tmp_dir_disk_usage_limit)
             if error_msg is not None:
                 print(error_msg)
                 return
@@ -95,6 +96,9 @@ def doctor():
                 compression_mode = input_file_list[1]
                 input_format = input_file_list[2]
 
+                if args.verbose:
+                    print_overwrite(get_dt_now() + " -- Start processing [" + ", ".join(str(input_file) for input_file in input_file_list[0]) + "]")
+
                 executor_calc.submit(get_shex_result, args, input_file_list[0], input_format, compression_mode, result_queue)
 
             executor_calc.shutdown()
@@ -109,13 +113,12 @@ def doctor():
                     if args.output is None:
                         # Standard output
                         print_overwrite("".join(result_output[0]))
+
+                        if args.verbose:
+                            print_overwrite(get_dt_now() + " -- Done! [" + ", ".join(str(input_file) for input_file in result_output[1]) + "]")
                     else:
                         # Output to file
-                        if args.each:
-                            #with open(args.output + "/" + os.path.basename(input_file_list[0][0]) + ".shex", "w", encoding="utf-8") as f:
-                            with open(args.output + "/" + Path(result_output[1][0]).name + ".shex", "w", encoding="utf-8") as f:
-                                f.write("".join(result_output[0]))
-                        else:
+                        if args.merge:
                             # Output one result file for each type of file processed(Turtle, N-triples, and RDF/XML)
                             # turtle.shex, nt.shex, rdf.shex
                             if result_output[2] == TURTLE:
@@ -133,8 +136,12 @@ def doctor():
                             with open(args.output + "/" + output_file_name + compression_exetention + ".shex", "w", encoding="utf-8") as f:
                                 f.write("".join(result_output[0]))
 
-                    if args.verbose:
-                        print_overwrite(get_dt_now() + " -- Done!")
+                        else:
+                            with open(args.output + "/" + Path(result_output[1][0]).name + ".shex", "w", encoding="utf-8") as f:
+                                f.write("".join(result_output[0]))
+
+                        if args.verbose:
+                            print_overwrite(get_dt_now() + " -- Done! [" + ", ".join(str(input_file) for input_file in result_output[1]) + "] Output file: [" + str(Path(args.output + "/" + Path(result_output[1][0]).name)) + ".shex]")
 
                 elif type(result_output) in [ValueError, IndexError, MemoryError, Exception]:
                     # Error case
@@ -199,8 +206,8 @@ def get_version(rel_path):
 
 # Parse command line arguments and get them as ArgumentParser
 def get_command_line_args(args):
-    parser = argparse.ArgumentParser(description="Home page: https://github.com/dbcls/rdf-doctor",
-                                    usage="rdf-doctor -i RDF-FILE [Options]",
+    parser = argparse.ArgumentParser(description="version: " + get_version(VERSION_FILE) +"\n\nhome page: https://github.com/dbcls/rdf-doctor",
+                                    usage="rdf-doctor -i RDF-FILE or DIRECTORY [Options]",
                                     formatter_class=argparse.RawDescriptionHelpFormatter)
 
     # Version info(-V, --version)
@@ -241,10 +248,10 @@ def get_command_line_args(args):
                         help="set the target classes to be inspected to one of: all (defalut) or URL1 URL2...",
                         metavar="URL")
 
-    # Separate results by file when multiple files are specified (-e、--each)
-    parser.add_argument("-e","--each",
+    # Merge results by input file format (-m、--merge)
+    parser.add_argument("-m","--merge",
                         action="store_true",
-                        help="separate results by file when multiple files are specified")
+                        help="merge results by input file format")
 
     # Temporary directory (--tmp-dir [DIRECTORY]、default: Platform-dependent default temporary directory)
     parser.add_argument("--tmp-dir", type=str,
@@ -884,7 +891,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
             namespaces_dict = get_default_namespaces_dict()
         else:
             if args.verbose:
-                print_overwrite(get_dt_now() + " -- Getting prefixes from input file...")
+                print_overwrite(get_dt_now() + " -- Getting prefixes from input file... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             if input_format == TURTLE:
                 input_prefixes, duplicated_prefixes, duplicated_prefixes_dict = get_input_prefixes_turtle(input_file_list, compression_mode)
@@ -902,7 +909,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
         if args.report:
             # Prefixes with the same Namespace but different URIs at the same time
             if args.verbose:
-                print_overwrite(get_dt_now() + " -- Checking for duplicate prefixes...")
+                print_overwrite(get_dt_now() + " -- Checking for duplicate prefixes... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             result_duplicated_prefixes = []
             if len(duplicated_prefixes) != 0:
@@ -915,7 +922,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
 
             # Suggest Namespace based on URI of validation expression output by sheXer and prefixes.tsv
             if args.verbose:
-                print_overwrite(get_dt_now() + " -- Creating suggestions for Namespace...")
+                print_overwrite(get_dt_now() + " -- Creating suggestions for Namespace... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             result_widely_used_namespace_and_uri = []
             widely_used_namespace_and_uri = get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, widely_used_prefixes_dict, args.prefix_uri_dict)
@@ -938,7 +945,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
             # Output results previously output in markdown mode=========================================
             # Get list for result output about prefix reuse percentage
             if args.verbose:
-                print_overwrite(get_dt_now() + " -- Calculating prefix reuse percentage...")
+                print_overwrite(get_dt_now() + " -- Calculating prefix reuse percentage... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             result_prefix_reuse_percentage = []
             result_prefix_reuse_percentage.append("# ## Prefix reuse percentage ([?](" + HELP_LINK_URL + "))\n# \n")
@@ -952,7 +959,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
             result_prefix_reuse_percentage.append("# ```\n# \n# \n")
 
             if args.verbose:
-                print_overwrite(get_dt_now() + " -- Getting classes from input file...")
+                print_overwrite(get_dt_now() + " -- Getting classes from input file... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             # Processing related to classes -------------------
             input_classes = get_input_classes(input_file_list, input_format, compression_mode, args.classes)
@@ -960,7 +967,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
             # Refers to the class URIs dictionary, acquires the list for result output that candidate pairs of URI rewrite source and rewrite destinations,
             # and generate the class corresponding to each key in fingerprint format stored in dictionary format.
             if args.verbose:
-                print_overwrite(get_dt_now() + " -- Comparing with class URIs dictionary...")
+                print_overwrite(get_dt_now() + " -- Comparing with class URIs dictionary... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             result_refine_class_uris = []
             class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_uri_dict)
@@ -979,7 +986,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
 
             # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
             if args.verbose:
-                print_overwrite(get_dt_now() + " -- Comparing with fingerprint method results...")
+                print_overwrite(get_dt_now() + " -- Comparing with fingerprint method results...[" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             result_class_fingerprint = []
             fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)

@@ -8,14 +8,16 @@ from pathlib import Path
 class TestGetCommandLineArgs(unittest.TestCase):
 
     def test_nt(self):
-        result = get_command_line_args(["--input", NT_1])
+        result = get_command_line_args(["--input", NT_1, \
+                                        "--merge"])
+        print(result)
         self.assertEqual(result, argparse.Namespace(verbose=False, \
                                                     input=[NT_1], \
                                                     type=None, \
                                                     report=False, \
                                                     output=None, \
                                                     classes=[TARGET_CLASS_ALL], \
-                                                    each=False, \
+                                                    merge=True, \
                                                     tmp_dir=None, \
                                                     tmp_dir_disk_usage_limit=TMP_DISK_USAGE_LIMIT_DEFAULT, \
                                                     prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
@@ -25,6 +27,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
 
     def test_ttl(self):
         result = get_command_line_args(["--input", TTL_1, TTL_2, TTL_3, \
+                                        "--merge", \
                                         "--report", \
                                         "--output", "./output.shex", \
                                         "--classes", "<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>", \
@@ -38,7 +41,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     report=True, \
                                                     output="./output.shex", \
                                                     classes=["<http://xmlns.com/foaf/0.1/Person>", "<http://xmlns.com/foaf/0.1/Document>"], \
-                                                    each=False, \
+                                                    merge=True, \
                                                     tmp_dir=None, \
                                                     tmp_dir_disk_usage_limit=TMP_DISK_USAGE_LIMIT_DEFAULT, \
                                                     prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
@@ -48,6 +51,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
 
     def test_ttl_format_nt(self):
         result = get_command_line_args(["--input", TTL_1, \
+                                        "--merge", \
                                         "--force-format", "nt"])
         self.assertEqual(result, argparse.Namespace(verbose=False, \
                                                     input=[TTL_1], \
@@ -55,7 +59,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     report=False, \
                                                     output=None, \
                                                     classes=[TARGET_CLASS_ALL], \
-                                                    each=False, \
+                                                    merge=True, \
                                                     tmp_dir=None, \
                                                     tmp_dir_disk_usage_limit=TMP_DISK_USAGE_LIMIT_DEFAULT, \
                                                     prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
@@ -65,6 +69,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
 
     def test_tmp_dir(self):
         result = get_command_line_args(["--input", TTL_1, \
+                                        "--merge", \
                                         "--tmp-dir", "/tmp"])
         self.assertEqual(result, argparse.Namespace(verbose=False, \
                                                     input=[TTL_1], \
@@ -72,7 +77,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     report=False, \
                                                     output=None, \
                                                     classes=[TARGET_CLASS_ALL], \
-                                                    each=False, \
+                                                    merge=True, \
                                                     tmp_dir="/tmp", \
                                                     tmp_dir_disk_usage_limit=TMP_DISK_USAGE_LIMIT_DEFAULT, \
                                                     prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
@@ -82,6 +87,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
 
     def test_tmp_dir_disk_usage_limit(self):
         result = get_command_line_args(["--input", TTL_1, \
+                                        "--merge", \
                                         "--tmp-dir-disk-usage-limit", "70"])
         self.assertEqual(result, argparse.Namespace(verbose=False, \
                                                     input=[TTL_1], \
@@ -89,7 +95,7 @@ class TestGetCommandLineArgs(unittest.TestCase):
                                                     report=False, \
                                                     output=None, \
                                                     classes=[TARGET_CLASS_ALL], \
-                                                    each=False, \
+                                                    merge=True, \
                                                     tmp_dir=None, \
                                                     tmp_dir_disk_usage_limit=70, \
                                                     prefix_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \

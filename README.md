@@ -25,9 +25,11 @@ pip install rdf-doctor
 ## Command Line Interface
 ```
 $ rdf-doctor --help
-usage: rdf-doctor -i RDF-FILE [Options]
+usage: rdf-doctor -i RDF-FILE or DIRECTORY [Options]
 
-Home page: https://github.com/dbcls/rdf-doctor
+version: 1.1.0
+
+home page: https://github.com/dbcls/rdf-doctor
 
 options:
   -h, --help            show this help message and exit
@@ -41,20 +43,17 @@ options:
                         directory to output results (standard output if not specified)
   -c URL [URL ...], --classes URL [URL ...]
                         set the target classes to be inspected to one of: all (defalut) or URL1 URL2...
-  -e, --each            separate results by file when multiple files are specified
-  --tmp-dir DIRECTORY   Temporary directory where the unzipped contents are placed when processing tar.gz or zipped directory
+  -m, --merge           merge results by input file format
+  --tmp-dir DIRECTORY   Temporary directory where the unzipped contents are placed when processing tar.gz or zip (default: Platform-dependent default temporary directory)
   --tmp-dir-disk-usage-limit PERCENTAGE
-                        Percentage of disk usage that contains the temporary directory where unzipped contents are placed when processing tar.gz or zipped directory. Interrupt processing when the specified usage percentage is exceeded (1-100 default: 95)
+                        Percentage of disk usage that contains the temporary directory where unzipped contents are placed when processing tar.gz or zip. Interrupt processing when the specified usage percentage is exceeded (1-100 default: 95)
   --prefix-uri-dict FILE
-                        path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-
-                        doctor/blob/main/doctor/reference/refine-prefix-uris.tsv)
+                        path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the prefix (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-prefix-uris.tsv)
   --class-uri-dict FILE
-                        path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the class (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-
-                        doctor/blob/main/doctor/reference/refine-class-uris.tsv)
+                        path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the class (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-class-uris.tsv)
   --prefix-list FILE    list of prefixes (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/prefixes.tsv)
   --force-format INPUT-FORMAT
-                        This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle", "nt" and
-                        "xml"(=RDF/XML) can be specified.
+                        This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle", "nt" and "xml"(=RDF/XML) can be specified.
 ```
 
 ## See Also
