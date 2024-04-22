@@ -53,10 +53,6 @@ def doctor():
                 return
 
         else:
-            # if args.output is None:
-            #     print("The --each option should be used with the --output option.")
-            #     return
-
             # Get an array containing each file to be processed
             # Acquire as a two-dimensional array for compatibility with subsequent processing
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each(args.input, temp_dir, args.tmp_dir_disk_usage_limit)
@@ -74,12 +70,12 @@ def doctor():
 
         for input_file_list in input_file_2d_list:
             if is_target_file(input_file_list, target_file_types):
-                error_msg = validate_command_line_args_input(args, input_file_list[0])
+                error_msg = validate_command_line_args_input(input_file_list[0])
                 if error_msg is not None:
                     print(error_msg)
                     return
 
-        result_queue = queue.Queue()
+        error_queue = queue.Queue()
         executor_calc = ThreadPoolExecutor(max_workers=multiprocessing.cpu_count())
         executor_spinner = ThreadPoolExecutor(max_workers=multiprocessing.cpu_count())
 
@@ -89,82 +85,49 @@ def doctor():
             executor_spinner.submit(display_spinner)
 
         try:
+            widely_used_prefixes_dict = get_widely_used_prefixes_dict(args.prefix_list)
+
             for input_file_list in input_file_2d_list:
                 if is_target_file(input_file_list, target_file_types) == False:
                     continue
 
                 compression_mode = input_file_list[1]
-                input_format = input_file_list[2]
+                if args.force_format is not None:
+                    input_format = args.force_format
+                else:
+                    input_format = input_file_list[2]
 
                 if args.verbose:
                     print_overwrite(get_dt_now() + " -- Start processing [" + ", ".join(str(input_file) for input_file in input_file_list[0]) + "]")
 
-                executor_calc.submit(get_shex_result, args, input_file_list[0], input_format, compression_mode, result_queue)
+                # Get and output result. If an error occurs, store it in a queue
+                executor_calc.submit(get_and_output_result, args, input_file_list[0], input_format, compression_mode, widely_used_prefixes_dict, error_queue)
 
             executor_calc.shutdown()
             if args.verbose:
                 is_displaying_spinner = False
                 executor_spinner.shutdown()
 
-            while not result_queue.empty():
-                result_output = result_queue.get()
-                if type(result_output) is list:
-                    # Normal case
-                    if args.output is None:
-                        # Standard output
-                        print_overwrite("".join(result_output[0]))
-
-                        if args.verbose:
-                            print_overwrite(get_dt_now() + " -- Done! [" + ", ".join(str(input_file) for input_file in result_output[1]) + "]")
-                    else:
-                        # Output to file
-                        if args.merge:
-                            # Output one result file for each type of file processed(Turtle, N-triples, and RDF/XML)
-                            # turtle.shex, nt.shex, rdf.shex
-                            if result_output[2] == TURTLE:
-                                output_file_name = TURTLE
-                            elif result_output[2] == NT:
-                                output_file_name = "n-triples"
-                            elif result_output[2] == RDF_XML:
-                                output_file_name = "rdf_xml"
-
-                            if result_output[3] is None:
-                                compression_exetention = ""
-                            else:
-                                compression_exetention = "." + result_output[3]
-
-                            with open(args.output + "/" + output_file_name + compression_exetention + ".shex", "w", encoding="utf-8") as f:
-                                f.write("".join(result_output[0]))
-
-                        else:
-                            with open(args.output + "/" + Path(result_output[1][0]).name + ".shex", "w", encoding="utf-8") as f:
-                                f.write("".join(result_output[0]))
-
-                        if args.verbose:
-                            print_overwrite(get_dt_now() + " -- Done! [" + ", ".join(str(input_file) for input_file in result_output[1]) + "] Output file: [" + str(Path(args.output + "/" + Path(result_output[1][0]).name)) + ".shex]")
-
-                elif type(result_output) in [ValueError, IndexError, MemoryError, Exception]:
-                    # Error case
-                    raise result_output
-
-                else:
-                    # Else case does not occur.
-                    raise Exception("An exception error has occurred. Not the expected processing result.")
+            # Output if there is an error
+            if not error_queue.empty():
+                print("Some files could not be processed successfully. Please check the following errors.")
+                while not error_queue.empty():
+                    print(error_queue.get())
 
         except ValueError as e:
-            print(e)
+            print("[ERROR] A value error occurred. Error message: " + str(e))
 
         except IndexError as e:
-            print(e)
+            print("[ERROR] An index error occurred. Error message: " + str(e))
 
         except MemoryError as e:
-            print(e)
+            print("[ERROR] A memory error occurred. Error message: " + str(e))
 
         except KeyboardInterrupt:
             print ("Keyboard interrupt occurred.")
 
         except Exception as e:
-            print(e)
+            print("[ERROR] An exception occurred. Error message: " + str(e))
 
         finally:
             is_displaying_spinner = False
@@ -294,17 +257,17 @@ def get_command_line_args(args):
 # Returns a two-dimensional array of input file array, compression mode, and input format
 # One element of the two-dimensional array is configured for each compression mode and input format.
 # example
-# {
-#     ttl: [["test1.ttl", "test2.ttl", "test3.ttl"], None, "turtle"]
-#     nt: [["test4.nt", "test5.nt", "test6.nt"], None, "nt"],
-#     rdf_xml: [["test7.rdf", "test8.xml", "test9.owl"], None, "xml"],
-#     ttl_gz: [["test10.ttl.gz", "test11.ttl.gz", "test12.ttl.gz"], "gz", "turtle"]
-#     nt_gz: [["test13.nt.gz", "test14.nt.gz", "test15.nt.gz"], gz, "nt"],
-#     rdf_xml_gz: [["test16.rdf.gz", "test17.xml.gz", "test18.owl.gz"], gz, "xml"],
-#     ttl_zip: [["test19.ttl.zip", "test20.ttl.zip", "test21.ttl.zip"], zip, "turtle"]
-#     nt_zip: [["test22.nt.zip", "test23.nt.zip", "test24.nt.zip"], zip, "nt"],
-#     rdf_xml_zip: [["test25.rdf.zip", "test26.xml.zip", "test27.owl.zip"], zip, "xml"]
-# }
+# [
+#     [["test1.ttl", "test2.ttl", "test3.ttl"], None, "turtle"]
+#     [["test4.nt", "test5.nt", "test6.nt"], None, "nt"],
+#     [["test7.rdf", "test8.xml", "test9.owl"], None, "xml"],
+#     [["test10.ttl.gz", "test11.ttl.gz", "test12.ttl.gz"], "gz", "turtle"]
+#     [["test13.nt.gz", "test14.nt.gz", "test15.nt.gz"], "gz", "nt"],
+#     [["test16.rdf.gz", "test17.xml.gz", "test18.owl.gz"], "gz", "xml"],
+#     [["test19.ttl.zip", "test20.ttl.zip", "test21.ttl.zip"], "zip", "turtle"]
+#     [["test22.nt.zip", "test23.nt.zip", "test24.nt.zip"], "zip", "nt"],
+#     [["test25.rdf.zip", "test26.xml.zip", "test27.owl.zip"], "zip", "xml"]
+# ]
 def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
 
     input_file_list_ttl = []            # Turtle(.ttl)
@@ -553,18 +516,18 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
 # Acquire as a two-dimensional array for compatibility with subsequent processing.
 # example
 # [
-#     ["test1.ttl", None, "turtle"],
-#     ["test2.ttl", None, "turtle"],
-#     ["test3.ttl", None, "turtle"],
-#     ["test4.ttl.gz", "gz", "turtle"],
-#     ["test5.nt", None, "nt"],
-#     ["test6.nt", None, "nt"],
-#     ["test7.nt", None, "nt"],
-#     ["test8.nt.gz", "gz", "nt"],
-#     ["test9.rdf", None, "xml"],
-#     ["test10.xml", None, "xml"],
-#     ["test11.owl", None, "xml"],
-#     ["test12.rdf.zip", "zip", "xml"]
+#     [["test1.ttl"], None, "turtle"],
+#     [["test2.ttl"], None, "turtle"],
+#     [["test3.ttl"], None, "turtle"],
+#     [["test4.ttl.gz"], "gz", "turtle"],
+#     [["test5.nt"], None, "nt"],
+#     [["test6.nt"], None, "nt"],
+#     [["test7.nt"], None, "nt"],
+#     [["test8.nt.gz"], "gz", "nt"],
+#     [["test9.rdf"], None, "xml"],
+#     [["test10.xml"], None, "xml"],
+#     [["test11.owl"], None, "xml"],
+#     [["test12.rdf.zip"], "zip", "xml"]
 # ]
 def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
 
@@ -730,7 +693,7 @@ def get_input_format(input_file, compression_mode):
 
 
 # Validate args(input)
-def validate_command_line_args_input(args, input_file_list):
+def validate_command_line_args_input(input_file_list):
     compression_mode = ""
     input_format = ""
     for input_file in input_file_list:
@@ -878,12 +841,10 @@ def validate_command_line_args_other(args):
     return None
 
 
-# Processing when the report format is "shex"
-def get_shex_result(args, input_file_list, input_format, compression_mode, result_queue):
+# Retrieve processing results and store them in a queue
+def get_and_output_result(args, input_file_list, input_format, compression_mode, widely_used_prefixes_dict, error_queue):
 
     try:
-        widely_used_prefixes_dict = get_widely_used_prefixes_dict(args.prefix_list)
-
         # Get Prefix when input file is turtle format
         if input_format == NT:
             input_prefixes = []
@@ -898,7 +859,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
             elif input_format == RDF_XML:
                 input_prefixes, duplicated_prefixes, duplicated_prefixes_dict = get_input_prefixes_rdf_xml(input_file_list, compression_mode)
             else:
-                raise ValueError('Invalid input format: ' + str(input_format))
+                raise ValueError("Invalid input format: " + str(input_format))
 
             namespaces_dict = get_namespaces_dict(input_prefixes, duplicated_prefixes_dict, widely_used_prefixes_dict)
 
@@ -907,6 +868,9 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
         report_result = []
         # Output only if report output option is specified
         if args.report:
+            refine_prefix_uris = get_refine_prefix_uris(args.prefix_uri_dict)
+            refine_class_uris = get_refine_class_uris(args.class_uri_dict)
+
             # Prefixes with the same Namespace but different URIs at the same time
             if args.verbose:
                 print_overwrite(get_dt_now() + " -- Checking for duplicate prefixes... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
@@ -925,7 +889,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
                 print_overwrite(get_dt_now() + " -- Creating suggestions for Namespace... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             result_widely_used_namespace_and_uri = []
-            widely_used_namespace_and_uri = get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, widely_used_prefixes_dict, args.prefix_uri_dict)
+            widely_used_namespace_and_uri = get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, widely_used_prefixes_dict, refine_prefix_uris)
             if len(widely_used_namespace_and_uri) != 0:
                 result_widely_used_namespace_and_uri.append("# There is a more widely used Namespace and URI.\n")
                 result_widely_used_namespace_and_uri.append("# (For each of Namespace and URI, output only if the input value differs from the widely used value.)\n")
@@ -970,7 +934,7 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
                 print_overwrite(get_dt_now() + " -- Comparing with class URIs dictionary... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             result_refine_class_uris = []
-            class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, args.class_uri_dict)
+            class_comparison_result, fingerprint_class_dict = get_class_comparison_result(input_classes, refine_class_uris)
             # When there is data to output
             if len(class_comparison_result) != 0:
                 result_refine_class_uris.append("# Found a more widely used one for the class URI inputed.\n")
@@ -1036,19 +1000,51 @@ def get_shex_result(args, input_file_list, input_format, compression_mode, resul
         if len(report_result) != 0:
             shex_final_result.extend(report_result)
 
-        result_queue.put([shex_final_result, input_file_list, input_format, compression_mode])
+        # Output results
+        if args.output is None:
+            # Standard output
+            print_overwrite("".join(shex_final_result))
+
+            if args.verbose:
+                print_overwrite(get_dt_now() + " -- Done! [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
+        else:
+            # Output to file
+            if args.merge:
+                # Output one result file for each type of file processed(Turtle, N-triples, and RDF/XML)
+                # turtle.shex, nt.shex, rdf.shex
+                if input_format == TURTLE:
+                    output_file_name = TURTLE
+                elif input_format == NT:
+                    output_file_name = "n-triples"
+                elif input_format == RDF_XML:
+                    output_file_name = "rdf_xml"
+
+                if compression_mode is None:
+                    compression_exetention = ""
+                else:
+                    compression_exetention = "." + compression_mode
+
+                with open(args.output + "/" + output_file_name + compression_exetention + ".shex", "w", encoding="utf-8") as f:
+                    f.write("".join(shex_final_result))
+
+            else:
+                with open(args.output + "/" + Path(input_file_list[0]).name + ".shex", "w", encoding="utf-8") as f:
+                    f.write("".join(shex_final_result))
+
+            if args.verbose:
+                print_overwrite(get_dt_now() + " -- Done! [" + ", ".join(str(input_file) for input_file in input_file_list) + "] Output file: [" + str(Path(args.output + "/" + Path(input_file_list[0]).name)) + ".shex]")
 
     except ValueError as e:
-        result_queue.put(ValueError('A value error has occurred.\n\nValueError message: ' + str(e)))
+        error_queue.put(ValueError("[ERROR] A value error occurred while processing [" + ", ".join(str(input_file) for input_file in input_file_list) + "] Error message: " + str(e)))
 
     except IndexError as e:
-        result_queue.put(IndexError('An index error has occurred.\n\nIndexError message: ' + str(e)))
+        error_queue.put(IndexError("[ERROR] An index error occurred while processing [" + ", ".join(str(input_file) for input_file in input_file_list) + "] Error message: " + str(e)))
 
     except MemoryError as e:
-        result_queue.put(MemoryError('A memory error has occurred.\n\nMemoryError message: ' + str(e)))
+        error_queue.put(MemoryError("[ERROR] A memory error occurred while processing [" + ", ".join(str(input_file) for input_file in input_file_list) + "] Error message: " + str(e)))
 
     except Exception as e:
-        result_queue.put(Exception('An exception error has occurred.\n\nException message: ' + str(e)))
+        error_queue.put(Exception("[ERROR] An exception occurred while processing [" + ", ".join(str(input_file) for input_file in input_file_list) + "] Error message: " + str(e)))
 
 
 # Call the shex_graph method of shexer's shaper class and output the result
@@ -1135,7 +1131,7 @@ def get_input_classes(input_files, input_format, compression_mode, target_classe
             }
         """
 
-        # Correspondence for not executing query methods in parallel, since calling them in parallel will result in an error. -----
+        # INFO: Correspondence for not executing query methods in parallel, since calling them in parallel will result in an error. -----
         global in_progress_rdflib_query
         while in_progress_rdflib_query == True:
             time.sleep(0.01)
@@ -1173,8 +1169,7 @@ def get_refine_prefix_uris(refine_prefix_uris_file):
 # Get a list of candidate pairs of URI rewrite source and rewrite destination by referencing the class URLs dictionary.
 # Create a dictionary with a class corresponding to each key in the stored fingerprint format.
 # Return the two.
-def get_class_comparison_result(input_classes, refine_class_uris_file):
-    refine_class_uris = get_refine_class_uris(refine_class_uris_file)
+def get_class_comparison_result(input_classes, refine_class_uris):
     class_comparison_result = []
     fingerprint_class_dict = defaultdict(list)
     # Perform clustering by fingerprint for the acquired class name
@@ -1335,7 +1330,7 @@ def get_widely_used_prefixes_dict(prefix_list_file):
 
 # Compare the URI of the validation expression in the shexer output with the URI of the prepared prefix list
 # and get the matching Namespace from the prefix list
-def get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, widely_used_prefixes_dict, refine_prefix_uris_file):
+def get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, widely_used_prefixes_dict, refine_prefix_uris):
     widely_used_namespace_and_uri_result = []
 
     # Comparison of prefix list and minimal URI detected by shaXer
@@ -1352,7 +1347,7 @@ def get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, wide
                     break
 
             # Obtain namespaces and URIs to suggest, formatting them for output
-            suggest_string = get_suggest_string_for_widely_used_namespace_and_uri(input_namespace, shaper_result_uri, widely_used_prefixes_dict, refine_prefix_uris_file)
+            suggest_string = get_suggest_string_for_widely_used_namespace_and_uri(input_namespace, shaper_result_uri, widely_used_prefixes_dict, refine_prefix_uris)
 
             # If the string for the suggestion you got exists and is not yet included in the results
             if suggest_string not in widely_used_namespace_and_uri_result and len(suggest_string) > 0:
@@ -1364,7 +1359,7 @@ def get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, wide
         input_uri = input_prefix[1]
 
         # Obtain namespaces and URIs to suggest, formatting them for output
-        suggest_string = get_suggest_string_for_widely_used_namespace_and_uri(input_namespace, input_uri, widely_used_prefixes_dict, refine_prefix_uris_file)
+        suggest_string = get_suggest_string_for_widely_used_namespace_and_uri(input_namespace, input_uri, widely_used_prefixes_dict, refine_prefix_uris)
 
         # If the string for the suggestion you got exists and is not yet included in the results
         if suggest_string not in widely_used_namespace_and_uri_result and len(suggest_string) > 0:
@@ -1529,11 +1524,9 @@ def get_widely_used_uri_by_namespace(namespace, widely_used_prefixes_dict):
 
 
 # Obtain namespaces and URIs to suggest, formatting them for output
-def get_suggest_string_for_widely_used_namespace_and_uri(input_namespace, input_uri, widely_used_prefixes_dict, refine_prefix_uris_file):
+def get_suggest_string_for_widely_used_namespace_and_uri(input_namespace, input_uri, widely_used_prefixes_dict, refine_prefix_uris):
     suggest_string = input_namespace + "\t" + input_uri + "\t"
     exists_suggest = False
-
-    refine_prefix_uris = get_refine_prefix_uris(refine_prefix_uris_file)
 
     # Obtain the corresponding namespace in the list obtained from prefixes.tsv using the URI as a key
     widely_used_namespaces = get_widely_used_namespace_by_uri(input_uri, widely_used_prefixes_dict)
