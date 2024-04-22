@@ -6,37 +6,38 @@ from pathlib import Path
 
 class TestGetPrefixReusePercentage(unittest.TestCase):
 
-    def test_nt(self):
+    def test_no_result_1(self):
         input_prefixes, _, _ = get_input_prefixes_turtle([NT_1], None)
         widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
         result = get_prefix_reuse_percentage(input_prefixes, widely_used_prefixes_dict)
         self.assertEqual(result, None)
 
-    def test_ttl_1(self):
-        input_prefixes, _, _ = get_input_prefixes_turtle([TTL_1], None)
-        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
-        result = get_prefix_reuse_percentage(input_prefixes, widely_used_prefixes_dict)
-        self.assertEqual(result, 100.0)
-
-    def test_ttl_2(self):
-        input_prefixes, _, _ = get_input_prefixes_turtle([TTL_2], None)
-        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
-        result = get_prefix_reuse_percentage(input_prefixes, widely_used_prefixes_dict)
-        self.assertEqual(result, 50.0)
-
-    def test_ttl_3(self):
-        input_prefixes, _, _ = get_input_prefixes_turtle([TTL_3], None)
-        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
-        result = get_prefix_reuse_percentage(input_prefixes, widely_used_prefixes_dict)
-        self.assertEqual(result, 40.0)
-
-    def test_nt_gz(self):
+    def test_no_result_2(self):
         input_prefixes, _, _ = get_input_prefixes_turtle([NT_1_GZ], GZ)
         widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
         result = get_prefix_reuse_percentage(input_prefixes, widely_used_prefixes_dict)
         self.assertEqual(result, None)
 
-    def test_ttl_gz(self):
+
+    def test_with_result_1(self):
+        input_prefixes, _, _ = get_input_prefixes_turtle([TTL_1], None)
+        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
+        result = get_prefix_reuse_percentage(input_prefixes, widely_used_prefixes_dict)
+        self.assertEqual(result, 100.0)
+
+    def test_with_result_2(self):
+        input_prefixes, _, _ = get_input_prefixes_turtle([TTL_2], None)
+        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
+        result = get_prefix_reuse_percentage(input_prefixes, widely_used_prefixes_dict)
+        self.assertEqual(result, 50.0)
+
+    def test_with_result_3(self):
+        input_prefixes, _, _ = get_input_prefixes_turtle([TTL_3], None)
+        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
+        result = get_prefix_reuse_percentage(input_prefixes, widely_used_prefixes_dict)
+        self.assertEqual(result, 40.0)
+
+    def test_with_result_4(self):
         input_prefixes, _, _ = get_input_prefixes_turtle([TTL_1_GZ], GZ)
         widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
         result = get_prefix_reuse_percentage(input_prefixes, widely_used_prefixes_dict)

@@ -1,5 +1,5 @@
 import unittest
-from doctor.doctor import get_input_prefixes_turtle, get_input_prefixes_rdf_xml, get_widely_used_prefixes_dict, get_widely_used_namespace_and_uri_result
+from doctor.doctor import get_input_prefixes_turtle, get_input_prefixes_rdf_xml, get_widely_used_prefixes_dict, get_refine_prefix_uris, get_widely_used_namespace_and_uri_result
 from tests.consts import NT_1, NT_1_GZ, NT_1_ZIP, NT_3, TTL_1, TTL_1_GZ, TTL_1_ZIP, TTL_3, OWL_1, OWL_1_GZ, OWL_1_ZIP, RDF_1, RDF_1_GZ, RDF_1_ZIP, XML_1, XML_1_GZ, XML_1_ZIP, PREFIXES_FILE_PATH, REFINE_PREFIX_URIS_FILE_PATH
 from shexer.shaper import Shaper
 from shexer.consts import NT, TURTLE, RDF_XML, GZ, ZIP, MIXED_INSTANCES
@@ -20,7 +20,8 @@ class TestGetWidelyUsedNamespaceAndUriResult(unittest.TestCase):
         shaper_result = shaper.shex_graph(string_output=True)
         input_prefixes, _, _ = get_input_prefixes_turtle([input_file], None)
         widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
-        widely_used_namespace_and_uri = get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, widely_used_prefixes_dict, str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        refine_prefix_uris = get_refine_prefix_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        widely_used_namespace_and_uri = get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, widely_used_prefixes_dict, refine_prefix_uris)
         self.assertEqual(widely_used_namespace_and_uri, ['Undefined\thttp://example.org/\tex:|ex2:\t\n'])
 
     def test_nt_2(self):
@@ -36,7 +37,8 @@ class TestGetWidelyUsedNamespaceAndUriResult(unittest.TestCase):
         shaper_result = shaper.shex_graph(string_output=True)
         input_prefixes, _, _ = get_input_prefixes_turtle([input_file], None)
         widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
-        widely_used_namespace_and_uri = get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, widely_used_prefixes_dict, str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        refine_prefix_uris = get_refine_prefix_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        widely_used_namespace_and_uri = get_widely_used_namespace_and_uri_result(shaper_result, input_prefixes, widely_used_prefixes_dict, refine_prefix_uris)
         self.assertEqual(widely_used_namespace_and_uri, ['Undefined\thttp://purl.obolibrary.org/obo/\tobo:|uo:\t\n'])
 
     def test_nt_gz(self):

@@ -6,6 +6,7 @@ from doctor.consts import FILE_TYPE_TTL, FILE_TYPE_NT, FILE_TYPE_RDF_XML, FILE_T
 from shexer.consts import GZ, ZIP, TURTLE, NT, RDF_XML
 from tests.consts import BASE_DIR, DIR_INPUT_TEST_DIR_TTL, DIR_INPUT_TEST_DIR_NT, DIR_INPUT_TEST_DIR_RDF_XML, COMPRESSED_DIR_TAR_GZ, COMPRESSED_DIR_ZIP, TTL_1, TTL_2, TTL_3, TTL_1_GZ, TTL_2_GZ, TTL_3_GZ, TTL_1_ZIP, NT_1, NT_2, NT_3, NT_1_GZ, NT_2_GZ, NT_3_GZ, NT_1_ZIP, OWL_1, OWL_1_GZ, OWL_1_ZIP, RDF_1, RDF_1_GZ, RDF_1_ZIP, XML_1, XML_1_GZ, XML_1_ZIP
 
+# INFO: Depending on the environment in which the test is run, there may be differences in the order in which file information is obtained, but this does not affect the results of the rdf-doctor process.
 class TestGetInputFilesEach(unittest.TestCase):
 
     def test_file_ttl(self):

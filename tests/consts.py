@@ -1,5 +1,6 @@
 import os.path as path
 
+# Directories for testing
 BASE_DIR = path.join(path.dirname(path.normpath(__file__)), "test_files" + path.sep)
 OUTPUT_DIR = BASE_DIR + "output" + path.sep
 DIR_INPUT_TEST_DIR_TTL = BASE_DIR + "dir_input_test_turtle"
@@ -26,6 +27,7 @@ NT_1_GZ = BASE_DIR + "test_nt_1.nt.gz"
 NT_2_GZ = BASE_DIR + "test_nt_2.nt.gz"
 NT_3_GZ = BASE_DIR + "test_nt_3.nt.gz"
 NT_1_ZIP = BASE_DIR + "test_nt_1.nt.zip"
+NT_2_ZIP = BASE_DIR + "test_nt_2.nt.zip"
 
 # RDF/XML test files
 OWL_1 = BASE_DIR + "test_owl_1.owl"
@@ -43,27 +45,7 @@ XML_1_ZIP = BASE_DIR + "test_xml_1.xml.zip"
 COMPRESSED_DIR_TAR_GZ = BASE_DIR + "test_compressed_dir.tar.gz"
 COMPRESSED_DIR_ZIP = BASE_DIR + "test_compressed_dir.zip"
 
-
-OUTPUT_NT_3_MD = OUTPUT_DIR + "test_nt_3.md"
-OUTPUT_NT_1_2_3_MD = OUTPUT_DIR + "test_nt_1_2_3.md"
-OUTPUT_NT_1_2_3_CLASS_1_MD = OUTPUT_DIR + "test_nt_1_2_3_class_1.md"
-OUTPUT_NT_1_2_3_CLASS_2_MD = OUTPUT_DIR + "test_nt_1_2_3_class_2.md"
-OUTPUT_NT_1_2_3_CLASS_3_MD = OUTPUT_DIR + "test_nt_1_2_3_class_3.md"
-OUTPUT_NT_1_2_3_CLASS_4_MD = OUTPUT_DIR + "test_nt_1_2_3_class_4.md"
-OUTPUT_NT_1_2_3_CLASS_5_MD = OUTPUT_DIR + "test_nt_1_2_3_class_5.md"
-OUTPUT_NT_1_GZ_MD = OUTPUT_DIR + "test_nt_1_gz.md"
-OUTPUT_NT_1_2_3_GZ_MD = OUTPUT_DIR + "test_nt_1_2_3_gz.md"
-
-OUTPUT_TTL_3_MD = OUTPUT_DIR + "test_ttl_3.md"
-OUTPUT_TTL_3_CLASS_1_MD = OUTPUT_DIR + "test_ttl_3_class_1.md"
-OUTPUT_TTL_3_CLASS_2_MD = OUTPUT_DIR + "test_ttl_3_class_2.md"
-OUTPUT_TTL_3_CLASS_3_MD = OUTPUT_DIR + "test_ttl_3_class_3.md"
-OUTPUT_TTL_3_CLASS_4_MD = OUTPUT_DIR + "test_ttl_3_class_4.md"
-OUTPUT_TTL_3_CLASS_5_MD = OUTPUT_DIR + "test_ttl_3_class_5.md"
-OUTPUT_TTL_1_GZ_MD = OUTPUT_DIR + "test_ttl_1_gz.md"
-OUTPUT_TTL_1_2_3_MD = OUTPUT_DIR + "test_ttl_1_2_3.md"
-OUTPUT_TTL_1_2_3_GZ_MD = OUTPUT_DIR + "test_ttl_1_2_3_gz.md"
-
+# Reference files
 PREFIXES_FILE_PATH = "reference/prefixes.tsv"
 PREFIXES_ERROR_FILE_PATH = "reference/prefixes-error.tsv"
 REFINE_CLASS_URIS_FILE_PATH = "reference/refine-class-uris.tsv"

@@ -6,14 +6,19 @@ from pathlib import Path
 
 class TestGetFingerprintComparisonResult(unittest.TestCase):
 
-    def test_nt_no_result(self):
+    def test_no_result_1(self):
         input_classes = get_input_classes([NT_1], NT, None, ["all"])
         _, fingerprint_class_dict = get_class_comparison_result(input_classes, str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
         fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
         self.assertEqual(fingerprint_comparison_result, [])
 
+    def test_no_result_2(self):
+        input_classes = get_input_classes([TTL_2], TURTLE, None, ["all"])
+        _, fingerprint_class_dict = get_class_comparison_result(input_classes, str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
+        fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
+        self.assertEqual(fingerprint_comparison_result, [])
 
-    def test_nt_with_result(self):
+    def test_with_result_1(self):
         input_classes = get_input_classes([NT_2], NT, None, ["all"])
         _, fingerprint_class_dict = get_class_comparison_result(input_classes, str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
         fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
@@ -24,13 +29,7 @@ class TestGetFingerprintComparisonResult(unittest.TestCase):
                                                         '\n# http://xmlns.com/foaf/0.1/Document', \
                                                         '\n# http://xmlns.com/foaf/0.1#Document'])
 
-    def test_ttl_no_result(self):
-        input_classes = get_input_classes([TTL_2], TURTLE, None, ["all"])
-        _, fingerprint_class_dict = get_class_comparison_result(input_classes, str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
-        fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
-        self.assertEqual(fingerprint_comparison_result, [])
-
-    def test_ttl_with_result(self):
+    def test_with_result_2(self):
         input_classes = get_input_classes([TTL_1, TTL_2, TTL_3], TURTLE, None, ["all"])
         _, fingerprint_class_dict = get_class_comparison_result(input_classes, str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
         fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)

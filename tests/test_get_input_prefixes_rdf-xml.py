@@ -4,9 +4,6 @@ from tests.consts import OWL_1, OWL_1_GZ, OWL_1_ZIP, RDF_1, RDF_2, RDF_1_GZ, RDF
 from shexer.consts import GZ, ZIP
 
 class TestGetInputPrefixesRdfXml(unittest.TestCase):
-    # TODO: Modify overall
-    # TODO: Add duplicated prefix case
-    # TODO: Add multi files case
 
     def test_owl(self):
         input_prefixes, duplicated_prefixes_list, duplicated_prefixes_dict = get_input_prefixes_rdf_xml([OWL_1], None)
