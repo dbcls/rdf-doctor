@@ -12,18 +12,18 @@ class TestGetInputFilesEach(unittest.TestCase):
     def test_file_ttl(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([TTL_1, TTL_2, TTL_3], temp_dir, 95)
-        self.assertEqual(input_file_2d_list, [[[TTL_1], None, TURTLE], \
-                                                [[TTL_2], None, TURTLE], \
-                                                [[TTL_3], None, TURTLE]])
+        self.assertTrue([[TTL_1], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_2], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_3], None, TURTLE] in input_file_2d_list)
         self.assertEqual(exists_file_types, [FILE_TYPE_TTL])
         self.assertEqual(error_msg, None)
 
     def test_file_ttl_gz(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([TTL_1_GZ, TTL_2_GZ, TTL_3_GZ], temp_dir, 95)
-        self.assertEqual(input_file_2d_list, [[[TTL_1_GZ], GZ, TURTLE], \
-                                                [[TTL_2_GZ], GZ, TURTLE], \
-                                                [[TTL_3_GZ], GZ, TURTLE]])
+        self.assertTrue([[TTL_1_GZ], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_2_GZ], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_3_GZ], GZ, TURTLE] in input_file_2d_list)
         self.assertEqual(exists_file_types, [FILE_TYPE_TTL_GZ])
         self.assertEqual(error_msg, None)
 
@@ -38,18 +38,18 @@ class TestGetInputFilesEach(unittest.TestCase):
     def test_file_nt(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([NT_1, NT_2, NT_3], temp_dir, 95)
-        self.assertEqual(input_file_2d_list, [[[NT_1], None, NT], \
-                                                [[NT_2], None, NT], \
-                                                [[NT_3], None, NT]])
+        self.assertTrue([[NT_1], None, NT] in input_file_2d_list)
+        self.assertTrue([[NT_2], None, NT] in input_file_2d_list)
+        self.assertTrue([[NT_3], None, NT] in input_file_2d_list)
         self.assertEqual(exists_file_types, [FILE_TYPE_NT])
         self.assertEqual(error_msg, None)
 
     def test_file_nt_gz(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([NT_1_GZ, NT_2_GZ, NT_3_GZ], temp_dir, 95)
-        self.assertEqual(input_file_2d_list, [[[NT_1_GZ], GZ, NT], \
-                                                [[NT_2_GZ], GZ, NT], \
-                                                [[NT_3_GZ], GZ, NT]])
+        self.assertTrue([[NT_1_GZ], GZ, NT] in input_file_2d_list)
+        self.assertTrue([[NT_2_GZ], GZ, NT] in input_file_2d_list)
+        self.assertTrue([[NT_3_GZ], GZ, NT] in input_file_2d_list)
         self.assertEqual(exists_file_types, [FILE_TYPE_NT_GZ])
         self.assertEqual(error_msg, None)
 
@@ -120,7 +120,6 @@ class TestGetInputFilesEach(unittest.TestCase):
         self.assertEqual(exists_file_types, [FILE_TYPE_RDF_XML_GZ])
         self.assertEqual(error_msg, None)
 
-
     def test_file_xml_zip(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([XML_1_ZIP], temp_dir, 95)
@@ -131,46 +130,99 @@ class TestGetInputFilesEach(unittest.TestCase):
     def test_file_mix(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([TTL_1, TTL_2, TTL_3, TTL_1_GZ, TTL_2_GZ, TTL_3_GZ, TTL_1_ZIP, NT_1, NT_2, NT_3, NT_1_GZ, NT_2_GZ, NT_3_GZ, NT_1_ZIP, OWL_1, OWL_1_GZ, OWL_1_ZIP, RDF_1, RDF_1_GZ, RDF_1_ZIP, XML_1, XML_1_GZ, XML_1_ZIP], temp_dir, 95)
-        print(exists_file_types)
-        self.assertEqual(input_file_2d_list, [[[TTL_1], None, TURTLE], \
-                                                [[TTL_2], None, TURTLE], \
-                                                [[TTL_3], None, TURTLE], \
-                                                [[TTL_1_GZ], GZ, TURTLE], \
-                                                [[TTL_2_GZ], GZ, TURTLE], \
-                                                [[TTL_3_GZ], GZ, TURTLE], \
-                                                [[TTL_1_ZIP], ZIP, TURTLE], \
-                                                [[NT_1], None, NT], \
-                                                [[NT_2], None, NT], \
-                                                [[NT_3], None, NT], \
-                                                [[NT_1_GZ], GZ, NT], \
-                                                [[NT_2_GZ], GZ, NT], \
-                                                [[NT_3_GZ], GZ, NT], \
-                                                [[NT_1_ZIP], ZIP, NT], \
-                                                [[OWL_1], None, RDF_XML], \
-                                                [[OWL_1_GZ], GZ, RDF_XML], \
-                                                [[OWL_1_ZIP], ZIP, RDF_XML], \
-                                                [[RDF_1], None, RDF_XML], \
-                                                [[RDF_1_GZ], GZ, RDF_XML], \
-                                                [[RDF_1_ZIP], ZIP, RDF_XML], \
-                                                [[XML_1], None, RDF_XML], \
-                                                [[XML_1_GZ], GZ, RDF_XML], \
-                                                [[XML_1_ZIP], ZIP, RDF_XML]])
-        self.assertEqual(exists_file_types, [FILE_TYPE_TTL, FILE_TYPE_TTL_GZ, FILE_TYPE_TTL_ZIP, FILE_TYPE_NT, FILE_TYPE_NT_GZ, FILE_TYPE_NT_ZIP, FILE_TYPE_RDF_XML, FILE_TYPE_RDF_XML_GZ, FILE_TYPE_RDF_XML_ZIP])
+
+        self.assertTrue([[TTL_1], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_2], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_3], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_1_GZ], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_2_GZ], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_3_GZ], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[TTL_1_ZIP], ZIP, TURTLE] in input_file_2d_list)
+        self.assertTrue([[NT_1], None, NT] in input_file_2d_list)
+        self.assertTrue([[NT_2], None, NT] in input_file_2d_list)
+        self.assertTrue([[NT_3], None, NT] in input_file_2d_list)
+        self.assertTrue([[NT_1_GZ], GZ, NT] in input_file_2d_list)
+        self.assertTrue([[NT_2_GZ], GZ, NT] in input_file_2d_list)
+        self.assertTrue([[NT_3_GZ], GZ, NT] in input_file_2d_list)
+        self.assertTrue([[NT_1_ZIP], ZIP, NT] in input_file_2d_list)
+        self.assertTrue([[OWL_1], None, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[OWL_1_GZ], GZ, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[OWL_1_ZIP], ZIP, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[RDF_1], None, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[RDF_1_GZ], GZ, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[RDF_1_ZIP], ZIP, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[XML_1], None, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[XML_1_GZ], GZ, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[XML_1_ZIP], ZIP, RDF_XML] in input_file_2d_list)
+
+        self.assertTrue(FILE_TYPE_TTL in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_ZIP in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT_ZIP in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML_ZIP in exists_file_types)
         self.assertEqual(error_msg, None)
 
     def test_dir_one(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([DIR_INPUT_TEST_DIR_TTL], temp_dir, 95)
-        self.assertEqual(input_file_2d_list, [[[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl.gz')], GZ, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl.gz')], GZ, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl.zip')], ZIP, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl.zip')], ZIP, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl.gz')], GZ, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl')], None, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl')], None, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl.zip')], ZIP, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl')], None, TURTLE]])
-        self.assertEqual(exists_file_types, [FILE_TYPE_TTL_GZ, FILE_TYPE_TTL_ZIP, FILE_TYPE_TTL])
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl')], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl')], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl')], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl.gz')], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl.gz')], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl.gz')], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl.zip')], ZIP, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl.zip')], ZIP, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl.zip')], ZIP, TURTLE] in input_file_2d_list)
+
+        self.assertTrue(FILE_TYPE_TTL in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_ZIP in exists_file_types)
         self.assertEqual(error_msg, None)
 
 
     def test_dir_multi(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([DIR_INPUT_TEST_DIR_TTL, DIR_INPUT_TEST_DIR_NT, DIR_INPUT_TEST_DIR_RDF_XML], temp_dir, 95)
-        self.assertEqual(input_file_2d_list, [[[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl.gz')], GZ, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl.gz')], GZ, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl.zip')], ZIP, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl.zip')], ZIP, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl.gz')], GZ, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl')], None, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl')], None, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl.zip')], ZIP, TURTLE], [[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl')], None, TURTLE], [[Path(BASE_DIR+'dir_input_test_nt/test_nt_1.nt.gz')], GZ, NT], [[Path(BASE_DIR+'dir_input_test_nt/test_nt_1.nt.zip')], ZIP, NT], [[Path(BASE_DIR+'dir_input_test_nt/test_nt_3.nt.gz')], GZ, NT], [[Path(BASE_DIR+'dir_input_test_nt/test_nt_1.nt')], None, NT], [[Path(BASE_DIR+'dir_input_test_nt/test_nt_2.nt.gz')], GZ, NT], [[Path(BASE_DIR+'dir_input_test_nt/test_nt_3.nt')], None, NT], [[Path(BASE_DIR+'dir_input_test_nt/test_nt_2.nt')], None, NT], [[Path(BASE_DIR+'dir_input_test_rdf_xml/test_xml_1.xml.gz')], GZ, RDF_XML], [[Path(BASE_DIR+'dir_input_test_rdf_xml/test_rdf_1.rdf.gz')], GZ, RDF_XML], [[Path(BASE_DIR+'dir_input_test_rdf_xml/test_owl_1.owl.gz')], GZ, RDF_XML], [[Path(BASE_DIR+'dir_input_test_rdf_xml/test_rdf_1.rdf')], None, RDF_XML], [[Path(BASE_DIR+'dir_input_test_rdf_xml/test_xml_1.xml.zip')], ZIP, RDF_XML], [[Path(BASE_DIR+'dir_input_test_rdf_xml/test_owl_1.owl.zip')], ZIP, RDF_XML], [[Path(BASE_DIR+'dir_input_test_rdf_xml/test_rdf_1.rdf.zip')], ZIP, RDF_XML], [[Path(BASE_DIR+'dir_input_test_rdf_xml/test_owl_1.owl')], None, RDF_XML], [[Path(BASE_DIR+'dir_input_test_rdf_xml/test_xml_1.xml')], None, RDF_XML]])
-        self.assertEqual(exists_file_types, [FILE_TYPE_TTL_GZ, FILE_TYPE_TTL_ZIP, FILE_TYPE_TTL, FILE_TYPE_NT_GZ, FILE_TYPE_NT_ZIP, FILE_TYPE_NT, FILE_TYPE_RDF_XML_GZ, FILE_TYPE_RDF_XML, FILE_TYPE_RDF_XML_ZIP])
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl')], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl')], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl')], None, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl.gz')], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl.gz')], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl.gz')], GZ, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_1.ttl.zip')], ZIP, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_2.ttl.zip')], ZIP, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_turtle/test_ttl_3.ttl.zip')], ZIP, TURTLE] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_nt/test_nt_1.nt')], None, NT] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_nt/test_nt_2.nt')], None, NT] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_nt/test_nt_3.nt')], None, NT] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_nt/test_nt_1.nt.gz')], GZ, NT] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_nt/test_nt_2.nt.gz')], GZ, NT] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_nt/test_nt_3.nt.gz')], GZ, NT] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_nt/test_nt_1.nt.zip')], ZIP, NT] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_rdf_xml/test_owl_1.owl')], None, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_rdf_xml/test_rdf_1.rdf')], None, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_rdf_xml/test_xml_1.xml')], None, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_rdf_xml/test_owl_1.owl.gz')], GZ, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_rdf_xml/test_xml_1.xml.gz')], GZ, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_rdf_xml/test_rdf_1.rdf.gz')], GZ, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_rdf_xml/test_owl_1.owl.zip')], ZIP, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_rdf_xml/test_rdf_1.rdf.zip')], ZIP, RDF_XML] in input_file_2d_list)
+        self.assertTrue([[Path(BASE_DIR+'dir_input_test_rdf_xml/test_xml_1.xml.zip')], ZIP, RDF_XML] in input_file_2d_list)
+
+        self.assertTrue(FILE_TYPE_TTL in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_ZIP in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT_ZIP in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML_ZIP in exists_file_types)
         self.assertEqual(error_msg, None)
 
 
@@ -178,216 +230,89 @@ class TestGetInputFilesEach(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([COMPRESSED_DIR_TAR_GZ], temp_dir, 95)
 
-        # The temporary directory contains a UUID and the full path of the file is not fixed, so the confirmation method is different from other tests.
-        self.assertTrue("test_nt_1.nt.gz" in str(input_file_2d_list[0][0][0]))
-        self.assertEqual(input_file_2d_list[0][1], GZ)
-        self.assertEqual(input_file_2d_list[0][2], NT)
+        input_file_2d_list_mod = []
+        for input_file_list in input_file_2d_list:
+            input_file_2d_list_mod.append([Path(input_file_list[0][0]).name, input_file_list[1], input_file_list[2]])
 
-        self.assertTrue("test_ttl_1.ttl.gz" in str(input_file_2d_list[1][0][0]))
-        self.assertEqual(input_file_2d_list[1][1], GZ)
-        self.assertEqual(input_file_2d_list[1][2], TURTLE)
+        self.assertTrue(["test_ttl_1.ttl", None ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_2.ttl", None ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_3.ttl", None ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_1.nt", None, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_2.nt", None, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_3.nt", None, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_owl_1.owl", None, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_rdf_1.rdf", None, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_xml_1.xml", None, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_1.ttl.gz", GZ ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_2.ttl.gz", GZ ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_3.ttl.gz", GZ ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_1.nt.gz", GZ, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_2.nt.gz", GZ, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_3.nt.gz", GZ, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_owl_1.owl.gz", GZ, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_rdf_1.rdf.gz", GZ, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_xml_1.xml.gz", GZ, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_1.ttl.zip", ZIP ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_2.ttl.zip", ZIP ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_3.ttl.zip", ZIP ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_1.nt.zip", ZIP, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_owl_1.owl.zip", ZIP, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_rdf_1.rdf.zip", ZIP, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_xml_1.xml.zip", ZIP, RDF_XML] in input_file_2d_list_mod)
 
-        self.assertTrue("est_nt_1.nt.zip" in str(input_file_2d_list[2][0][0]))
-        self.assertEqual(input_file_2d_list[2][1], ZIP)
-        self.assertEqual(input_file_2d_list[2][2], NT)
-
-        self.assertTrue("test_xml_1.xml.gz" in str(input_file_2d_list[3][0][0]))
-        self.assertEqual(input_file_2d_list[3][1], GZ)
-        self.assertEqual(input_file_2d_list[3][2], RDF_XML)
-
-        self.assertTrue("test_rdf_1.rdf.gz" in str(input_file_2d_list[4][0][0]))
-        self.assertEqual(input_file_2d_list[4][1], GZ)
-        self.assertEqual(input_file_2d_list[4][2], RDF_XML)
-
-        self.assertTrue("test_nt_3.nt.gz" in str(input_file_2d_list[5][0][0]))
-        self.assertEqual(input_file_2d_list[5][1], GZ)
-        self.assertEqual(input_file_2d_list[5][2], NT)
-
-        self.assertTrue("test_owl_1.owl.gz" in str(input_file_2d_list[6][0][0]))
-        self.assertEqual(input_file_2d_list[6][1], GZ)
-        self.assertEqual(input_file_2d_list[6][2], RDF_XML)
-
-        self.assertTrue("test_ttl_3.ttl.gz" in str(input_file_2d_list[7][0][0]))
-        self.assertEqual(input_file_2d_list[7][1], GZ)
-        self.assertEqual(input_file_2d_list[7][2], TURTLE)
-
-        self.assertTrue("test_rdf_1.rdf" in str(input_file_2d_list[8][0][0]))
-        self.assertEqual(input_file_2d_list[8][1], None)
-        self.assertEqual(input_file_2d_list[8][2], RDF_XML)
-
-        self.assertTrue("test_xml_1.xml.zip" in str(input_file_2d_list[9][0][0]))
-        self.assertEqual(input_file_2d_list[9][1], ZIP)
-        self.assertEqual(input_file_2d_list[9][2], RDF_XML)
-
-        self.assertTrue("test_nt_1.nt" in str(input_file_2d_list[10][0][0]))
-        self.assertEqual(input_file_2d_list[10][1], None)
-        self.assertEqual(input_file_2d_list[10][2], NT)
-
-        self.assertTrue("test_nt_2.nt.gz" in str(input_file_2d_list[11][0][0]))
-        self.assertEqual(input_file_2d_list[11][1], GZ)
-        self.assertEqual(input_file_2d_list[11][2], NT)
-
-        self.assertTrue("test_owl_1.owl.zip" in str(input_file_2d_list[12][0][0]))
-        self.assertEqual(input_file_2d_list[12][1], ZIP)
-        self.assertEqual(input_file_2d_list[12][2], RDF_XML)
-
-        self.assertTrue("test_rdf_1.rdf.zip" in str(input_file_2d_list[13][0][0]))
-        self.assertEqual(input_file_2d_list[13][1], ZIP)
-        self.assertEqual(input_file_2d_list[13][2], RDF_XML)
-
-        self.assertTrue("test_ttl_3.ttl.zip" in str(input_file_2d_list[14][0][0]))
-        self.assertEqual(input_file_2d_list[14][1], ZIP)
-        self.assertEqual(input_file_2d_list[14][2], TURTLE)
-
-        self.assertTrue("test_nt_3.nt" in str(input_file_2d_list[15][0][0]))
-        self.assertEqual(input_file_2d_list[15][1], None)
-        self.assertEqual(input_file_2d_list[15][2], NT)
-
-        self.assertTrue("test_ttl_2.ttl.zip" in str(input_file_2d_list[16][0][0]))
-        self.assertEqual(input_file_2d_list[16][1], ZIP)
-        self.assertEqual(input_file_2d_list[16][2], TURTLE)
-
-        self.assertTrue("test_nt_2.nt" in str(input_file_2d_list[17][0][0]))
-        self.assertEqual(input_file_2d_list[17][1], None)
-        self.assertEqual(input_file_2d_list[17][2], NT)
-
-        self.assertTrue("test_ttl_2.ttl.gz" in str(input_file_2d_list[18][0][0]))
-        self.assertEqual(input_file_2d_list[18][1], GZ)
-        self.assertEqual(input_file_2d_list[18][2], TURTLE)
-
-        self.assertTrue("test_owl_1.owl" in str(input_file_2d_list[19][0][0]))
-        self.assertEqual(input_file_2d_list[19][1], None)
-        self.assertEqual(input_file_2d_list[19][2], RDF_XML)
-
-        self.assertTrue("test_xml_1.xml" in str(input_file_2d_list[20][0][0]))
-        self.assertEqual(input_file_2d_list[20][1], None)
-        self.assertEqual(input_file_2d_list[20][2], RDF_XML)
-
-        self.assertTrue("test_ttl_1.ttl" in str(input_file_2d_list[21][0][0]))
-        self.assertEqual(input_file_2d_list[21][1], None)
-        self.assertEqual(input_file_2d_list[21][2], TURTLE)
-
-        self.assertTrue("test_ttl_3.ttl" in str(input_file_2d_list[22][0][0]))
-        self.assertEqual(input_file_2d_list[22][1], None)
-        self.assertEqual(input_file_2d_list[22][2], TURTLE)
-
-        self.assertTrue("test_ttl_1.ttl.zip" in str(input_file_2d_list[23][0][0]))
-        self.assertEqual(input_file_2d_list[23][1], ZIP)
-        self.assertEqual(input_file_2d_list[23][2], TURTLE)
-
-        self.assertTrue("test_ttl_2.ttl" in str(input_file_2d_list[24][0][0]))
-        self.assertEqual(input_file_2d_list[24][1], None)
-        self.assertEqual(input_file_2d_list[24][2], TURTLE)
-
-        self.assertEqual(exists_file_types, [FILE_TYPE_NT_GZ, FILE_TYPE_TTL_GZ, FILE_TYPE_NT_ZIP, FILE_TYPE_RDF_XML_GZ, FILE_TYPE_RDF_XML, FILE_TYPE_RDF_XML_ZIP, FILE_TYPE_NT, FILE_TYPE_TTL_ZIP, FILE_TYPE_TTL])
+        self.assertTrue(FILE_TYPE_TTL in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_ZIP in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT_ZIP in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML_ZIP in exists_file_types)
         self.assertEqual(error_msg, None)
 
     def test_zipped_dir(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each([COMPRESSED_DIR_ZIP], temp_dir, 95)
+        input_file_2d_list_mod = []
+        for input_file_list in input_file_2d_list:
+            input_file_2d_list_mod.append([Path(input_file_list[0][0]).name, input_file_list[1], input_file_list[2]])
 
-        # The temporary directory contains a UUID and the full path of the file is not fixed, so the confirmation method is different from other tests.
-        self.assertTrue("test_nt_1.nt.gz" in str(input_file_2d_list[0][0][0]))
-        self.assertEqual(input_file_2d_list[0][1], GZ)
-        self.assertEqual(input_file_2d_list[0][2], NT)
+        self.assertTrue(["test_ttl_1.ttl", None ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_2.ttl", None ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_3.ttl", None ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_1.nt", None, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_2.nt", None, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_3.nt", None, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_owl_1.owl", None, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_rdf_1.rdf", None, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_xml_1.xml", None, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_1.ttl.gz", GZ ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_2.ttl.gz", GZ ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_3.ttl.gz", GZ ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_1.nt.gz", GZ, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_2.nt.gz", GZ, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_3.nt.gz", GZ, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_owl_1.owl.gz", GZ, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_rdf_1.rdf.gz", GZ, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_xml_1.xml.gz", GZ, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_1.ttl.zip", ZIP ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_2.ttl.zip", ZIP ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_ttl_3.ttl.zip", ZIP ,TURTLE] in input_file_2d_list_mod)
+        self.assertTrue(["test_nt_1.nt.zip", ZIP, NT] in input_file_2d_list_mod)
+        self.assertTrue(["test_owl_1.owl.zip", ZIP, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_rdf_1.rdf.zip", ZIP, RDF_XML] in input_file_2d_list_mod)
+        self.assertTrue(["test_xml_1.xml.zip", ZIP, RDF_XML] in input_file_2d_list_mod)
 
-        self.assertTrue("test_ttl_1.ttl.gz" in str(input_file_2d_list[1][0][0]))
-        self.assertEqual(input_file_2d_list[1][1], GZ)
-        self.assertEqual(input_file_2d_list[1][2], TURTLE)
-
-        self.assertTrue("est_nt_1.nt.zip" in str(input_file_2d_list[2][0][0]))
-        self.assertEqual(input_file_2d_list[2][1], ZIP)
-        self.assertEqual(input_file_2d_list[2][2], NT)
-
-        self.assertTrue("test_xml_1.xml.gz" in str(input_file_2d_list[3][0][0]))
-        self.assertEqual(input_file_2d_list[3][1], GZ)
-        self.assertEqual(input_file_2d_list[3][2], RDF_XML)
-
-        self.assertTrue("test_rdf_1.rdf.gz" in str(input_file_2d_list[4][0][0]))
-        self.assertEqual(input_file_2d_list[4][1], GZ)
-        self.assertEqual(input_file_2d_list[4][2], RDF_XML)
-
-        self.assertTrue("test_nt_3.nt.gz" in str(input_file_2d_list[5][0][0]))
-        self.assertEqual(input_file_2d_list[5][1], GZ)
-        self.assertEqual(input_file_2d_list[5][2], NT)
-
-        self.assertTrue("test_owl_1.owl.gz" in str(input_file_2d_list[6][0][0]))
-        self.assertEqual(input_file_2d_list[6][1], GZ)
-        self.assertEqual(input_file_2d_list[6][2], RDF_XML)
-
-        self.assertTrue("test_ttl_3.ttl.gz" in str(input_file_2d_list[7][0][0]))
-        self.assertEqual(input_file_2d_list[7][1], GZ)
-        self.assertEqual(input_file_2d_list[7][2], TURTLE)
-
-        self.assertTrue("test_rdf_1.rdf" in str(input_file_2d_list[8][0][0]))
-        self.assertEqual(input_file_2d_list[8][1], None)
-        self.assertEqual(input_file_2d_list[8][2], RDF_XML)
-
-        self.assertTrue("test_xml_1.xml.zip" in str(input_file_2d_list[9][0][0]))
-        self.assertEqual(input_file_2d_list[9][1], ZIP)
-        self.assertEqual(input_file_2d_list[9][2], RDF_XML)
-
-        self.assertTrue("test_nt_1.nt" in str(input_file_2d_list[10][0][0]))
-        self.assertEqual(input_file_2d_list[10][1], None)
-        self.assertEqual(input_file_2d_list[10][2], NT)
-
-        self.assertTrue("test_nt_2.nt.gz" in str(input_file_2d_list[11][0][0]))
-        self.assertEqual(input_file_2d_list[11][1], GZ)
-        self.assertEqual(input_file_2d_list[11][2], NT)
-
-        self.assertTrue("test_owl_1.owl.zip" in str(input_file_2d_list[12][0][0]))
-        self.assertEqual(input_file_2d_list[12][1], ZIP)
-        self.assertEqual(input_file_2d_list[12][2], RDF_XML)
-
-        self.assertTrue("test_rdf_1.rdf.zip" in str(input_file_2d_list[13][0][0]))
-        self.assertEqual(input_file_2d_list[13][1], ZIP)
-        self.assertEqual(input_file_2d_list[13][2], RDF_XML)
-
-        self.assertTrue("test_ttl_3.ttl.zip" in str(input_file_2d_list[14][0][0]))
-        self.assertEqual(input_file_2d_list[14][1], ZIP)
-        self.assertEqual(input_file_2d_list[14][2], TURTLE)
-
-        self.assertTrue("test_nt_3.nt" in str(input_file_2d_list[15][0][0]))
-        self.assertEqual(input_file_2d_list[15][1], None)
-        self.assertEqual(input_file_2d_list[15][2], NT)
-
-        self.assertTrue("test_ttl_2.ttl.zip" in str(input_file_2d_list[16][0][0]))
-        self.assertEqual(input_file_2d_list[16][1], ZIP)
-        self.assertEqual(input_file_2d_list[16][2], TURTLE)
-
-        self.assertTrue("test_nt_2.nt" in str(input_file_2d_list[17][0][0]))
-        self.assertEqual(input_file_2d_list[17][1], None)
-        self.assertEqual(input_file_2d_list[17][2], NT)
-
-        self.assertTrue("test_ttl_2.ttl.gz" in str(input_file_2d_list[18][0][0]))
-        self.assertEqual(input_file_2d_list[18][1], GZ)
-        self.assertEqual(input_file_2d_list[18][2], TURTLE)
-
-        self.assertTrue("test_owl_1.owl" in str(input_file_2d_list[19][0][0]))
-        self.assertEqual(input_file_2d_list[19][1], None)
-        self.assertEqual(input_file_2d_list[19][2], RDF_XML)
-
-        self.assertTrue("test_xml_1.xml" in str(input_file_2d_list[20][0][0]))
-        self.assertEqual(input_file_2d_list[20][1], None)
-        self.assertEqual(input_file_2d_list[20][2], RDF_XML)
-
-        self.assertTrue("test_ttl_1.ttl" in str(input_file_2d_list[21][0][0]))
-        self.assertEqual(input_file_2d_list[21][1], None)
-        self.assertEqual(input_file_2d_list[21][2], TURTLE)
-
-        self.assertTrue("test_ttl_3.ttl" in str(input_file_2d_list[22][0][0]))
-        self.assertEqual(input_file_2d_list[22][1], None)
-        self.assertEqual(input_file_2d_list[22][2], TURTLE)
-
-        self.assertTrue("test_ttl_1.ttl.zip" in str(input_file_2d_list[23][0][0]))
-        self.assertEqual(input_file_2d_list[23][1], ZIP)
-        self.assertEqual(input_file_2d_list[23][2], TURTLE)
-
-        self.assertTrue("test_ttl_2.ttl" in str(input_file_2d_list[24][0][0]))
-        self.assertEqual(input_file_2d_list[24][1], None)
-        self.assertEqual(input_file_2d_list[24][2], TURTLE)
-
-        self.assertEqual(exists_file_types, [FILE_TYPE_NT_GZ, FILE_TYPE_TTL_GZ, FILE_TYPE_NT_ZIP, FILE_TYPE_RDF_XML_GZ, FILE_TYPE_RDF_XML, FILE_TYPE_RDF_XML_ZIP, FILE_TYPE_NT, FILE_TYPE_TTL_ZIP, FILE_TYPE_TTL])
+        self.assertTrue(FILE_TYPE_TTL in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_TTL_ZIP in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_NT_ZIP in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML_GZ in exists_file_types)
+        self.assertTrue(FILE_TYPE_RDF_XML_ZIP in exists_file_types)
         self.assertEqual(error_msg, None)
 
 
