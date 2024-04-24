@@ -85,7 +85,15 @@ def doctor():
             executor_spinner.submit(display_spinner)
 
         try:
+            # Obtaining the contents of various reference files
             widely_used_prefixes_dict = get_widely_used_prefixes_dict(args.prefix_list)
+            if args.report:
+                refine_prefix_uris = get_refine_prefix_uris(args.prefix_uri_dict)
+                refine_class_uris = get_refine_class_uris(args.class_uri_dict)
+            else:
+                # Not used if -r option is not specified
+                refine_prefix_uris = None
+                refine_class_uris = None
 
             for input_file_list in input_file_2d_list:
                 if is_target_file(input_file_list, target_file_types) == False:
@@ -101,7 +109,7 @@ def doctor():
                     print_overwrite(get_dt_now() + " -- Start processing [" + ", ".join(str(input_file) for input_file in input_file_list[0]) + "]")
 
                 # Get and output result. If an error occurs, store it in a queue
-                executor_calc.submit(get_and_output_result, args, input_file_list[0], input_format, compression_mode, widely_used_prefixes_dict, error_queue)
+                executor_calc.submit(get_and_output_result, args, input_file_list[0], input_format, compression_mode, widely_used_prefixes_dict, refine_prefix_uris, refine_class_uris, error_queue)
 
             executor_calc.shutdown()
             if args.verbose:
@@ -842,7 +850,7 @@ def validate_command_line_args_other(args):
 
 
 # Retrieve processing results and store them in a queue
-def get_and_output_result(args, input_file_list, input_format, compression_mode, widely_used_prefixes_dict, error_queue):
+def get_and_output_result(args, input_file_list, input_format, compression_mode, widely_used_prefixes_dict, refine_prefix_uris, refine_class_uris, error_queue):
 
     try:
         # Get Prefix when input file is turtle format
@@ -868,9 +876,6 @@ def get_and_output_result(args, input_file_list, input_format, compression_mode,
         report_result = []
         # Output only if report output option is specified
         if args.report:
-            refine_prefix_uris = get_refine_prefix_uris(args.prefix_uri_dict)
-            refine_class_uris = get_refine_class_uris(args.class_uri_dict)
-
             # Prefixes with the same Namespace but different URIs at the same time
             if args.verbose:
                 print_overwrite(get_dt_now() + " -- Checking for duplicate prefixes... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
@@ -950,7 +955,7 @@ def get_and_output_result(args, input_file_list, input_format, compression_mode,
 
             # Get a result output list to notify about different class strings with the same key as a result of fingerprinting
             if args.verbose:
-                print_overwrite(get_dt_now() + " -- Comparing with fingerprint method results...[" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
+                print_overwrite(get_dt_now() + " -- Comparing with fingerprint method results... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
             result_class_fingerprint = []
             fingerprint_comparison_result = get_fingerprint_comparison_result(fingerprint_class_dict)
