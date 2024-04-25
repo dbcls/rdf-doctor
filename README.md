@@ -53,7 +53,7 @@ options:
                         path to a tab delimited file listing candidate pairs of URI rewrite source and rewrite destination for the class (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/refine-class-uris.tsv)
   --prefix-list FILE    list of prefixes (default: predefined file in rdf-doctor: https://github.com/dbcls/rdf-doctor/blob/main/doctor/reference/prefixes.tsv)
   --force-format INPUT-FORMAT
-                        This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle", "nt" and "xml"(=RDF/XML) can be specified.
+                        This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle", "turtle_iter", "nt" and "xml"(=RDF/XML) can be specified.
 ```
 
 ## See Also

@@ -5,7 +5,7 @@ import shutil
 from doctor.doctor import get_and_output_result, get_widely_used_prefixes_dict, get_refine_prefix_uris, get_refine_class_uris
 from doctor.consts import TARGET_CLASS_ALL
 from tests.consts import NT_1, NT_1_GZ, NT_1_ZIP, NT_2, NT_2_GZ, NT_2_ZIP, NT_3, NT_3_GZ, TTL_1, TTL_1_GZ, TTL_1_ZIP, TTL_2, TTL_2_GZ, TTL_2_ZIP, TTL_3, TTL_3_GZ, TTL_3_ZIP, TTL_ERROR, OWL_1, OWL_1_GZ, OWL_1_ZIP, RDF_1, RDF_2, RDF_1_GZ, RDF_1_ZIP, XML_1, XML_1_GZ, XML_1_ZIP, REFINE_PREFIX_URIS_FILE_PATH, REFINE_CLASS_URIS_FILE_PATH, PREFIXES_FILE_PATH, REFINE_CLASS_URIS_ERROR_FILE_PATH, OUTPUT_DIR
-from shexer.consts import NT, TURTLE, RDF_XML, GZ, ZIP
+from shexer.consts import NT, TURTLE, TURTLE_ITER, RDF_XML, GZ, ZIP
 from pathlib import Path
 
 # Since the order of the output of sheXer changes each time, only check that the result is list in the normal case.
@@ -383,6 +383,204 @@ class TestGetAndOutputResult(unittest.TestCase):
                                             merge=True, \
                                             tmp_dir=None, \
                                             tmp_dir_disk_usage_limit=95),
+                                    [TTL_1_ZIP, TTL_2_ZIP, TTL_3_ZIP],
+                                    TURTLE,
+                                    ZIP,
+                                    widely_used_prefixes_dict,
+                                    refine_prefix_uris,
+                                    refine_class_uris,
+                                    error_queue)
+
+        self.assertTrue(Path(OUTPUT_DIR + "turtle.zip.shex").exists())
+        self.assertTrue(error_queue.empty)
+
+    def test_ttl_iter_each(self):
+        shutil.rmtree(OUTPUT_DIR)
+        Path(OUTPUT_DIR).mkdir(exist_ok=True)
+        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
+        refine_prefix_uris = get_refine_prefix_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        refine_class_uris = get_refine_class_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
+        error_queue = queue.Queue()
+        input_file_list = [TTL_1, TTL_2, TTL_3]
+        for input_file in input_file_list:
+            get_and_output_result(argparse.Namespace(input=[TTL_1, TTL_2, TTL_3], \
+                                                output=OUTPUT_DIR, \
+                                                classes=[TARGET_CLASS_ALL], \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
+                                                verbose=False, \
+                                                report=True, \
+                                                type=None, \
+                                                merge=False, \
+                                                tmp_dir=None, \
+                                                tmp_dir_disk_usage_limit=95, \
+                                                force_format=TURTLE_ITER),
+                                        [input_file],
+                                        TURTLE,
+                                        None,
+                                        widely_used_prefixes_dict,
+                                        refine_prefix_uris,
+                                        refine_class_uris,
+                                        error_queue)
+
+        self.assertTrue(Path(OUTPUT_DIR+str(Path(TTL_1).name)+".shex").exists())
+        self.assertTrue(Path(OUTPUT_DIR+str(Path(TTL_2).name)+".shex").exists())
+        self.assertTrue(Path(OUTPUT_DIR+str(Path(TTL_3).name)+".shex").exists())
+        self.assertTrue(error_queue.empty)
+
+    def test_ttl_iter_merge(self):
+        shutil.rmtree(OUTPUT_DIR)
+        Path(OUTPUT_DIR).mkdir(exist_ok=True)
+        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
+        refine_prefix_uris = get_refine_prefix_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        refine_class_uris = get_refine_class_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
+        error_queue = queue.Queue()
+        get_and_output_result(argparse.Namespace(input=[TTL_1, TTL_2, TTL_3], \
+                                            output=OUTPUT_DIR, \
+                                            classes=[TARGET_CLASS_ALL], \
+                                            prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                            class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
+                                            verbose=False, \
+                                            report=True, \
+                                            type=None, \
+                                            merge=True, \
+                                            tmp_dir=None, \
+                                            tmp_dir_disk_usage_limit=95, \
+                                            force_format=TURTLE_ITER),
+                                    [TTL_1, TTL_2, TTL_3],
+                                    TURTLE,
+                                    None,
+                                    widely_used_prefixes_dict,
+                                    refine_prefix_uris,
+                                    refine_class_uris,
+                                    error_queue)
+
+        self.assertTrue(Path(OUTPUT_DIR + "turtle.shex").exists())
+        self.assertTrue(error_queue.empty)
+
+    def test_ttl_iter_gz_each(self):
+        shutil.rmtree(OUTPUT_DIR)
+        Path(OUTPUT_DIR).mkdir(exist_ok=True)
+        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
+        refine_prefix_uris = get_refine_prefix_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        refine_class_uris = get_refine_class_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
+        error_queue = queue.Queue()
+        input_file_list = [TTL_1_GZ, TTL_2_GZ, TTL_3_GZ]
+        for input_file in input_file_list:
+            get_and_output_result(argparse.Namespace(input=[TTL_1_GZ, TTL_2_GZ, TTL_3_GZ], \
+                                                output=OUTPUT_DIR, \
+                                                classes=[TARGET_CLASS_ALL], \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
+                                                verbose=False, \
+                                                report=True, \
+                                                type=None, \
+                                                merge=False, \
+                                                tmp_dir=None, \
+                                                tmp_dir_disk_usage_limit=95, \
+                                                force_format=TURTLE_ITER),
+                                        [input_file],
+                                        TURTLE,
+                                        GZ,
+                                        widely_used_prefixes_dict,
+                                        refine_prefix_uris,
+                                        refine_class_uris,
+                                        error_queue)
+
+        self.assertTrue(Path(OUTPUT_DIR+str(Path(TTL_1_GZ).name)+".shex").exists())
+        self.assertTrue(Path(OUTPUT_DIR+str(Path(TTL_2_GZ).name)+".shex").exists())
+        self.assertTrue(Path(OUTPUT_DIR+str(Path(TTL_3_GZ).name)+".shex").exists())
+        self.assertTrue(error_queue.empty)
+
+    def test_ttl_iter_gz_merge(self):
+        shutil.rmtree(OUTPUT_DIR)
+        Path(OUTPUT_DIR).mkdir(exist_ok=True)
+        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
+        refine_prefix_uris = get_refine_prefix_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        refine_class_uris = get_refine_class_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
+        error_queue = queue.Queue()
+        get_and_output_result(argparse.Namespace(input=[TTL_1_GZ, TTL_2_GZ, TTL_3_GZ], \
+                                            output=OUTPUT_DIR, \
+                                            classes=[TARGET_CLASS_ALL], \
+                                            prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                            class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
+                                            verbose=False, \
+                                            report=True, \
+                                            type=None, \
+                                            merge=True, \
+                                            tmp_dir=None, \
+                                            tmp_dir_disk_usage_limit=95, \
+                                            force_format=TURTLE_ITER),
+                                    [TTL_1_GZ, TTL_2_GZ, TTL_3_GZ],
+                                    TURTLE,
+                                    GZ,
+                                    widely_used_prefixes_dict,
+                                    refine_prefix_uris,
+                                    refine_class_uris,
+                                    error_queue)
+
+        self.assertTrue(Path(OUTPUT_DIR + "turtle.gz.shex").exists())
+        self.assertTrue(error_queue.empty)
+
+    def test_ttl_iter_zip_each(self):
+        shutil.rmtree(OUTPUT_DIR)
+        Path(OUTPUT_DIR).mkdir(exist_ok=True)
+        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
+        refine_prefix_uris = get_refine_prefix_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        refine_class_uris = get_refine_class_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
+        error_queue = queue.Queue()
+        input_file_list = [TTL_1_ZIP, TTL_2_ZIP, TTL_3_ZIP]
+        for input_file in input_file_list:
+            get_and_output_result(argparse.Namespace(input=[TTL_1_ZIP, TTL_2_ZIP, TTL_3_ZIP], \
+                                                output=OUTPUT_DIR, \
+                                                classes=[TARGET_CLASS_ALL], \
+                                                prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                                class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                                prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
+                                                verbose=False, \
+                                                report=True, \
+                                                type=None, \
+                                                merge=False, \
+                                                tmp_dir=None, \
+                                                tmp_dir_disk_usage_limit=95, \
+                                                force_format=TURTLE_ITER),
+                                        [input_file],
+                                        TURTLE,
+                                        ZIP,
+                                        widely_used_prefixes_dict,
+                                        refine_prefix_uris,
+                                        refine_class_uris,
+                                        error_queue)
+
+        self.assertTrue(Path(OUTPUT_DIR+str(Path(TTL_1_ZIP).name)+".shex").exists())
+        self.assertTrue(Path(OUTPUT_DIR+str(Path(TTL_2_ZIP).name)+".shex").exists())
+        self.assertTrue(Path(OUTPUT_DIR+str(Path(TTL_3_ZIP).name)+".shex").exists())
+        self.assertTrue(error_queue.empty)
+
+    def test_ttl_iter_zip_merge(self):
+        shutil.rmtree(OUTPUT_DIR)
+        Path(OUTPUT_DIR).mkdir(exist_ok=True)
+        widely_used_prefixes_dict = get_widely_used_prefixes_dict(str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)))
+        refine_prefix_uris = get_refine_prefix_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)))
+        refine_class_uris = get_refine_class_uris(str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)))
+        error_queue = queue.Queue()
+        get_and_output_result(argparse.Namespace(input=[TTL_1_ZIP, TTL_2_ZIP, TTL_3_ZIP], \
+                                            output=OUTPUT_DIR, \
+                                            classes=[TARGET_CLASS_ALL], \
+                                            prefix_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_PREFIX_URIS_FILE_PATH)), \
+                                            class_uri_dict=str(Path(__file__).resolve().parent.joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
+                                            prefix_list=str(Path(__file__).resolve().parent.joinpath(PREFIXES_FILE_PATH)), \
+                                            verbose=False, \
+                                            report=True, \
+                                            type=None, \
+                                            merge=True, \
+                                            tmp_dir=None, \
+                                            tmp_dir_disk_usage_limit=95, \
+                                            force_format=TURTLE_ITER),
                                     [TTL_1_ZIP, TTL_2_ZIP, TTL_3_ZIP],
                                     TURTLE,
                                     ZIP,

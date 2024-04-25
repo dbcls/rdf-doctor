@@ -26,7 +26,7 @@ from doctor.consts import VERSION_FILE, TARGET_CLASS_ALL, EXTENSION_NT, EXTENSIO
                             FILE_TYPE_TTL_ZIP, FILE_TYPE_NT_ZIP, FILE_TYPE_RDF_XML_ZIP, FILE_TYPE_ALL, FILE_TYPE_DICT, TMP_DISK_USAGE_LIMIT_DEFAULT
 
 from shexer.shaper import Shaper
-from shexer.consts import NT, TURTLE, RDF_XML, GZ, ZIP, MIXED_INSTANCES
+from shexer.consts import NT, TURTLE, TURTLE_ITER, RDF_XML, GZ, ZIP, MIXED_INSTANCES
 
 is_displaying_spinner = False
 in_progress_rdflib_query = False
@@ -256,7 +256,7 @@ def get_command_line_args(args):
 
     # input format (--force-format [INPUT_FORMAT]、default: Standard output)
     parser.add_argument("--force-format", type=str,
-                        help='This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle", "nt" and "xml"(=RDF/XML) can be specified.',
+                        help='This option should not normally be used. Because the input format is automatically determined by the file extension. Use it only when you want to force specification. If used, "turtle", "turtle_iter", "nt" and "xml"(=RDF/XML) can be specified.',
                         metavar="INPUT-FORMAT")
 
     return parser.parse_args(args)
@@ -557,12 +557,8 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                     input_format = get_input_format(file_path, compression_mode)
 
                     # Determine file type and add to array
-                    if input_format == TURTLE:
-                        input_file_2d_list.append([[file_path], compression_mode, TURTLE])
-                    elif input_format == NT:
-                        input_file_2d_list.append([[file_path], compression_mode, NT])
-                    elif input_format == RDF_XML:
-                        input_file_2d_list.append([[file_path], compression_mode, RDF_XML])
+                    if input_format in (TURTLE, NT, RDF_XML):
+                        input_file_2d_list.append([[file_path], compression_mode, input_format])
                     else:
                         # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
                         pass
@@ -573,12 +569,8 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
             compression_mode = get_compression_mode(input_file)
             input_format = get_input_format(input_file, compression_mode)
 
-            if input_format == TURTLE:
-                input_file_2d_list.append([[input_file], compression_mode, TURTLE])
-            elif input_format == NT:
-                input_file_2d_list.append([[input_file], compression_mode, NT])
-            elif input_format == RDF_XML:
-                input_file_2d_list.append([[input_file], compression_mode, RDF_XML])
+            if input_format in (TURTLE, NT, RDF_XML):
+                input_file_2d_list.append([[input_file], compression_mode, input_format])
             else:
                 # Case None
                 if compression_mode is None:
@@ -604,12 +596,8 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                             # Determine file type and add to array
                             compression_mode = get_compression_mode(file_path)
                             input_format = get_input_format(file_path, compression_mode)
-                            if input_format == TURTLE:
-                                input_file_2d_list.append([[file_path], compression_mode, TURTLE])
-                            elif input_format == NT:
-                                input_file_2d_list.append([[file_path], compression_mode, NT])
-                            elif input_format == RDF_XML:
-                                input_file_2d_list.append([[file_path], compression_mode, RDF_XML])
+                            if input_format in (TURTLE, NT, RDF_XML):
+                                input_file_2d_list.append([[file_path], compression_mode, input_format])
                             else:
                                 # No processing except for .ttl, .nt, .rdf, .xml, .owl and their compressed
                                 pass
@@ -631,12 +619,8 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                             file_path = Path(root) / file
                             compression_mode = get_compression_mode(file_path)
                             input_format = get_input_format(file_path, compression_mode)
-                            if input_format == TURTLE:
-                                input_file_2d_list.append([[file_path], compression_mode, TURTLE])
-                            elif input_format == NT:
-                                input_file_2d_list.append([[file_path], compression_mode, NT])
-                            elif input_format == RDF_XML:
-                                input_file_2d_list.append([[file_path], compression_mode, RDF_XML])
+                            if input_format in (TURTLE, NT, RDF_XML):
+                                input_file_2d_list.append([[file_path], compression_mode, input_format])
                             else:
                                 # No processing except for .ttl, .nt, .rdf, .xml, .owl and their compressed
                                 pass
@@ -779,8 +763,8 @@ def validate_command_line_args_other(args):
 
     # Input Format only allows "turtle" or "nt" or "xml"
     if args.force_format is not None:
-        if args.force_format not in [TURTLE, NT, RDF_XML]:
-            error_msg = 'Input format error: "' + args.force_format + '" is an unsupported input format. "' + TURTLE + '", "' + NT + '" and "' + RDF_XML + '"(=RDF/XML) are supported.'
+        if args.force_format not in [TURTLE, TURTLE_ITER, NT, RDF_XML]:
+            error_msg = 'Input format error: "' + args.force_format + '" is an unsupported input format. "' + TURTLE + '", "' + TURTLE_ITER + '", "' + NT + '" and "' + RDF_XML + '"(=RDF/XML) are supported.'
             return error_msg
 
     if Path(args.prefix_uri_dict).is_file() == False:
@@ -862,7 +846,7 @@ def get_and_output_result(args, input_file_list, input_format, compression_mode,
             if args.verbose:
                 print_overwrite(get_dt_now() + " -- Getting prefixes from input file... [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
 
-            if input_format == TURTLE:
+            if input_format in (TURTLE, TURTLE_ITER):
                 input_prefixes, duplicated_prefixes, duplicated_prefixes_dict = get_input_prefixes_turtle(input_file_list, compression_mode)
             elif input_format == RDF_XML:
                 input_prefixes, duplicated_prefixes, duplicated_prefixes_dict = get_input_prefixes_rdf_xml(input_file_list, compression_mode)
@@ -1017,7 +1001,7 @@ def get_and_output_result(args, input_file_list, input_format, compression_mode,
             if args.merge:
                 # Output one result file for each type of file processed(Turtle, N-triples, and RDF/XML)
                 # turtle.shex, nt.shex, rdf.shex
-                if input_format == TURTLE:
+                if input_format in (TURTLE, TURTLE_ITER):
                     output_file_name = TURTLE
                 elif input_format == NT:
                     output_file_name = "n-triples"

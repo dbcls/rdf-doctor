@@ -234,7 +234,7 @@ class TestValidateCommnadLineArgsOther(unittest.TestCase):
                                                                             class_uri_dict=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(REFINE_CLASS_URIS_FILE_PATH)), \
                                                                             prefix_list=str(Path(__file__).resolve().parent.parent.joinpath("doctor").joinpath(PREFIXES_FILE_PATH)), \
                                                                             force_format="aaa"))
-        self.assertEqual(error_msg, 'Input format error: "aaa" is an unsupported input format. "turtle", "nt" and "xml"(=RDF/XML) are supported.')
+        self.assertEqual(error_msg, 'Input format error: "aaa" is an unsupported input format. "turtle", "turtle_iter", "nt" and "xml"(=RDF/XML) are supported.')
 
     # [prefix_list/OK] default file
     def test_prefix_list_default_file(self):
