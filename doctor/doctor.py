@@ -19,14 +19,16 @@ from collections import defaultdict
 from pathlib import Path
 import tempfile
 import uuid
+import xz
 from doctor.consts import VERSION_FILE, TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, \
                             EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL, EXTENSION_GZ, EXTENSION_ZIP, EXTENSION_TAR_GZ, \
+                            EXTENSION_XZ, EXTENSION_TAR_XZ, FILE_TYPE_TTL_XZ, FILE_TYPE_NT_XZ, FILE_TYPE_RDF_XML_XZ, \
                             PREFIXES_FILE_PATH, REFINE_CLASS_URIS_FILE_PATH, REFINE_PREFIX_URIS_FILE_PATH, HELP_LINK_URL, \
                             FILE_TYPE_TTL, FILE_TYPE_NT, FILE_TYPE_RDF_XML, FILE_TYPE_TTL_GZ, FILE_TYPE_NT_GZ, FILE_TYPE_RDF_XML_GZ, \
                             FILE_TYPE_TTL_ZIP, FILE_TYPE_NT_ZIP, FILE_TYPE_RDF_XML_ZIP, FILE_TYPE_ALL, FILE_TYPE_DICT, TMP_DISK_USAGE_LIMIT_DEFAULT
 
 from shexer.shaper import Shaper
-from shexer.consts import NT, TURTLE, TURTLE_ITER, RDF_XML, GZ, ZIP, MIXED_INSTANCES
+from shexer.consts import NT, TURTLE, TURTLE_ITER, RDF_XML, GZ, ZIP, XZ, MIXED_INSTANCES, ALL_EXAMPLES
 
 is_displaying_spinner = False
 in_progress_rdflib_query = False
@@ -109,6 +111,7 @@ def doctor():
                     print_overwrite(get_dt_now() + " -- Start processing [" + ", ".join(str(input_file) for input_file in input_file_list[0]) + "]")
 
                 # Get and output result. If an error occurs, store it in a queue
+                #print_overwrite(get_dt_now() + " -- " + input_format + ":" + compression_mode)
                 executor_calc.submit(get_and_output_result, args, input_file_list[0], input_format, compression_mode, widely_used_prefixes_dict, refine_prefix_uris, refine_class_uris, error_queue)
 
             executor_calc.shutdown()
@@ -200,7 +203,7 @@ def get_command_line_args(args):
 
     # Input file type (-t、--type)
     parser.add_argument("-t","--type",
-                        help='specifies the type of the input file ("all" or individually from the following Multiple types can be specified by separating them with a comma. ttl, nt, rdf_xml, ttl_gz, nt_gz, rdf_xml_gz, ttl_zip, nt_zip, rdf_xml_zip)')
+                        help='specifies the type of the input file ("all" or individually from the following Multiple types can be specified by separating them with a comma. ttl, nt, rdf_xml, ttl_gz, nt_gz, rdf_xml_gz, ttl_xz, nt_xz, rdf_xml_xz, ttl_zip, nt_zip, rdf_xml_zip)')
 
     # Add report to results (-r、--report)
     parser.add_argument("-r","--report",
@@ -227,13 +230,13 @@ def get_command_line_args(args):
     # Temporary directory (--tmp-dir [DIRECTORY]、default: Platform-dependent default temporary directory)
     parser.add_argument("--tmp-dir", type=str,
                         default=None,
-                        help='Temporary directory where the unzipped contents are placed when processing tar.gz or zip (default: Platform-dependent default temporary directory)',
+                        help='Temporary directory where the unzipped contents are placed when processing tar.gz, tar.xz, or zip (default: Platform-dependent default temporary directory)',
                         metavar="DIRECTORY")
 
     # Temporary directory usage upper limit(--tmp-dir-disk-usage-limit [percentage]、default: 95)
     parser.add_argument("--tmp-dir-disk-usage-limit", type=int,
                         default=TMP_DISK_USAGE_LIMIT_DEFAULT,
-                        help='Percentage of disk usage that contains the temporary directory where unzipped contents are placed when processing tar.gz or zip. Interrupt processing when the specified usage percentage is exceeded (1-100 default: 95)',
+                        help='Percentage of disk usage that contains the temporary directory where unzipped contents are placed when processing tar.gz, tar.xz, or zip. Interrupt processing when the specified usage percentage is exceeded (1-100 default: 95)',
                         metavar="PERCENTAGE")
 
     # Prefix URI dictionary file path(--prefix-uri-dict [FILE]、default: reference/refine-prefix-uris.tsv)
@@ -284,6 +287,9 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
     input_file_list_ttl_gz = []         # GZ compressed Turtle(.ttl.gz)
     input_file_list_nt_gz = []          # GZ compressed N-Triples(.nt.gz)
     input_file_list_rdf_xml_gz = []     # GZ compressed RDF/XML(.rdf.gz, .xml.gz, .owl.gz)
+    input_file_list_ttl_xz = []         # XZ compressed Turtle(.ttl.xz)
+    input_file_list_nt_xz = []          # XZ compressed N-Triples(.nt.xz)
+    input_file_list_rdf_xml_xz = []     # XZ compressed RDF/XML(.rdf.xz, .xml.xz, .owl.xz)
     input_file_list_ttl_zip = []        # ZIP compressed Turtle(.ttl.zip)
     input_file_list_nt_zip = []         # ZIP compressed N-Triples(.nt.zip)
     input_file_list_rdf_xml_zip = []    # ZIP compressed RDF/XML(.rdf.zip, .xml.zip, .owl.zip)
@@ -313,6 +319,17 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                             input_file_list_nt_gz.append(file_path)
                         elif input_format == RDF_XML:
                             input_file_list_rdf_xml_gz.append(file_path)
+                        else:
+                            # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                            pass
+
+                    elif compression_mode == XZ:
+                        if input_format == TURTLE:
+                            input_file_list_ttl_xz.append(file_path)
+                        elif input_format == NT:
+                            input_file_list_nt_xz.append(file_path)
+                        elif input_format == RDF_XML:
+                            input_file_list_rdf_xml_xz.append(file_path)
                         else:
                             # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
                             pass
@@ -381,6 +398,16 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                                     else:
                                         # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
                                         pass
+                                if compression_mode == XZ:
+                                    if input_format == TURTLE:
+                                        input_file_list_ttl_xz.append(file_path)
+                                    elif input_format == NT:
+                                        input_file_list_nt_xz.append(file_path)
+                                    elif input_format == RDF_XML:
+                                        input_file_list_rdf_xml_xz.append(file_path)
+                                    else:
+                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        pass
                                 elif compression_mode == ZIP:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_zip.append(file_path)
@@ -403,7 +430,80 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                                         # No processing except for .ttl, .nt, .rdf, .xml, .owl
                                         pass
                     else:
-                        error_msg = '"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                        error_msg = '1:"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                        return None, None, error_msg
+
+            elif compression_mode == XZ:
+                if input_format == TURTLE:
+                    input_file_list_ttl_xz.append(input_file)
+                elif input_format == NT:
+                    input_file_list_nt_xz.append(input_file)
+                elif input_format == RDF_XML:
+                    input_file_list_rdf_xml_xz.append(input_file)
+                else:
+                    extension = get_extension_before_compression(input_file) + "." + compression_mode
+
+                    if extension == EXTENSION_TAR_XZ:
+                        # Check disk usage percentage
+                        if get_disk_usage_percentage(temp_dir) >= tmp_dir_disk_usage_limit:
+                            error_msg = 'The process was canceled because the disk usage exceeded ' + str(tmp_dir_disk_usage_limit) + '%.'
+                            return None, None, error_msg
+
+                        extract_path = Path(temp_dir) / Path(input_file + "_" + str(uuid.uuid4())).name
+                        # For .tar.xz, expand and process the contents
+                        with tarfile.open(input_file, 'r:xz') as tar:
+                            tar.extractall(extract_path)
+
+                        # Loop by recursively retrieving files in a directory
+                        for root, _, files in os.walk(top=extract_path):
+                            for file in files:
+                                file_path = Path(root) / file
+
+                                compression_mode = get_compression_mode(file_path)
+                                input_format = get_input_format(file_path, compression_mode)
+                                if compression_mode == GZ:
+                                    if input_format == TURTLE:
+                                        input_file_list_ttl_gz.append(file_path)
+                                    elif input_format == NT:
+                                        input_file_list_nt_gz.append(file_path)
+                                    elif input_format == RDF_XML:
+                                        input_file_list_rdf_xml_gz.append(file_path)
+                                    else:
+                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        pass
+                                elif compression_mode == XZ:
+                                    if input_format == TURTLE:
+                                        input_file_list_ttl_xz.append(file_path)
+                                    elif input_format == NT:
+                                        input_file_list_nt_xz.append(file_path)
+                                    elif input_format == RDF_XML:
+                                        input_file_list_rdf_xml_xz.append(file_path)
+                                    else:
+                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        pass
+                                elif compression_mode == ZIP:
+                                    if input_format == TURTLE:
+                                        input_file_list_ttl_zip.append(file_path)
+                                    elif input_format == NT:
+                                        input_file_list_nt_zip.append(file_path)
+                                    elif input_format == RDF_XML:
+                                        input_file_list_rdf_xml_zip.append(file_path)
+                                    else:
+                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        pass
+
+                                elif compression_mode is None:
+                                    if input_format == TURTLE:
+                                        input_file_list_ttl.append(file_path)
+                                    elif input_format == NT:
+                                        input_file_list_nt.append(file_path)
+                                    elif input_format == RDF_XML:
+                                        input_file_list_rdf_xml.append(file_path)
+                                    else:
+                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl
+                                        pass
+                    else:
+                        error_msg = '2:"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                         return None, None, error_msg
 
             elif compression_mode == ZIP:
@@ -444,6 +544,17 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                                         # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
                                         pass
 
+                                elif compression_mode == XZ:
+                                    if input_format == TURTLE:
+                                        input_file_list_ttl_xz.append(file_path)
+                                    elif input_format == NT:
+                                        input_file_list_nt_xz.append(file_path)
+                                    elif input_format == RDF_XML:
+                                        input_file_list_rdf_xml_xz.append(file_path)
+                                    else:
+                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        pass
+
                                 elif compression_mode == ZIP:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_zip.append(file_path)
@@ -466,7 +577,7 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                                         # No processing except for .ttl, .nt, .rdf, .xml, .owl
                                         pass
                     else:
-                        error_msg = '"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                        error_msg = '3:"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                         return None, None, error_msg
 
             elif compression_mode is None:
@@ -477,7 +588,7 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                 elif input_format == RDF_XML:
                     input_file_list_rdf_xml.append(input_file)
                 else:
-                    error_msg = '"' + get_extension(input_file) + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                    error_msg = '4:"' + get_extension(input_file) + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                     return None, None, error_msg
 
     if len(input_file_list_ttl) != 0:
@@ -496,14 +607,26 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
         # input_file_dict[FILE_TYPE_TTL_GZ] = [input_file_list_ttl_gz, GZ, TURTLE]
         input_file_2d_list.append([input_file_list_ttl_gz, GZ, TURTLE])
         exists_file_types.append(FILE_TYPE_TTL_GZ)
+    if len(input_file_list_ttl_xz) != 0:
+        # input_file_dict[FILE_TYPE_TTL_XZ] = [input_file_list_ttl_xz, XZ, TURTLE]
+        input_file_2d_list.append([input_file_list_ttl_xz, XZ, TURTLE])
+        exists_file_types.append(FILE_TYPE_TTL_XZ)
     if len(input_file_list_nt_gz) != 0:
         # input_file_dict[FILE_TYPE_NT_GZ] = [input_file_list_nt_gz, GZ, NT]
         input_file_2d_list.append([input_file_list_nt_gz, GZ, NT])
         exists_file_types.append(FILE_TYPE_NT_GZ)
+    if len(input_file_list_nt_xz) != 0:
+        # input_file_dict[FILE_TYPE_NT_XZ] = [input_file_list_nt_xz, XZ, NT]
+        input_file_2d_list.append([input_file_list_nt_xz, XZ, NT])
+        exists_file_types.append(FILE_TYPE_NT_XZ)
     if len(input_file_list_rdf_xml_gz) != 0:
         # input_file_dict[FILE_TYPE_RDF_XML_GZ] = [input_file_list_rdf_xml_gz, GZ, RDF_XML]
         input_file_2d_list.append([input_file_list_rdf_xml_gz, GZ, RDF_XML])
         exists_file_types.append(FILE_TYPE_RDF_XML_GZ)
+    if len(input_file_list_rdf_xml_xz) != 0:
+        # input_file_dict[FILE_TYPE_RDF_XML_XZ] = [input_file_list_rdf_xml_xz, XZ, RDF_XML]
+        input_file_2d_list.append([input_file_list_rdf_xml_xz, XZ, RDF_XML])
+        exists_file_types.append(FILE_TYPE_RDF_XML_XZ)
     if len(input_file_list_ttl_zip) != 0:
         # input_file_dict[FILE_TYPE_TTL_ZIP] = [input_file_list_ttl_zip, ZIP, TURTLE]
         input_file_2d_list.append([input_file_list_ttl_zip, ZIP, TURTLE])
@@ -602,6 +725,30 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                                 # No processing except for .ttl, .nt, .rdf, .xml, .owl and their compressed
                                 pass
 
+                elif extension == EXTENSION_TAR_XZ:
+                    # Check disk usage percentage
+                    if get_disk_usage_percentage(temp_dir) >= tmp_dir_disk_usage_limit:
+                        error_msg = 'The process was canceled because the disk usage exceeded ' + str(tmp_dir_disk_usage_limit) + '%.'
+                        return None, None, error_msg
+
+                    extract_path = Path(temp_dir) / Path(input_file + "_" + str(uuid.uuid4())).name
+                    # For .tar.xz, expand and process the contents
+                    with tarfile.open(input_file, 'r:xz') as tar:
+                        tar.extractall(extract_path)
+
+                    # Loop by recursively retrieving files in a directory
+                    for root, _, files in os.walk(top=extract_path):
+                        for file in files:
+                            file_path = Path(root) / file
+                            # Determine file type and add to array
+                            compression_mode = get_compression_mode(file_path)
+                            input_format = get_input_format(file_path, compression_mode)
+                            if input_format in (TURTLE, NT, RDF_XML):
+                                input_file_2d_list.append([[file_path], compression_mode, input_format])
+                            else:
+                                # No processing except for .ttl, .nt, .rdf, .xml, .owl and their compressed
+                                pass
+
                 elif extension == EXTENSION_ZIP:
                     # Check disk usage percentage
                     if get_disk_usage_percentage(temp_dir) >= tmp_dir_disk_usage_limit:
@@ -625,7 +772,7 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                                 # No processing except for .ttl, .nt, .rdf, .xml, .owl and their compressed
                                 pass
                 else:
-                    error_msg = '"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                    error_msg = '5:"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                     return None, None, error_msg
 
     for input_file_list in input_file_2d_list:
@@ -643,6 +790,13 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                 exists_file_types.append(FILE_TYPE_NT_GZ)
             elif input_file_list[2] == RDF_XML and FILE_TYPE_RDF_XML_GZ not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_RDF_XML_GZ)
+        elif input_file_list[1] == XZ:
+            if input_file_list[2] == TURTLE and FILE_TYPE_TTL_XZ not in exists_file_types:
+                exists_file_types.append(FILE_TYPE_TTL_XZ)
+            elif input_file_list[2] == NT and FILE_TYPE_NT_XZ not in exists_file_types:
+                exists_file_types.append(FILE_TYPE_NT_XZ)
+            elif input_file_list[2] == RDF_XML and FILE_TYPE_RDF_XML_XZ not in exists_file_types:
+                exists_file_types.append(FILE_TYPE_RDF_XML_XZ)
         elif input_file_list[1] == ZIP:
             if input_file_list[2] == TURTLE and FILE_TYPE_TTL_ZIP not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_TTL_ZIP)
@@ -653,11 +807,13 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
 
     return input_file_2d_list, exists_file_types, None
 
-# Determine if the input file is compressed and get the compression mode ("gz" or None)
+# Determine if the input file is compressed and get the compression mode ("gz", "xz", "zip" or None)
 def get_compression_mode(input_file):
     extension = get_extension(input_file)
     if extension == EXTENSION_GZ:
         return GZ
+    elif extension == EXTENSION_XZ:
+        return XZ
     elif extension == EXTENSION_ZIP:
         return ZIP
     else:
@@ -705,16 +861,16 @@ def validate_command_line_args_input(input_file_list):
 
         # Allow only ".nt", ".ttl", ".rdf", ".xml", ".owl" (and their compressed versions) extensions
         extension = get_extension(input_file)
-        if extension in [EXTENSION_GZ, EXTENSION_ZIP]:
+        if extension in [EXTENSION_GZ, EXTENSION_XZ, EXTENSION_ZIP]:
             org_extension = get_extension_before_compression(input_file)
             # gz
             # if org_extension != EXTENSION_NT and org_extension != EXTENSION_TTL and org_extension != EXTENSION_RDF and org_extension != EXTENSION_XML and org_extension != EXTENSION_OWL:
             if org_extension not in [EXTENSION_NT, EXTENSION_TTL, EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL]:
-                error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                error_msg = '6:Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                 return error_msg
         #elif extension != EXTENSION_NT and extension != EXTENSION_TTL and extension != EXTENSION_RDF and extension != EXTENSION_XML and extension != EXTENSION_OWL:
         elif extension not in [EXTENSION_NT, EXTENSION_TTL, EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL]:
-            error_msg = 'Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+            error_msg = '7:Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
             return error_msg
 
         if compression_mode == "":
@@ -804,7 +960,7 @@ def validate_command_line_args_other(args):
         else:
             for type in types:
                 if type not in FILE_TYPE_DICT:
-                    error_msg = 'Type error: "' + type + '" is an unsupported input file format. "' + FILE_TYPE_TTL + '", "' + FILE_TYPE_NT + '", "' + FILE_TYPE_RDF_XML + '", "' + FILE_TYPE_TTL_GZ + '", "' + FILE_TYPE_NT_GZ + '", "' + FILE_TYPE_RDF_XML_GZ + '", "' + FILE_TYPE_TTL_ZIP + '", "' + FILE_TYPE_NT_ZIP + '" and "' + FILE_TYPE_RDF_XML_ZIP + '" are supported.'
+                    error_msg = 'Type error: "' + type + '" is an unsupported input file format. "' + FILE_TYPE_TTL + '", "' + FILE_TYPE_NT + '", "' + FILE_TYPE_RDF_XML + '", "' + FILE_TYPE_TTL_GZ + '", "' + FILE_TYPE_NT_GZ + '", "' + FILE_TYPE_RDF_XML_GZ + '", "' + FILE_TYPE_TTL_XZ + '", "' + FILE_TYPE_NT_XZ + '", "' + FILE_TYPE_RDF_XML_XZ + '", "' + FILE_TYPE_TTL_ZIP + '", "' + FILE_TYPE_NT_ZIP + '" and "' + FILE_TYPE_RDF_XML_ZIP + '" are supported.'
                     return error_msg
 
     # Check temporary directory
@@ -1059,7 +1215,8 @@ def get_shaper_result(args, input_file_list, input_format, compression_mode, nam
                     namespaces_dict=namespaces_dict,
                     compression_mode=compression_mode,
                     instances_report_mode=MIXED_INSTANCES,
-                    detect_minimal_iri=True)
+                    detect_minimal_iri=True,
+                    examples_mode=ALL_EXAMPLES)
 
     return shaper.shex_graph(string_output=True,
                             verbose=args.verbose,
@@ -1095,6 +1252,10 @@ def get_input_classes(input_files, input_format, compression_mode, target_classe
 
         if compression_mode == GZ:
             with gzip.open(input_file, "rb") as f:
+                data = f.read()
+            g.parse(data=data, format=input_format)
+        elif compression_mode == XZ:
+            with xz.open(input_file, "rb") as f:
                 data = f.read()
             g.parse(data=data, format=input_format)
         elif compression_mode == ZIP:
@@ -1199,6 +1360,9 @@ def get_input_prefixes_turtle(input_files, compression_mode):
         if compression_mode == GZ:
             with gzip.open(input_file, mode="rt", encoding="utf-8") as f:
                 data = f.read().splitlines()
+        elif compression_mode == XZ:
+            with xz.open(input_file, mode="rt", encoding="utf-8") as f:
+                data = f.read().splitlines()
         elif compression_mode == ZIP:
             with ZipFile(input_file, "r") as f:
                 data = f.read(Path(input_file).name.replace(".zip", "")).decode().splitlines()
@@ -1239,6 +1403,9 @@ def get_input_prefixes_rdf_xml(input_files, compression_mode):
     for input_file in input_files:
         if compression_mode == GZ:
             with gzip.open(input_file, mode="rt", encoding="utf-8") as f:
+                data = f.read().splitlines()
+        elif compression_mode == XZ:
+            with xz.open(input_file, mode="rt", encoding="utf-8") as f:
                 data = f.read().splitlines()
         elif compression_mode == ZIP:
             with ZipFile(input_file, "r") as f:
@@ -1455,6 +1622,16 @@ def is_target_file(input_file_list, target_file_types):
                 return True
         elif input_file_list[2] == RDF_XML:
             if FILE_TYPE_RDF_XML_GZ in target_file_types:
+                return True
+    elif input_file_list[1] == XZ:
+        if input_file_list[2] == TURTLE:
+            if FILE_TYPE_TTL_XZ in target_file_types:
+                return True
+        elif input_file_list[2] == NT:
+            if FILE_TYPE_NT_XZ in target_file_types:
+                return True
+        elif input_file_list[2] == RDF_XML:
+            if FILE_TYPE_RDF_XML_XZ in target_file_types:
                 return True
     elif input_file_list[1] == ZIP:
         if input_file_list[2] == TURTLE:

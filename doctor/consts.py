@@ -16,6 +16,8 @@ EXTENSION_XML = ".xml"
 EXTENSION_OWL = ".owl"
 EXTENSION_GZ = ".gz"
 EXTENSION_TAR_GZ = ".tar.gz"
+EXTENSION_XZ = ".xz"
+EXTENSION_TAR_XZ = ".tar.xz"
 EXTENSION_ZIP = ".zip"
 
 # Input file type
@@ -25,6 +27,9 @@ FILE_TYPE_RDF_XML = "rdf_xml"
 FILE_TYPE_TTL_GZ = "ttl_gz"
 FILE_TYPE_NT_GZ = "nt_gz"
 FILE_TYPE_RDF_XML_GZ = "rdf_xml_gz"
+FILE_TYPE_TTL_XZ = "ttl_xz"
+FILE_TYPE_NT_XZ = "nt_xz"
+FILE_TYPE_RDF_XML_XZ = "rdf_xml_xz"
 FILE_TYPE_TTL_ZIP = "ttl_zip"
 FILE_TYPE_NT_ZIP = "nt_zip"
 FILE_TYPE_RDF_XML_ZIP = "rdf_xml_zip"
@@ -39,6 +44,9 @@ FILE_TYPE_DICT = {
     FILE_TYPE_TTL_GZ: "tar compressed Turtle(.ttl.gz)",
     FILE_TYPE_NT_GZ: "tar compressed N-Triples(.nt.gz)",
     FILE_TYPE_RDF_XML_GZ: "tar compressed RDF/XML(.rdf.gz and .xml.gz and .owl.gz)",
+    FILE_TYPE_TTL_XZ: "tar compressed Turtle(.ttl.xz)",
+    FILE_TYPE_NT_XZ: "tar compressed N-Triples(.nt.xz)",
+    FILE_TYPE_RDF_XML_XZ: "tar compressed RDF/XML(.rdf.xz and .xml.xz and .owl.xz)",
     FILE_TYPE_TTL_ZIP: "zip compressed Turtle(.ttl.zip)",
     FILE_TYPE_NT_ZIP: "zip compressed N-Triples(.nt.zip)",
     FILE_TYPE_RDF_XML_ZIP: "zip compressed RDF/XML(.rdf.zip and .xml.zip and .owl.zip)"
