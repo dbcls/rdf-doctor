@@ -20,15 +20,16 @@ from pathlib import Path
 import tempfile
 import uuid
 import xz
-from doctor.consts import VERSION_FILE, TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, \
+from doctor.consts import VERSION_FILE, TARGET_CLASS_ALL, EXTENSION_NT, EXTENSION_TTL, EXTENSION_JSON_LD, \
                             EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL, EXTENSION_GZ, EXTENSION_ZIP, EXTENSION_TAR_GZ, \
                             EXTENSION_XZ, EXTENSION_TAR_XZ, FILE_TYPE_TTL_XZ, FILE_TYPE_NT_XZ, FILE_TYPE_RDF_XML_XZ, \
                             PREFIXES_FILE_PATH, REFINE_CLASS_URIS_FILE_PATH, REFINE_PREFIX_URIS_FILE_PATH, HELP_LINK_URL, \
                             FILE_TYPE_TTL, FILE_TYPE_NT, FILE_TYPE_RDF_XML, FILE_TYPE_TTL_GZ, FILE_TYPE_NT_GZ, FILE_TYPE_RDF_XML_GZ, \
+                            FILE_TYPE_JSON_LD, FILE_TYPE_JSON_LD_GZ, FILE_TYPE_JSON_LD_XZ, FILE_TYPE_JSON_LD_ZIP, \
                             FILE_TYPE_TTL_ZIP, FILE_TYPE_NT_ZIP, FILE_TYPE_RDF_XML_ZIP, FILE_TYPE_ALL, FILE_TYPE_DICT, TMP_DISK_USAGE_LIMIT_DEFAULT
 
 from shexer.shaper import Shaper
-from shexer.consts import NT, TURTLE, TURTLE_ITER, RDF_XML, GZ, ZIP, XZ, MIXED_INSTANCES, ALL_EXAMPLES
+from shexer.consts import NT, TURTLE, TURTLE_ITER, RDF_XML, GZ, ZIP, XZ, MIXED_INSTANCES, ALL_EXAMPLES, JSON_LD
 
 is_displaying_spinner = False
 in_progress_rdflib_query = False
@@ -111,7 +112,7 @@ def doctor():
                     print_overwrite(get_dt_now() + " -- Start processing [" + ", ".join(str(input_file) for input_file in input_file_list[0]) + "]")
 
                 # Get and output result. If an error occurs, store it in a queue
-                #print_overwrite(get_dt_now() + " -- " + input_format + ":" + compression_mode)
+                print_overwrite(get_dt_now() + " -- " + input_format + ":" + compression_mode)
                 executor_calc.submit(get_and_output_result, args, input_file_list[0], input_format, compression_mode, widely_used_prefixes_dict, refine_prefix_uris, refine_class_uris, error_queue)
 
             executor_calc.shutdown()
@@ -198,12 +199,12 @@ def get_command_line_args(args):
     parser.add_argument("-i","--input", type=str,
                         required=True,
                         nargs="+",
-                        help='input RDF file or directory (Turtle(.ttl), N-Triples(.nt), RDF/XML(.rdf, .xml, .owl) and their compressed versions are supported)',
+                        help='input RDF file or directory (Turtle(.ttl), N-Triples(.nt), RDF/XML(.rdf, .xml, .owl), JSON-LD(.jsonld) and their compressed versions are supported)',
                         metavar="RDF-FILE or DIRECTORY")
 
     # Input file type (-t、--type)
     parser.add_argument("-t","--type",
-                        help='specifies the type of the input file ("all" or individually from the following Multiple types can be specified by separating them with a comma. ttl, nt, rdf_xml, ttl_gz, nt_gz, rdf_xml_gz, ttl_xz, nt_xz, rdf_xml_xz, ttl_zip, nt_zip, rdf_xml_zip)')
+                        help='specifies the type of the input file ("all" or individually from the following Multiple types can be specified by separating them with a comma. ttl, nt, rdf_xml, jsonld, or one of these followed by gz, xz, or zip concatenated with _ such as ttl_gz)')
 
     # Add report to results (-r、--report)
     parser.add_argument("-r","--report",
@@ -282,15 +283,19 @@ def get_command_line_args(args):
 def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
 
     input_file_list_ttl = []            # Turtle(.ttl)
+    input_file_list_jsonld = []         # JSON-LD(.jsonld)
     input_file_list_nt = []             # N-Triples(.nt)
     input_file_list_rdf_xml = []        # RDF/XML(.rdf, .xml, .owl)
     input_file_list_ttl_gz = []         # GZ compressed Turtle(.ttl.gz)
+    input_file_list_jsonld_gz = []      # GZ compressed JSON-LD(.jsonld.gz)
     input_file_list_nt_gz = []          # GZ compressed N-Triples(.nt.gz)
     input_file_list_rdf_xml_gz = []     # GZ compressed RDF/XML(.rdf.gz, .xml.gz, .owl.gz)
     input_file_list_ttl_xz = []         # XZ compressed Turtle(.ttl.xz)
+    input_file_list_jsonld_xz = []      # XZ compressed JSON-LD(.jsonld.xz)
     input_file_list_nt_xz = []          # XZ compressed N-Triples(.nt.xz)
     input_file_list_rdf_xml_xz = []     # XZ compressed RDF/XML(.rdf.xz, .xml.xz, .owl.xz)
     input_file_list_ttl_zip = []        # ZIP compressed Turtle(.ttl.zip)
+    input_file_list_jsonld_zip = []     # ZIP compressed JSON-LD(.jsonld.zip)
     input_file_list_nt_zip = []         # ZIP compressed N-Triples(.nt.zip)
     input_file_list_rdf_xml_zip = []    # ZIP compressed RDF/XML(.rdf.zip, .xml.zip, .owl.zip)
     input_file_2d_list = []             # For storing final results
@@ -315,45 +320,53 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                     if compression_mode == GZ:
                         if input_format == TURTLE:
                             input_file_list_ttl_gz.append(file_path)
+                        elif input_format == JSON_LD:
+                            input_file_list_jsonld_gz.append(file_path)
                         elif input_format == NT:
                             input_file_list_nt_gz.append(file_path)
                         elif input_format == RDF_XML:
                             input_file_list_rdf_xml_gz.append(file_path)
                         else:
-                            # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                            # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                             pass
 
                     elif compression_mode == XZ:
                         if input_format == TURTLE:
                             input_file_list_ttl_xz.append(file_path)
+                        elif input_format == JSON_LD:
+                            input_file_list_jsonld_xz.append(file_path)
                         elif input_format == NT:
                             input_file_list_nt_xz.append(file_path)
                         elif input_format == RDF_XML:
                             input_file_list_rdf_xml_xz.append(file_path)
                         else:
-                            # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                            # No processing except for .ttl, ,jsonld, .nt, .rdf, .xml, .owl compressed
                             pass
 
                     elif compression_mode == ZIP:
                         if input_format == TURTLE:
                             input_file_list_ttl_zip.append(file_path)
+                        elif input_format == JSON_LD:
+                            input_file_list_jsonld_zip.append(file_path)
                         elif input_format == NT:
                             input_file_list_nt_zip.append(file_path)
                         elif input_format == RDF_XML:
                             input_file_list_rdf_xml_zip.append(file_path)
                         else:
-                            # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                            # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                             pass
 
                     elif compression_mode is None:
                         if input_format == TURTLE:
                             input_file_list_ttl.append(file_path)
+                        elif input_format == JSON_LD:
+                            input_file_list_jsonld.append(file_path)
                         elif input_format == NT:
                             input_file_list_nt.append(file_path)
                         elif input_format == RDF_XML:
                             input_file_list_rdf_xml.append(file_path)
                         else:
-                            # No processing except for .ttl, .nt, .rdf, .xml, .owl
+                            # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl
                             pass
 
         else:
@@ -363,6 +376,8 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
             if compression_mode == GZ:
                 if input_format == TURTLE:
                     input_file_list_ttl_gz.append(input_file)
+                elif input_format == JSON_LD:
+                    input_file_list_jsonld_gz.append(input_file)
                 elif input_format == NT:
                     input_file_list_nt_gz.append(input_file)
                 elif input_format == RDF_XML:
@@ -391,51 +406,61 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                                 if compression_mode == GZ:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_gz.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld_gz.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt_gz.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml_gz.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                                         pass
                                 if compression_mode == XZ:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_xz.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld_xz.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt_xz.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml_xz.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                                         pass
                                 elif compression_mode == ZIP:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_zip.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld_zip.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt_zip.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml_zip.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                                         pass
 
                                 elif compression_mode is None:
                                     if input_format == TURTLE:
                                         input_file_list_ttl.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl
                                         pass
                     else:
-                        error_msg = '1:"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                        error_msg = '1:"' + extension + '" is an unsupported extension. ".ttl", ".jsonld", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                         return None, None, error_msg
 
             elif compression_mode == XZ:
                 if input_format == TURTLE:
                     input_file_list_ttl_xz.append(input_file)
+                elif input_format == JSON_LD:
+                    input_file_list_jsonld_xz.append(input_file)
                 elif input_format == NT:
                     input_file_list_nt_xz.append(input_file)
                 elif input_format == RDF_XML:
@@ -464,51 +489,61 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                                 if compression_mode == GZ:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_gz.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld_gz.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt_gz.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml_gz.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                                         pass
                                 elif compression_mode == XZ:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_xz.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld_xz.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt_xz.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml_xz.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                                         pass
                                 elif compression_mode == ZIP:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_zip.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld_zip.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt_zip.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml_zip.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                                         pass
 
                                 elif compression_mode is None:
                                     if input_format == TURTLE:
                                         input_file_list_ttl.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl
                                         pass
                     else:
-                        error_msg = '2:"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                        error_msg = '2:"' + extension + '" is an unsupported extension. ".ttl", ".jsonld", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                         return None, None, error_msg
 
             elif compression_mode == ZIP:
                 if input_format == TURTLE:
                     input_file_list_ttl_zip.append(input_file)
+                elif input_format == JSON_LD:
+                    input_file_list_jsonld_zip.append(input_file)
                 elif input_format == NT:
                     input_file_list_nt_zip.append(input_file)
                 elif input_format == RDF_XML:
@@ -536,65 +571,79 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
                                 if compression_mode == GZ:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_gz.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld_gz.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt_gz.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml_gz.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                                         pass
 
                                 elif compression_mode == XZ:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_xz.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld_xz.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt_xz.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml_xz.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                                         pass
 
                                 elif compression_mode == ZIP:
                                     if input_format == TURTLE:
                                         input_file_list_ttl_zip.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld_zip.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt_zip.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml_zip.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                                         pass
 
                                 elif compression_mode is None:
                                     if input_format == TURTLE:
                                         input_file_list_ttl.append(file_path)
+                                    elif input_format == JSON_LD:
+                                        input_file_list_jsonld.append(file_path)
                                     elif input_format == NT:
                                         input_file_list_nt.append(file_path)
                                     elif input_format == RDF_XML:
                                         input_file_list_rdf_xml.append(file_path)
                                     else:
-                                        # No processing except for .ttl, .nt, .rdf, .xml, .owl
+                                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl
                                         pass
                     else:
-                        error_msg = '3:"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                        error_msg = '3:"' + extension + '" is an unsupported extension. ".ttl", ".jsonld", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                         return None, None, error_msg
 
             elif compression_mode is None:
                 if input_format == TURTLE:
                     input_file_list_ttl.append(input_file)
+                elif input_format == JSON_LD:
+                    input_file_list_jsonld.append(input_file)
                 elif input_format == NT:
                     input_file_list_nt.append(input_file)
                 elif input_format == RDF_XML:
                     input_file_list_rdf_xml.append(input_file)
                 else:
-                    error_msg = '4:"' + get_extension(input_file) + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                    error_msg = '4:"' + get_extension(input_file) + '" is an unsupported extension. ".ttl", ".jsonld", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                     return None, None, error_msg
 
     if len(input_file_list_ttl) != 0:
         # input_file_dict[FILE_TYPE_TTL] = [input_file_list_ttl, None, TURTLE]
         input_file_2d_list.append([input_file_list_ttl, None, TURTLE])
         exists_file_types.append(FILE_TYPE_TTL)
+    if len(input_file_list_jsonld) != 0:
+        # input_file_dict[FILE_TYPE_JSON_LD] = [input_file_list_jsonld, None, JSON_LD]
+        input_file_2d_list.append([input_file_list_jsonld, None, JSON_LD])
+        exists_file_types.append(FILE_TYPE_JSON_LD)
     if len(input_file_list_nt) != 0:
         # input_file_dict[FILE_TYPE_NT] = [input_file_list_nt, None, NT]
         input_file_2d_list.append([input_file_list_nt, None, NT])
@@ -607,10 +656,18 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
         # input_file_dict[FILE_TYPE_TTL_GZ] = [input_file_list_ttl_gz, GZ, TURTLE]
         input_file_2d_list.append([input_file_list_ttl_gz, GZ, TURTLE])
         exists_file_types.append(FILE_TYPE_TTL_GZ)
+    if len(input_file_list_jsonld_gz) != 0:
+        # input_file_dict[FILE_TYPE_JSON_LD_GZ] = [input_file_list_jsonld_gz, GZ, JSON_LD]
+        input_file_2d_list.append([input_file_list_jsonld_gz, GZ, JSON_LD])
+        exists_file_types.append(FILE_TYPE_JSON_LD_GZ)
     if len(input_file_list_ttl_xz) != 0:
         # input_file_dict[FILE_TYPE_TTL_XZ] = [input_file_list_ttl_xz, XZ, TURTLE]
         input_file_2d_list.append([input_file_list_ttl_xz, XZ, TURTLE])
         exists_file_types.append(FILE_TYPE_TTL_XZ)
+    if len(input_file_list_jsonld_xz) != 0:
+        # input_file_dict[FILE_TYPE_JSON_LD_XZ] = [input_file_list_jsonld_xz, XZ, JSON_LD]
+        input_file_2d_list.append([input_file_list_jsonld_xz, XZ, JSON_LD])
+        exists_file_types.append(FILE_TYPE_JSON_LD_XZ)
     if len(input_file_list_nt_gz) != 0:
         # input_file_dict[FILE_TYPE_NT_GZ] = [input_file_list_nt_gz, GZ, NT]
         input_file_2d_list.append([input_file_list_nt_gz, GZ, NT])
@@ -631,6 +688,10 @@ def get_input_files_by_type(input_files, temp_dir, tmp_dir_disk_usage_limit):
         # input_file_dict[FILE_TYPE_TTL_ZIP] = [input_file_list_ttl_zip, ZIP, TURTLE]
         input_file_2d_list.append([input_file_list_ttl_zip, ZIP, TURTLE])
         exists_file_types.append(FILE_TYPE_TTL_ZIP)
+    if len(input_file_list_jsonld_zip) != 0:
+        # input_file_dict[FILE_TYPE_JSON_LD_ZIP] = [input_file_list_jsonld_zip, ZIP, JSON_LD]
+        input_file_2d_list.append([input_file_list_jsonld_zip, ZIP, JSON_LD])
+        exists_file_types.append(FILE_TYPE_JSON_LD_ZIP)
     if len(input_file_list_nt_zip) != 0:
         # input_file_dict[FILE_TYPE_NT_ZIP] = [input_file_list_nt_zip, ZIP, NT]
         input_file_2d_list.append([input_file_list_nt_zip, ZIP, NT])
@@ -680,19 +741,19 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                     input_format = get_input_format(file_path, compression_mode)
 
                     # Determine file type and add to array
-                    if input_format in (TURTLE, NT, RDF_XML):
+                    if input_format in (TURTLE, JSON_LD, NT, RDF_XML):
                         input_file_2d_list.append([[file_path], compression_mode, input_format])
                     else:
-                        # No processing except for .ttl, .nt, .rdf, .xml, .owl compressed
+                        # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl compressed
                         pass
 
         else:
-            # Files with the following extensions are supported: .ttl, .nt, .rdf, .xml, and .owl.
+            # Files with the following extensions are supported: .ttl, .jsonld, .nt, .rdf, .xml, and .owl.
             # However, other files are also added to the list for input checking.
             compression_mode = get_compression_mode(input_file)
             input_format = get_input_format(input_file, compression_mode)
 
-            if input_format in (TURTLE, NT, RDF_XML):
+            if input_format in (TURTLE, JSON_LD, NT, RDF_XML):
                 input_file_2d_list.append([[input_file], compression_mode, input_format])
             else:
                 # Case None
@@ -719,10 +780,10 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                             # Determine file type and add to array
                             compression_mode = get_compression_mode(file_path)
                             input_format = get_input_format(file_path, compression_mode)
-                            if input_format in (TURTLE, NT, RDF_XML):
+                            if input_format in (TURTLE, JSON_LD, NT, RDF_XML):
                                 input_file_2d_list.append([[file_path], compression_mode, input_format])
                             else:
-                                # No processing except for .ttl, .nt, .rdf, .xml, .owl and their compressed
+                                # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl and their compressed
                                 pass
 
                 elif extension == EXTENSION_TAR_XZ:
@@ -743,10 +804,10 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                             # Determine file type and add to array
                             compression_mode = get_compression_mode(file_path)
                             input_format = get_input_format(file_path, compression_mode)
-                            if input_format in (TURTLE, NT, RDF_XML):
+                            if input_format in (TURTLE, JSON_LD, NT, RDF_XML):
                                 input_file_2d_list.append([[file_path], compression_mode, input_format])
                             else:
-                                # No processing except for .ttl, .nt, .rdf, .xml, .owl and their compressed
+                                # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl and their compressed
                                 pass
 
                 elif extension == EXTENSION_ZIP:
@@ -766,19 +827,21 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
                             file_path = Path(root) / file
                             compression_mode = get_compression_mode(file_path)
                             input_format = get_input_format(file_path, compression_mode)
-                            if input_format in (TURTLE, NT, RDF_XML):
+                            if input_format in (TURTLE, JSON_LD, NT, RDF_XML):
                                 input_file_2d_list.append([[file_path], compression_mode, input_format])
                             else:
-                                # No processing except for .ttl, .nt, .rdf, .xml, .owl and their compressed
+                                # No processing except for .ttl, .jsonld, .nt, .rdf, .xml, .owl and their compressed
                                 pass
                 else:
-                    error_msg = '5:"' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+                    error_msg = '5:"' + extension + '" is an unsupported extension. ".ttl", ".jsonld", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                     return None, None, error_msg
 
     for input_file_list in input_file_2d_list:
         if input_file_list[1] is None:
             if input_file_list[2] == TURTLE and FILE_TYPE_TTL not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_TTL)
+            elif input_file_list[2] == JSON_LD and FILE_TYPE_JSON_LD not in exists_file_types:
+                exists_file_types.append(FILE_TYPE_JSON_LD)
             elif input_file_list[2] == NT and FILE_TYPE_NT not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_NT)
             elif input_file_list[2] == RDF_XML and FILE_TYPE_RDF_XML not in exists_file_types:
@@ -786,6 +849,8 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
         elif input_file_list[1] == GZ:
             if input_file_list[2] == TURTLE and FILE_TYPE_TTL_GZ not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_TTL_GZ)
+            elif input_file_list[2] == JSON_LD and FILE_TYPE_JSON_LD_GZ not in exists_file_types:
+                exists_file_types.append(FILE_TYPE_JSON_LD_GZ)
             elif input_file_list[2] == NT and FILE_TYPE_NT_GZ not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_NT_GZ)
             elif input_file_list[2] == RDF_XML and FILE_TYPE_RDF_XML_GZ not in exists_file_types:
@@ -793,6 +858,8 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
         elif input_file_list[1] == XZ:
             if input_file_list[2] == TURTLE and FILE_TYPE_TTL_XZ not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_TTL_XZ)
+            elif input_file_list[2] == JSON_LD and FILE_TYPE_JSON_LD_XZ not in exists_file_types:
+                exists_file_types.append(FILE_TYPE_JSON_LD_XZ)
             elif input_file_list[2] == NT and FILE_TYPE_NT_XZ not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_NT_XZ)
             elif input_file_list[2] == RDF_XML and FILE_TYPE_RDF_XML_XZ not in exists_file_types:
@@ -800,6 +867,8 @@ def get_input_files_each(input_files, temp_dir, tmp_dir_disk_usage_limit):
         elif input_file_list[1] == ZIP:
             if input_file_list[2] == TURTLE and FILE_TYPE_TTL_ZIP not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_TTL_ZIP)
+            elif input_file_list[2] == JSON_LD and FILE_TYPE_JSON_LD_ZIP not in exists_file_types:
+                exists_file_types.append(FILE_TYPE_JSON_LD_ZIP)
             elif input_file_list[2] == NT and FILE_TYPE_NT_ZIP not in exists_file_types:
                 exists_file_types.append(FILE_TYPE_NT_ZIP)
             elif input_file_list[2] == RDF_XML and FILE_TYPE_RDF_XML_ZIP not in exists_file_types:
@@ -833,6 +902,9 @@ def get_input_format(input_file, compression_mode):
     elif extension == EXTENSION_TTL:
         # Turtle
         return TURTLE
+    elif extension == EXTENSION_JSON_LD:
+        # JSON-LD
+        return JSON_LD
     elif extension in [EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL]:
         # RDF/XML(.owl、.rdf、.xml)
         return RDF_XML
@@ -859,18 +931,18 @@ def validate_command_line_args_input(input_file_list):
             error_msg = "Input file error: you don't have permission to read the input file."
             return error_msg
 
-        # Allow only ".nt", ".ttl", ".rdf", ".xml", ".owl" (and their compressed versions) extensions
+        # Allow only ".nt", ".ttl", ".jsonld", ".rdf", ".xml", ".owl" (and their compressed versions) extensions
         extension = get_extension(input_file)
         if extension in [EXTENSION_GZ, EXTENSION_XZ, EXTENSION_ZIP]:
             org_extension = get_extension_before_compression(input_file)
             # gz
             # if org_extension != EXTENSION_NT and org_extension != EXTENSION_TTL and org_extension != EXTENSION_RDF and org_extension != EXTENSION_XML and org_extension != EXTENSION_OWL:
-            if org_extension not in [EXTENSION_NT, EXTENSION_TTL, EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL]:
-                error_msg = '6:Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+            if org_extension not in [EXTENSION_NT, EXTENSION_TTL, EXTENSION_JSON_LD, EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL]:
+                error_msg = '6:Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt", ".jsonld", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
                 return error_msg
         #elif extension != EXTENSION_NT and extension != EXTENSION_TTL and extension != EXTENSION_RDF and extension != EXTENSION_XML and extension != EXTENSION_OWL:
-        elif extension not in [EXTENSION_NT, EXTENSION_TTL, EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL]:
-            error_msg = '7:Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
+        elif extension not in [EXTENSION_NT, EXTENSION_TTL, EXTENSION_JSON_LD, EXTENSION_RDF, EXTENSION_XML, EXTENSION_OWL]:
+            error_msg = '7:Input file error: "' + extension + '" is an unsupported extension. ".ttl", ".nt", ".jsonld", ".rdf", ".xml", ".owl" and their compressed versions are supported.'
             return error_msg
 
         if compression_mode == "":
@@ -960,7 +1032,11 @@ def validate_command_line_args_other(args):
         else:
             for type in types:
                 if type not in FILE_TYPE_DICT:
-                    error_msg = 'Type error: "' + type + '" is an unsupported input file format. "' + FILE_TYPE_TTL + '", "' + FILE_TYPE_NT + '", "' + FILE_TYPE_RDF_XML + '", "' + FILE_TYPE_TTL_GZ + '", "' + FILE_TYPE_NT_GZ + '", "' + FILE_TYPE_RDF_XML_GZ + '", "' + FILE_TYPE_TTL_XZ + '", "' + FILE_TYPE_NT_XZ + '", "' + FILE_TYPE_RDF_XML_XZ + '", "' + FILE_TYPE_TTL_ZIP + '", "' + FILE_TYPE_NT_ZIP + '" and "' + FILE_TYPE_RDF_XML_ZIP + '" are supported.'
+                    error_msg = 'Type error: "' + type + '" is an unsupported input file format. "' \
+                        + FILE_TYPE_TTL + '", "' + FILE_TYPE_JSON_LD + '", "' + FILE_TYPE_NT + '", "' + FILE_TYPE_RDF_XML + '", "' \
+                        + FILE_TYPE_TTL_GZ + '", "' + FILE_TYPE_JSON_LD_GZ + '", "' + FILE_TYPE_NT_GZ + '", "' + FILE_TYPE_RDF_XML_GZ + '", "' \
+                        + FILE_TYPE_TTL_XZ + '", "' + FILE_TYPE_JSON_LD_XZ + '", "' + FILE_TYPE_NT_XZ + '", "' + FILE_TYPE_RDF_XML_XZ + '", "' \
+                        + FILE_TYPE_TTL_ZIP + '", "' + FILE_TYPE_JSON_LD_ZIP + '", "' + FILE_TYPE_NT_ZIP + '" and "' + FILE_TYPE_RDF_XML_ZIP + '" are supported.'
                     return error_msg
 
     # Check temporary directory
@@ -1004,13 +1080,18 @@ def get_and_output_result(args, input_file_list, input_format, compression_mode,
 
             if input_format in (TURTLE, TURTLE_ITER):
                 input_prefixes, duplicated_prefixes, duplicated_prefixes_dict = get_input_prefixes_turtle(input_file_list, compression_mode)
+            elif input_format == JSON_LD:
+                input_prefixes, duplicated_prefixes, duplicated_prefixes_dict = get_input_prefixes_json_ld(input_file_list, compression_mode)
             elif input_format == RDF_XML:
                 input_prefixes, duplicated_prefixes, duplicated_prefixes_dict = get_input_prefixes_rdf_xml(input_file_list, compression_mode)
             else:
                 raise ValueError("Invalid input format: " + str(input_format))
 
+            print_overwrite(get_dt_now() + " --- [" + str(input_prefixes) + "|" + str(duplicated_prefixes_dict) + "]")
             namespaces_dict = get_namespaces_dict(input_prefixes, duplicated_prefixes_dict, widely_used_prefixes_dict)
 
+        if args.verbose:
+            print_overwrite(get_dt_now() + " -- [" + str(namespaces_dict) + "]")
         shaper_result = get_shaper_result(args, input_file_list, input_format, compression_mode, namespaces_dict)
 
         report_result = []
@@ -1159,6 +1240,8 @@ def get_and_output_result(args, input_file_list, input_format, compression_mode,
                 # turtle.shex, nt.shex, rdf.shex
                 if input_format in (TURTLE, TURTLE_ITER):
                     output_file_name = TURTLE
+                elif input_format == JSON_LD:
+                    output_file_name = "json-ld"
                 elif input_format == NT:
                     output_file_name = "n-triples"
                 elif input_format == RDF_XML:
@@ -1349,7 +1432,6 @@ def get_fingerprint_comparison_result(fingerprint_class_dict):
 
     return fingerprint_comparison_result
 
-
 # Get the prefixes contained within the Turtle file(s)
 # And get prefixes with the same Namespace but different URIs at the same time.
 def get_input_prefixes_turtle(input_files, compression_mode):
@@ -1392,6 +1474,47 @@ def get_input_prefixes_turtle(input_files, compression_mode):
 
     return input_prefixes, duplicated_prefixes_list, duplicated_prefixes_dict
 
+
+# Get the prefixes contained within the JSON-LD file(s)
+# And get prefixes with the same Namespace but different URIs at the same time.
+def get_input_prefixes_json_ld(input_files, compression_mode):
+    input_prefixes = []
+    duplicated_namespaces = []
+    duplicated_prefixes_dict = defaultdict(list) # Used for processing Namespace collision prevention when generating namespaces_dict to be passed to sheXer. ex. {'foaf:': ['http://xmlns.com/foaf/0.1/', 'http://xmlns.com/foaf/spec/#']}
+    for input_file in input_files:
+        if compression_mode == GZ:
+            with gzip.open(input_file, mode="rt", encoding="utf-8") as f:
+                data = f.read()
+        elif compression_mode == XZ:
+            with xz.open(input_file, mode="rt", encoding="utf-8") as f:
+                data = f.read()
+        elif compression_mode == ZIP:
+            with ZipFile(input_file, "r") as f:
+                data = f.read(Path(input_file).name.replace(".zip", "")).decode()
+        else:
+            with open(input_file, mode="r", newline="\n", encoding="utf-8") as f:
+                data = f.read()
+    # using RDFLib to parse JSON-LD files and extract prefixes
+    g = rdflib.Graph()
+    g.parse(data=data, format="json-ld")
+    for prefix, uri in g.namespace_manager.namespaces():
+        uri = str(uri)
+        if [prefix, uri] not in input_prefixes:
+            input_prefixes.append([prefix, uri])
+            for input_prefix in input_prefixes:
+                if input_prefix[0] == prefix and input_prefix[1] != uri and prefix not in duplicated_namespaces:
+                    duplicated_namespaces.append(prefix)
+
+    for input_prefix in input_prefixes:
+        if input_prefix[0] in duplicated_namespaces:
+            duplicated_prefixes_dict[input_prefix[0]].append(input_prefix[1])
+
+    duplicated_prefixes_list = []
+    for key, values in duplicated_prefixes_dict.items():
+        for value in values:
+            duplicated_prefixes_list.append(key + "\t" + value + "\n")
+
+    return input_prefixes, duplicated_prefixes_list, duplicated_prefixes_dict
 
 # Get the prefixes contained within the RDF/XML file(s)
 # And get prefixes with the same Namespace but different URIs at the same time.
@@ -1607,6 +1730,9 @@ def is_target_file(input_file_list, target_file_types):
         if input_file_list[2] == TURTLE:
             if FILE_TYPE_TTL in target_file_types:
                 return True
+        elif input_file_list[2] == JSON_LD:
+            if FILE_TYPE_JSON_LD in target_file_types:
+                return True
         elif input_file_list[2] == NT:
             if FILE_TYPE_NT in target_file_types:
                 return True
@@ -1616,6 +1742,9 @@ def is_target_file(input_file_list, target_file_types):
     elif input_file_list[1] == GZ:
         if input_file_list[2] == TURTLE:
             if FILE_TYPE_TTL_GZ in target_file_types:
+                return True
+        elif input_file_list[2] == JSON_LD:
+            if FILE_TYPE_JSON_LD_GZ in target_file_types:
                 return True
         elif input_file_list[2] == NT:
             if FILE_TYPE_NT_GZ in target_file_types:
@@ -1627,6 +1756,9 @@ def is_target_file(input_file_list, target_file_types):
         if input_file_list[2] == TURTLE:
             if FILE_TYPE_TTL_XZ in target_file_types:
                 return True
+        elif input_file_list[2] == JSON_LD:
+            if FILE_TYPE_JSON_LD_XZ in target_file_types:
+                return True
         elif input_file_list[2] == NT:
             if FILE_TYPE_NT_XZ in target_file_types:
                 return True
@@ -1636,6 +1768,9 @@ def is_target_file(input_file_list, target_file_types):
     elif input_file_list[1] == ZIP:
         if input_file_list[2] == TURTLE:
             if FILE_TYPE_TTL_ZIP in target_file_types:
+                return True
+        elif input_file_list[2] == JSON_LD:
+            if FILE_TYPE_JSON_LD_ZIP in target_file_types:
                 return True
         elif input_file_list[2] == NT:
             if FILE_TYPE_NT_ZIP in target_file_types:
