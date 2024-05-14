@@ -1087,11 +1087,11 @@ def get_and_output_result(args, input_file_list, input_format, compression_mode,
             else:
                 raise ValueError("Invalid input format: " + str(input_format))
 
-            print_overwrite(get_dt_now() + " --- [" + str(input_prefixes) + "|" + str(duplicated_prefixes_dict) + "]")
+            #print_overwrite(get_dt_now() + " --- [" + str(input_prefixes) + "|" + str(duplicated_prefixes_dict) + "]")
             namespaces_dict = get_namespaces_dict(input_prefixes, duplicated_prefixes_dict, widely_used_prefixes_dict)
 
-        if args.verbose:
-            print_overwrite(get_dt_now() + " -- [" + str(namespaces_dict) + "]")
+        #if args.verbose:
+        #    print_overwrite(get_dt_now() + " -- [" + str(namespaces_dict) + "]")
         shaper_result = get_shaper_result(args, input_file_list, input_format, compression_mode, namespaces_dict)
 
         report_result = []
@@ -1496,8 +1496,11 @@ def get_input_prefixes_json_ld(input_files, compression_mode):
                 data = f.read()
     # using RDFLib to parse JSON-LD files and extract prefixes
     g = rdflib.Graph()
+    default_namespaces = set(g.namespace_manager.namespaces())
     g.parse(data=data, format="json-ld")
-    for prefix, uri in g.namespace_manager.namespaces():
+    all_namespaces = set(g.namespace_manager.namespaces())
+    json_ld_namespaces = all_namespaces - default_namespaces
+    for prefix, uri in json_ld_namespaces:
         uri = str(uri)
         if [prefix, uri] not in input_prefixes:
             input_prefixes.append([prefix, uri])
