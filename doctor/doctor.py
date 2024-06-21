@@ -112,6 +112,7 @@ def doctor():
                     print_overwrite(get_dt_now() + " -- Start processing [" + ", ".join(str(input_file) for input_file in input_file_list[0]) + "]")
 
                 # Get and output result. If an error occurs, store it in a queue
+                if compression_mode is None: compression_mode = ""
                 print_overwrite(get_dt_now() + " -- " + input_format + ":" + compression_mode)
                 executor_calc.submit(get_and_output_result, args, input_file_list[0], input_format, compression_mode, widely_used_prefixes_dict, refine_prefix_uris, refine_class_uris, error_queue)
 
