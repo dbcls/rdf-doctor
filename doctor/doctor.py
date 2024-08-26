@@ -40,7 +40,7 @@ def doctor():
 
     error_msg = validate_command_line_args_other(args)
     if error_msg is not None:
-        print(error_msg)
+        print(error_msg, file=sys.stderr)
         return
 
     # Generate temporary directory for compressed file decompression
@@ -52,7 +52,7 @@ def doctor():
             # Retrieve input files in dictionary format by type
             input_file_2d_list, exists_file_types, error_msg = get_input_files_by_type(args.input, temp_dir, args.tmp_dir_disk_usage_limit)
             if error_msg is not None:
-                print(error_msg)
+                print(error_msg, file=sys.stderr)
                 return
 
         else:
@@ -60,7 +60,7 @@ def doctor():
             # Acquire as a two-dimensional array for compatibility with subsequent processing
             input_file_2d_list, exists_file_types, error_msg = get_input_files_each(args.input, temp_dir, args.tmp_dir_disk_usage_limit)
             if error_msg is not None:
-                print(error_msg)
+                print(error_msg, file=sys.stderr)
                 return
 
         if args.type:
@@ -75,7 +75,7 @@ def doctor():
             if is_target_file(input_file_list, target_file_types):
                 error_msg = validate_command_line_args_input(input_file_list[0])
                 if error_msg is not None:
-                    print(error_msg)
+                    print(error_msg, file=sys.stderr)
                     return
 
         error_queue = queue.Queue()
@@ -112,8 +112,9 @@ def doctor():
                     print_overwrite(get_dt_now() + " -- Start processing [" + ", ".join(str(input_file) for input_file in input_file_list[0]) + "]")
 
                 # Get and output result. If an error occurs, store it in a queue
-                if compression_mode is None: compression_mode = ""
-                print_overwrite(get_dt_now() + " -- " + input_format + ":" + compression_mode)
+                cmp_mode = compression_mode
+                if compression_mode is None: cmp_mode = "(not compressed)"
+                print_overwrite(get_dt_now() + " -- " + input_format + ":" + cmp_mode)
                 executor_calc.submit(get_and_output_result, args, input_file_list[0], input_format, compression_mode, widely_used_prefixes_dict, refine_prefix_uris, refine_class_uris, error_queue)
 
             executor_calc.shutdown()
@@ -123,24 +124,24 @@ def doctor():
 
             # Output if there is an error
             if not error_queue.empty():
-                print("Some files could not be processed successfully. Please check the following errors.")
+                print("Some files could not be processed successfully. Please check the following errors.", file=sys.stderr)
                 while not error_queue.empty():
-                    print(error_queue.get())
+                    print(error_queue.get(), file=sys.stderr)
 
         except ValueError as e:
-            print("[ERROR] A value error occurred. Error message: " + str(e))
+            print("[ERROR] A value error occurred. Error message: " + str(e), file=sys.stderr)
 
         except IndexError as e:
-            print("[ERROR] An index error occurred. Error message: " + str(e))
+            print("[ERROR] An index error occurred. Error message: " + str(e), file=sys.stderr)
 
         except MemoryError as e:
-            print("[ERROR] A memory error occurred. Error message: " + str(e))
+            print("[ERROR] A memory error occurred. Error message: " + str(e), file=sys.stderr)
 
         except KeyboardInterrupt:
             print ("Keyboard interrupt occurred.")
 
         except Exception as e:
-            print("[ERROR] An exception occurred. Error message: " + str(e))
+            print("[ERROR] An exception occurred. Error message: " + str(e), file=sys.stderr)
 
         finally:
             is_displaying_spinner = False
@@ -157,7 +158,7 @@ def display_spinner():
     #while result_queue.empty():
     global is_displaying_spinner
     while is_displaying_spinner:
-        print(spin_char[i], end="\r")
+        print(spin_char[i], end="\r", file=sys.stderr)
         if i == len(spin_char) - 1:
             i = 0
         else:
@@ -1230,7 +1231,7 @@ def get_and_output_result(args, input_file_list, input_format, compression_mode,
         # Output results
         if args.output is None:
             # Standard output
-            print_overwrite("".join(shex_final_result))
+            print("".join(shex_final_result))
 
             if args.verbose:
                 print_overwrite(get_dt_now() + " -- Done! [" + ", ".join(str(input_file) for input_file in input_file_list) + "]")
@@ -1683,8 +1684,11 @@ def get_dt_now():
     return datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
 # Overwrites the current line of the console with the string passed as argument
-def print_overwrite(string):
-    print("\r" + string)
+def print_overwrite(string, stderr=True):
+    if stderr:
+        print("\r" + string, file=sys.stderr)
+    else:
+        print("\r" + string)
 
 # Returns the extension of the given filename
 def get_extension(input_file):
